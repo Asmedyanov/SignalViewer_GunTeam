@@ -13,7 +13,71 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Итоговые сигналы</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Сырые сигналы</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>Итоговые спектры</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Сырые спектры</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_5">
+         <attribute name="title">
+          <string>Резульаты пакетной обработки</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_7"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -23,8 +87,180 @@
      <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+    <addaction name="action_4"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Шаблон эксперимента</string>
+    </property>
+    <addaction name="action_6"/>
+    <addaction name="action_7"/>
+    <addaction name="action_8"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>График</string>
+    </property>
+    <addaction name="action_10"/>
+    <addaction name="action_9"/>
+    <addaction name="action_11"/>
+    <addaction name="action_12"/>
+    <addaction name="action_13"/>
+    <addaction name="action_14"/>
+    <addaction name="action_15"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Пакетная обработка папки</string>
+    </property>
+    <addaction name="action_16"/>
+    <addaction name="action_17"/>
+    <addaction name="action_18"/>
+   </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>Настройки</string>
+    </property>
+    <addaction name="action_19"/>
+    <addaction name="action_20"/>
+   </widget>
+   <widget class="QMenu" name="menu_6">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+    <addaction name="action_21"/>
+    <addaction name="action_22"/>
+    <addaction name="action_23"/>
+   </widget>
+   <addaction name="menu_2"/>
+   <addaction name="menu"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_5"/>
+   <addaction name="menu_6"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action">
+   <property name="text">
+    <string>Добавить файл</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Добавить папку</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Пакетная обработка папки</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Группировать папку по выстрелам</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Выбрать шаблон эксперимента</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>Открыть шаблон эксперимента</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>Сохранить эксперимент как шаблон</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>Настройки шаблона по умолчанию</string>
+   </property>
+  </action>
+  <action name="action_9">
+   <property name="text">
+    <string>Очистить</string>
+   </property>
+  </action>
+  <action name="action_10">
+   <property name="text">
+    <string>Нормировать на себя</string>
+   </property>
+  </action>
+  <action name="action_11">
+   <property name="text">
+    <string>Скользящее среднее</string>
+   </property>
+  </action>
+  <action name="action_12">
+   <property name="text">
+    <string>Подписи кликов</string>
+   </property>
+  </action>
+  <action name="action_13">
+   <property name="text">
+    <string>Отображение каналов</string>
+   </property>
+  </action>
+  <action name="action_14">
+   <property name="text">
+    <string>Отслеживание кликов</string>
+   </property>
+  </action>
+  <action name="action_15">
+   <property name="text">
+    <string>Вывести статистику</string>
+   </property>
+  </action>
+  <action name="action_16">
+   <property name="text">
+    <string>Запустить пакетную обработку папки</string>
+   </property>
+  </action>
+  <action name="action_17">
+   <property name="text">
+    <string>Записать пакетную обработку папки</string>
+   </property>
+  </action>
+  <action name="action_18">
+   <property name="text">
+    <string>Настройки сбора статистики</string>
+   </property>
+  </action>
+  <action name="action_19">
+   <property name="text">
+    <string>Осциллографы</string>
+   </property>
+  </action>
+  <action name="action_20">
+   <property name="text">
+    <string>Диагностики</string>
+   </property>
+  </action>
+  <action name="action_21">
+   <property name="text">
+    <string>Об авторах</string>
+   </property>
+  </action>
+  <action name="action_22">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="action_23">
+   <property name="text">
+    <string>Примеры</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
