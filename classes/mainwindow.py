@@ -1,6 +1,7 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
 from classes.mplwidget import MplWidget
+import functions.filefunctions as filefunctions
 
 
 class MainWindow(QMainWindow):
@@ -42,7 +43,7 @@ class MainWindow(QMainWindow):
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
 
     def addFile(self):
-        filterlist=[
+        filterlist = [
             'Любые файлы (*.*)',
             'АЦП Хильченко(*.bin)',
             'Дистанционный АКИП(A*.CSV)',
@@ -56,3 +57,4 @@ class MainWindow(QMainWindow):
                                         "Добавьте файл",
                                         "D:/1.Clouds/GUN_TEAM/Experiments",
                                         ';;'.join(filterlist))[0]
+        addeddatalist = filefunctions.addFile(self.lastFileName)
