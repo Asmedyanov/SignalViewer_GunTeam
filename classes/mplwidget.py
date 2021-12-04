@@ -1,6 +1,6 @@
 # Matplotlib widget
-from mplcanvas import MplCanvas
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from classes.mplcanvas import MplCanvas
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
 
 
 class MplWidget(QWidget):
