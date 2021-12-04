@@ -2,12 +2,13 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
 from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
-
+from classes.experiment import Experiment
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('ui/mainwindow.ui', self)
+        self.experiment=Experiment(self)
         self.initActions()
         self.initTabs()
         self.show()
@@ -58,5 +59,5 @@ class MainWindow(QMainWindow):
                                         "D:/1.Clouds/GUN_TEAM/Experiments",
                                         ';;'.join(filterlist))[0]
         addeddatalist = filefunctions.addFile(self.lastFileName)
-        for data in addeddatalist:
-            print(data)
+        self.experiment.addRawdataList(addeddatalist)
+        print(self.experiment)

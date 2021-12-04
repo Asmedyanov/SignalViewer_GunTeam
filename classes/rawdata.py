@@ -20,5 +20,4 @@ class RawData(DataFrame):
             maxtime = 0
             minvalues = 0
             maxvalues = 0
-
         return f'RawData {self.label}: len = {len(self)}; mintime = {mintime}; maxtime = {maxtime}; minvalues = {minvalues}; maxvalues = {maxvalues}'
