@@ -136,6 +136,9 @@
    <property name="text">
     <string>Добавить файл</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="action_2">
    <property name="text">
@@ -159,7 +162,8 @@
   </action>
   <action name="action_6">
    <property name="icon">
-    <iconset theme="Шаблон"/>
+    <iconset theme="Шаблон">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Открыть шаблон эксперимента</string>

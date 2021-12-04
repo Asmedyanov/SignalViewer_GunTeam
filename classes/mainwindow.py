@@ -9,7 +9,6 @@ class MainWindow(QMainWindow):
         uic.loadUi('ui/mainwindow.ui', self)
         self.initActions()
         self.initTabs()
-
         self.show()
 
     def initTabs(self):
@@ -39,3 +38,8 @@ class MainWindow(QMainWindow):
             self.mainActionsDict[menu.title()] = dict()
             for act in menu.actions():
                 self.mainActionsDict[menu.title()][act.text()] = act
+        currentmenu = self.mainActionsDict['Файл']
+        currentmenu['Добавить файл'].triggered.connect(self.addFile)
+
+    def addFile(self):
+        print('Добавить файл')
