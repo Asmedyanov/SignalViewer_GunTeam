@@ -23,6 +23,7 @@ def Open_A_CSV(a):
     """
     mask = 'A*.CSV'
     if not fnmatch(a, mask):
+        #print(f'file is not {mask}')
         return None
 
     data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
@@ -47,6 +48,7 @@ def Open_F_CSV(a):
     """
     mask = 'F*.CSV'
     if not fnmatch(a, mask):
+        #print(f'file is not {mask}')
         return None
     data = pd.read_csv(a, skiprows=19, error_bad_lines=False, names=[
         'T', 'V', 'e'], skipinitialspace=True)
@@ -61,6 +63,7 @@ def Open_PRN(a):
 
     mask = '*.PRN'
     if not fnmatch(a, mask):
+        #print(f'file is not {mask}')
         return None
 
     parametr_data = pd.read_csv(a, nrows=29, error_bad_lines=False,
@@ -78,7 +81,7 @@ def Open_PRN(a):
     returnlist = []
     for k in range(len(CHDisplay)):
         if CHDisplay[k] == True:
-            returnlist.append(RawData(mask, time, data['CH' + str(k + 1)]))
+            returnlist.append(RawData(f'{mask} #{k+1}', time, data[f'CH{k+1}']))
     return returnlist
 
 
@@ -89,6 +92,7 @@ def Open_bin(a):
 
     mask = '*.bin'
     if not fnmatch(a, mask):
+        #print(f'file is not {mask}')
         return None
     f = open(a, 'rb')
     value0 = np.fromfile(f, dtype='>i2').byteswap().newbyteorder()
@@ -101,7 +105,7 @@ def Open_bin(a):
         values = (value0[4 + k::16] - (1 << 11)) * (1.6 / (1 << 11))
         if np.min(values) == np.max(values):
             continue
-        returnlist.append(RawData(mask, time, values))
+        returnlist.append(RawData(f'{mask} #{k}', time, values))
     return returnlist
 
 
@@ -111,17 +115,11 @@ def Open_tek_csv(a):
     """
     mask = 'tek*.CSV'
     if not fnmatch(a, mask):
+        #print(f'file is not {mask}')
         return None
     data = pd.read_csv(a, skiprows=20)
-    time = data['TIME'] * 1.0e6
-    data_ret = []
-    data_ret.append(pd.DataFrame())
-    data_ret[0]['T'] = time
-    data_ret[0]['V'] = data['CH2']
-    data_ret.append(pd.DataFrame())
-    data_ret[1]['T'] = time
-    data_ret[1]['V'] = data['CH3']
-    data_ret.append(pd.DataFrame())
-    data_ret[2]['T'] = time
-    data_ret[2]['V'] = data['CH4']
-    return data_ret
+    time = data['TIME']
+    returnlist = [
+        RawData(f'{mask} #{i}', time, data[f'CH{i}']) for i in [2, 3, 4]
+    ]
+    return returnlist

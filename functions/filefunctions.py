@@ -1,7 +1,12 @@
-import re
+from inspect import getmembers, isfunction
+from functions import rawdatafunctions
+
+
 def addFile(file_name):
-    print(file_name)
-    short_file_name = file_name.split('/')[-1]
-    numlist = re.findall(r'\d+', short_file_name)
-    num = int(numlist[0])
-    
+    functions_list = [o[1] for o in getmembers(rawdatafunctions) if
+                      (isfunction(o[1]) and (o[0].split('_')[0] == 'Open'))]
+    for open_function in functions_list:
+        returnlist = open_function(file_name)
+        if not returnlist is None:
+            return returnlist
+    return []

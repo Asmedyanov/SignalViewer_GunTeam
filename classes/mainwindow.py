@@ -58,3 +58,5 @@ class MainWindow(QMainWindow):
                                         "D:/1.Clouds/GUN_TEAM/Experiments",
                                         ';;'.join(filterlist))[0]
         addeddatalist = filefunctions.addFile(self.lastFileName)
+        for data in addeddatalist:
+            print(data)
