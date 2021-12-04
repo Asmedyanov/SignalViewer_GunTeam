@@ -19,6 +19,11 @@ class MainWindow(QMainWindow):
         for text, page in self.mainTabPageDict.items():
             plotter = MplWidget()
             self.mainPlotDict[text] = plotter
-            page.layout().addWidget(plotter)
+            try:
+                page.layout().addWidget(plotter)
+            except:
+                layout = QVBoxLayout()
+                layout.addWidget(plotter)
+                page.setLayout(layout)
 
         self.show()
