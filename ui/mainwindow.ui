@@ -236,6 +236,9 @@
    <property name="text">
     <string>Осциллографы</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+O</string>
+   </property>
   </action>
   <action name="action_20">
    <property name="text">

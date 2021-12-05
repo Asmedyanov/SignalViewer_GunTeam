@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frame</class>
+ <widget class="QFrame" name="Frame">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>297</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Параметры</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QTableWidget" name="tableWidget">
+             <row>
+              <property name="text">
+               <string>f диск</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>t сдвиг</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>старт</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>стоп</string>
+              </property>
+             </row>
+             <column>
+              <property name="text">
+               <string>Значение</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Авто</string>
+              </property>
+             </column>
+             <item row="0" column="0">
+              <property name="text">
+               <string>1.0e7</string>
+              </property>
+             </item>
+             <item row="0" column="1">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item row="1" column="0">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="1" column="1">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="2" column="0">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="2" column="1">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item row="3" column="0">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="3" column="1">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Каналы</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QTableWidget" name="tableWidget_2">
+             <row>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>3</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>7</string>
+              </property>
+             </row>
+             <column>
+              <property name="text">
+               <string>Отобр</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Диагн</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Подп</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Сдвиг</string>
+              </property>
+             </column>
+             <item row="0" column="0">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item row="0" column="1">
+              <property name="text">
+               <string>Инрерферометр</string>
+              </property>
+             </item>
+             <item row="0" column="2">
+              <property name="text">
+               <string>ne1</string>
+              </property>
+             </item>
+             <item row="0" column="3">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="1" column="0">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item row="1" column="1">
+              <property name="text">
+               <string>Интерферометр</string>
+              </property>
+             </item>
+             <item row="1" column="2">
+              <property name="text">
+               <string>ne2</string>
+              </property>
+             </item>
+             <item row="1" column="3">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="2" column="0">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item row="2" column="1">
+              <property name="text">
+               <string>Пояс</string>
+              </property>
+             </item>
+             <item row="2" column="2">
+              <property name="text">
+               <string>I</string>
+              </property>
+             </item>
+             <item row="2" column="3">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,8 +1,9 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog
 from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
 from classes.experiment import Experiment
+from classes.experimenttemplate import ExperimentTemplateEditor
 
 
 class MainWindow(QMainWindow):
@@ -45,6 +46,8 @@ class MainWindow(QMainWindow):
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
+        currentmenu = self.mainActionsDict['Настройки']
+        currentmenu['Осциллографы'].triggered.connect(self.oscSettings)
 
     def addFile(self):
         filterlist = [
@@ -70,3 +73,6 @@ class MainWindow(QMainWindow):
         for plot in self.mainPlotDict.values():
             plot.canvas.fig.clear()
             plot.canvas.draw()
+
+    def oscSettings(self):
+        self.expTemplate = ExperimentTemplateEditor()
