@@ -5,6 +5,7 @@ class Experiment:
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist)
 
     def clear(self):
         self.rawdatalist = []
