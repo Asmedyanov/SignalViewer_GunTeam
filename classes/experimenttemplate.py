@@ -1,6 +1,7 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
 from classes.oscsettings import OscilloscopPage
+from classes.gumteamxml import GunTeamXML
 
 
 class ExperimentTemplateEditor(QMainWindow):
@@ -39,3 +40,22 @@ class ExperimentTemplateEditor(QMainWindow):
             self.mainActionsDict[menu.title()] = dict()
             for act in menu.actions():
                 self.mainActionsDict[menu.title()][act.text()] = act
+        currentmenu = self.mainActionsDict['Файл']
+        currentmenu['Сохранить'].triggered.connect(self.save)
+
+    def save(self):
+
+        self.xml = GunTeamXML()
+
+        for oscname, osc in self.mainOscDict.items():
+            self.xml.addElement('Эксперимент', oscname)
+            self.xml.addElement(oscname, 'Параметры')
+            for pname, p in osc.parametersDict.items():
+                self.xml.addElement('Параметры', pname)
+                for ppname, pp in p.items():
+                    self.xml.addElement(pname, ppname, pp.text())
+            self.xml.addElement(oscname, 'Каналы')
+            for cname, c in osc.chanalDict.items():
+                self.xml.addElement('Каналы', f'Канал_{cname}')
+                for ccname, cc in c.items():
+                    self.xml.addElement(f'Канал_{cname}', ccname, cc.text())

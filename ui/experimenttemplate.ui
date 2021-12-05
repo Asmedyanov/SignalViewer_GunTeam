@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="documentMode">
          <bool>true</bool>
@@ -36,27 +36,27 @@
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>*.bin</string>
+          <string>АЦП_Хильченко</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>A*.CSV</string>
+          <string>АКИП</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>*.PRN</string>
+          <string>Лекрой</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>F*.CSV</string>
+          <string>Старый_Тектроникс</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
-          <string>tek*.CSV</string>
+          <string>Новый_Тектроникс</string>
          </attribute>
         </widget>
        </widget>

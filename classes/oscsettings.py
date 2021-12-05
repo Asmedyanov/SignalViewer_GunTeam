@@ -25,8 +25,16 @@ class OscilloscopPage(QFrame):
         self.parametersDict = dict()
         parametersTable = (self.mainTabPageDict['Параметры'].findChildren(QTableWidget))[0]
         for i in range(parametersTable.verticalHeader().count()):
-            self.parametersDict[parametersTable.verticalHeaderItem(i).text()] = \
-                parametersTable.item(i, 0).text()
+            parametr = dict()
+            for j in range(parametersTable.horizontalHeader().count()):
+                parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)#.text()
+            self.parametersDict[parametersTable.verticalHeaderItem(i).text()] = parametr
 
     def initChanals(self):
-        pass
+        self.chanalDict = dict()
+        chanalTable = (self.mainTabPageDict['Каналы'].findChildren(QTableWidget))[0]
+        for i in range(chanalTable.verticalHeader().count()):
+            chanal = dict()
+            for j in range(chanalTable.horizontalHeader().count()):
+                chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)#.text()
+            self.chanalDict[chanalTable.verticalHeaderItem(i).text()] = chanal
