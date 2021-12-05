@@ -183,6 +183,9 @@
    <property name="text">
     <string>Очистить</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Backspace</string>
+   </property>
   </action>
   <action name="action_10">
    <property name="text">

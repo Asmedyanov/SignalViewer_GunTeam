@@ -4,11 +4,12 @@ from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
 from classes.experiment import Experiment
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('ui/mainwindow.ui', self)
-        self.experiment=Experiment(self)
+        self.experiment = Experiment(self)
         self.initActions()
         self.initTabs()
         self.show()
@@ -42,6 +43,8 @@ class MainWindow(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
+        currentmenu = self.mainActionsDict['График']
+        currentmenu['Очистить'].triggered.connect(self.clearAll)
 
     def addFile(self):
         filterlist = [
@@ -61,3 +64,9 @@ class MainWindow(QMainWindow):
         addeddatalist = filefunctions.addFile(self.lastFileName)
         self.experiment.addRawdataList(addeddatalist)
         print(self.experiment)
+
+    def clearAll(self):
+        self.experiment.clear()
+        for plot in self.mainPlotDict.values():
+            plot.canvas.fig.clear()
+            plot.canvas.draw()
