@@ -26,10 +26,10 @@
          <bool>true</bool>
         </property>
         <property name="tabsClosable">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="movable">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="tabBarAutoHide">
          <bool>false</bool>
@@ -81,6 +81,7 @@
     <addaction name="action"/>
     <addaction name="action_2"/>
     <addaction name="action_3"/>
+    <addaction name="action_7"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -131,6 +132,11 @@
   <action name="action_6">
    <property name="text">
     <string>Справка</string>
+   </property>
+  </action>
+  <action name="action_7">
+   <property name="text">
+    <string>Применить</string>
    </property>
   </action>
  </widget>

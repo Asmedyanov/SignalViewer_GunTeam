@@ -6,14 +6,14 @@ class GunTeamXML:
     fileName: str
 
     def __init__(self, fileName='default'):
-        self.fileName = f'experiment_templates/{fileName}.xml'
+        self.fileName = f'{fileName}.xml'
         self.openFile()
 
     def openFile(self):
         try:
             file = open(self.fileName, "r")
             file.close()
-        except FileNotFoundError:
+        except:
             self.createFile()
         self.tree = xml.ElementTree(file=self.fileName)
 
@@ -62,3 +62,6 @@ class GunTeamXML:
         # file = open(self.fileName, 'w')
         # file.write(new_text)
         # file.close()
+
+    def temptelement(self, name):
+        return xml.Element(name)

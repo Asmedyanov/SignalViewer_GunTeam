@@ -44,8 +44,9 @@ class ExperimentTemplateEditor(QMainWindow):
         currentmenu['Сохранить'].triggered.connect(self.save)
 
     def save(self):
+        name = QFileDialog.getSaveFileName(self, 'Save File', "./experiment_templates", )[0]
+        self.xml = GunTeamXML(name)
 
-        self.xml = GunTeamXML()
 
         for oscname, osc in self.mainOscDict.items():
             self.xml.addElement('Эксперимент', oscname)
@@ -58,4 +59,5 @@ class ExperimentTemplateEditor(QMainWindow):
             for cname, c in osc.chanalDict.items():
                 self.xml.addElement('Каналы', f'Канал_{cname}')
                 for ccname, cc in c.items():
-                    self.xml.addElement(f'Канал_{cname}', ccname, cc.text())
+                    self.xml.addElement(f'Канал_{cname}', ccname, cc.text())'''
+        self.xml.updatafile()
