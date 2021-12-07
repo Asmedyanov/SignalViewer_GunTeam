@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QFrame, QTableWidget
+from PyQt5.QtWidgets import QFrame, QTableWidget, QTableWidgetItem
 
 
 class OscilloscopPage(QFrame):
@@ -27,7 +27,7 @@ class OscilloscopPage(QFrame):
         for i in range(parametersTable.verticalHeader().count()):
             parametr = dict()
             for j in range(parametersTable.horizontalHeader().count()):
-                parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)#.text()
+                parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)  # .text()
             self.parametersDict[parametersTable.verticalHeaderItem(i).text()] = parametr
 
     def initChanals(self):
@@ -36,5 +36,5 @@ class OscilloscopPage(QFrame):
         for i in range(chanalTable.verticalHeader().count()):
             chanal = dict()
             for j in range(chanalTable.horizontalHeader().count()):
-                chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)#.text()
+                chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)  # .text()
             self.chanalDict[chanalTable.verticalHeaderItem(i).text()] = chanal

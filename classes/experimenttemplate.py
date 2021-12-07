@@ -1,8 +1,9 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
 from classes.oscsettings import OscilloscopPage
 import xml.etree.ElementTree as xml
-import xml.etree as etree
+
+default_file = 'experiment_templates\default.xml'
 
 
 class ExperimentTemplateEditor(QMainWindow):
@@ -12,6 +13,8 @@ class ExperimentTemplateEditor(QMainWindow):
         uic.loadUi('ui/experimenttemplate.ui', self)
         self.initActions()
         self.initTabs()
+        self.initButtons()
+        self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -43,6 +46,13 @@ class ExperimentTemplateEditor(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Сохранить'].triggered.connect(self.save)
+        currentmenu['Открыть'].triggered.connect(self.loadFile)
+
+    def initButtons(self):
+        self.mainButtonDict = dict()
+        for button in self.frame.findChildren(QPushButton):
+            self.mainButtonDict[button.text()] = button
+        self.mainButtonDict['Сохранить'].clicked.connect(self.save)
 
     def save(self):
         rootXML = xml.Element('Эксперимент')
@@ -64,7 +74,7 @@ class ExperimentTemplateEditor(QMainWindow):
                 numXML = xml.Element('Номер')
                 numXML.text = chname
                 chXML.append(numXML)
-                for fname, f in par.items():
+                for fname, f in ch.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
                     chXML.append(fXML)
@@ -73,8 +83,37 @@ class ExperimentTemplateEditor(QMainWindow):
             oscsXML.append(oscXML)
         rootXML.append(oscsXML)
 
-        name = QFileDialog.getSaveFileName(self, 'Save File', "./experiment_templates", )[0]
+        name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
+        if len(name) == 0:
+            return
 
         mainTree = xml.ElementTree(rootXML)
 
         mainTree.write(name, encoding="UTF-8")
+
+    def loadFile(self, default=None):
+        if default is None:
+            name = QFileDialog.getOpenFileName(self, 'Откройте файл шаблона эксперимента', "./experiment_templates", )[
+                0]
+        else:
+            name = default
+        if len(name) == 0:
+            return
+        rootXML = xml.ElementTree(file=name).getroot()
+        oscsXML = rootXML.find('Осциллографы')
+        for oscname, osc in self.mainOscDict.items():
+            oscXML = oscsXML.find(oscname)
+            parsXML = oscXML.find('Параметры')
+            for parname, par in osc.parametersDict.items():
+                parXML = parsXML.find(parname)
+                for fname, f in par.items():
+                    fXML = parXML.find(fname)
+                    f.setText(fXML.text)
+            chsXML = oscXML.find('Каналы')
+            chXMLall = chsXML.findall('Канал')
+            for chXML in chXMLall:
+                numXML = chXML.find('Номер')
+                ch = osc.chanalDict[numXML.text]
+                for fname, f in ch.items():
+                    fXML = chXML.find(fname)
+                    f.setText(fXML.text)

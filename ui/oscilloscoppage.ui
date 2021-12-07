@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>297</height>
+    <height>379</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,12 @@
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QTableWidget" name="tableWidget">
+             <property name="gridStyle">
+              <enum>Qt::SolidLine</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
              <row>
               <property name="text">
                <string>Маска</string>
@@ -147,17 +153,17 @@
              </row>
              <column>
               <property name="text">
-               <string>Отобр</string>
+               <string>Отображение</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Диагн</string>
+               <string>Диагниагностика</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Подп</string>
+               <string>Подподпись</string>
               </property>
              </column>
              <column>
@@ -234,6 +240,26 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="frame">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Добавить</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>Удалить</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
