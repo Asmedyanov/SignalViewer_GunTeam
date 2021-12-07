@@ -1,7 +1,8 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QVBoxLayout, QMenu, QFileDialog
 from classes.oscsettings import OscilloscopPage
-from classes.gumteamxml import GunTeamXML
+import xml.etree.ElementTree as xml
+import xml.etree as etree
 
 
 class ExperimentTemplateEditor(QMainWindow):
@@ -44,20 +45,36 @@ class ExperimentTemplateEditor(QMainWindow):
         currentmenu['Сохранить'].triggered.connect(self.save)
 
     def save(self):
-        name = QFileDialog.getSaveFileName(self, 'Save File', "./experiment_templates", )[0]
-        self.xml = GunTeamXML(name)
-
-
+        rootXML = xml.Element('Эксперимент')
+        oscsXML = xml.Element('Осциллографы')
         for oscname, osc in self.mainOscDict.items():
-            self.xml.addElement('Эксперимент', oscname)
-            self.xml.addElement(oscname, 'Параметры')
-            for pname, p in osc.parametersDict.items():
-                self.xml.addElement('Параметры', pname)
-                for ppname, pp in p.items():
-                    self.xml.addElement(pname, ppname, pp.text())
-            self.xml.addElement(oscname, 'Каналы')
-            for cname, c in osc.chanalDict.items():
-                self.xml.addElement('Каналы', f'Канал_{cname}')
-                for ccname, cc in c.items():
-                    self.xml.addElement(f'Канал_{cname}', ccname, cc.text())'''
-        self.xml.updatafile()
+            oscXML = xml.Element(oscname)
+            parsXML = xml.Element('Параметры')
+            for parname, par in osc.parametersDict.items():
+                parXML = xml.Element(parname)
+                for fname, f in par.items():
+                    fXML = xml.Element(fname)
+                    fXML.text = f.text()
+                    parXML.append(fXML)
+                parsXML.append(parXML)
+            oscXML.append(parsXML)
+            chsXML = xml.Element('Каналы')
+            for chname, ch in osc.chanalDict.items():
+                chXML = xml.Element('Канал')
+                numXML = xml.Element('Номер')
+                numXML.text = chname
+                chXML.append(numXML)
+                for fname, f in par.items():
+                    fXML = xml.Element(fname)
+                    fXML.text = f.text()
+                    chXML.append(fXML)
+                chsXML.append(chXML)
+            oscXML.append(chsXML)
+            oscsXML.append(oscXML)
+        rootXML.append(oscsXML)
+
+        name = QFileDialog.getSaveFileName(self, 'Save File', "./experiment_templates", )[0]
+
+        mainTree = xml.ElementTree(rootXML)
+
+        mainTree.write(name, encoding="UTF-8")
