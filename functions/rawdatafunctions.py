@@ -72,8 +72,8 @@ def Open_PRN(a):
     namesch = ['CH' + str(i) for i in range(1, 5)]
     CHDisplay = np.array(
         parametr_data.loc[parametr_data['P'].str.contains('Disp')].V1 == 'On')
-    t0 = float(parametr_data['Trigger Address']['V1'])
-    dt = float(parametr_data['Delta(second)']['V1'])
+    t0 = float(parametr_data.V1['Trigger Address'])
+    dt = float(parametr_data.V1['Delta(second)'])
     data = pd.read_csv(a, sep=' ', skiprows=30,
                        error_bad_lines=False,
                        names=namesch)

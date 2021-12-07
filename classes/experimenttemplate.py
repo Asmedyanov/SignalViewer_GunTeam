@@ -14,7 +14,7 @@ class ExperimentTemplateEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        self.loadFile(default_file)
+        #self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -53,6 +53,8 @@ class ExperimentTemplateEditor(QMainWindow):
         for button in self.frame.findChildren(QPushButton):
             self.mainButtonDict[button.text()] = button
         self.mainButtonDict['Сохранить'].clicked.connect(self.save)
+        self.mainButtonDict['Отменить'].clicked.connect(self.cancel)
+        self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
     def save(self):
         rootXML = xml.Element('Эксперимент')
@@ -71,9 +73,6 @@ class ExperimentTemplateEditor(QMainWindow):
             chsXML = xml.Element('Каналы')
             for chname, ch in osc.chanalDict.items():
                 chXML = xml.Element('Канал')
-                numXML = xml.Element('Номер')
-                numXML.text = chname
-                chXML.append(numXML)
                 for fname, f in ch.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
@@ -117,3 +116,9 @@ class ExperimentTemplateEditor(QMainWindow):
                 for fname, f in ch.items():
                     fXML = chXML.find(fname)
                     f.setText(fXML.text)
+
+    def cancel(self):
+        self.loadFile(default_file)
+
+    def apply(self):
+        pass

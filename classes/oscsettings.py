@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QFrame, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QFrame, QTableWidget, QPushButton
 
 
 class OscilloscopPage(QFrame):
@@ -9,6 +9,7 @@ class OscilloscopPage(QFrame):
         self.initTabs()
         self.initParameters()
         self.initChanals()
+        self.initButtons()
         self.show()
 
     def initTabs(self):
@@ -37,4 +38,20 @@ class OscilloscopPage(QFrame):
             chanal = dict()
             for j in range(chanalTable.horizontalHeader().count()):
                 chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)  # .text()
-            self.chanalDict[chanalTable.verticalHeaderItem(i).text()] = chanal
+            self.chanalDict[chanalTable.item(i,0).text()] = chanal
+
+    def initButtons(self):
+        self.mainButtonDict = dict()
+        for button in self.frame.findChildren(QPushButton):
+            self.mainButtonDict[button.text()] = button
+        self.mainButtonDict['Добавить'].clicked.connect(self.addClick)
+        self.mainButtonDict['Удалить'].clicked.connect(self.remClick)
+
+    def addClick(self):
+        selectPage=self.tabWidget.widget(self.tabWidget.currentIndex())
+        selectTable=selectPage.findChildren(QTableWidget)[0]
+        selectRow = selectTable.rowCount()
+        selectTable.insertRow(selectRow)
+
+    def remClick(self):
+        pass
