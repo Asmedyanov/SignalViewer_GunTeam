@@ -110,6 +110,7 @@ class ExperimentTemplateEditor(QMainWindow):
                     f.setText(fXML.text)
             chsXML = oscXML.find('Каналы')
             chXMLall = chsXML.findall('Канал')
+            osc.clearChanals()
             for chXML in chXMLall:
                 numXML = chXML.find('Номер')
                 try:

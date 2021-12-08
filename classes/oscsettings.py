@@ -65,8 +65,9 @@ class OscilloscopPage(QFrame):
             selectRow = selectTable.selectionModel().selectedRows()[0].row()
             print(selectRow)
         except:
-            selectRow = selectTable.rowCount()-1
+            selectRow = selectTable.rowCount() - 1
         selectTable.removeRow(selectRow)
+        self.initChanals()
 
     def addChanalInTable(self, chanal):
         selectPage = self.tabWidget.widget(1)
@@ -78,3 +79,9 @@ class OscilloscopPage(QFrame):
             selectTable.setItem(selectRow, j, QTableWidgetItem())
             self.chanalDict[chanal][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
         self.chanalDict[chanal]['Номер'].setText(chanal)
+
+    def clearChanals(self):
+        selectPage = self.tabWidget.widget(1)
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectTable.setRowCount(0)
+        self.chanalDict=dict()
