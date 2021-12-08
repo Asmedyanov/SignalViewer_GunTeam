@@ -8,7 +8,7 @@ class Experiment:
         self.rawdatalist = []
         self.chanalDict = dict()
         self.oscDict = dict()
-        #self.loadDefaultSettings()
+        self.loadDefaultSettings()
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
@@ -18,41 +18,35 @@ class Experiment:
         self.rawdatalist = []
 
     def loadDefaultSettings(self, ):
-        rootXML = xml.ElementTree(file=default_file).getroot()
+        self.oscDict = dict()
+        rootXML = xml.ElementTree(file = default_file).getroot()
         oscsXML = rootXML.find('Осциллографы')
-
-        def itemlist(parent):
-            retlist = []
-            for child in parent.iter():
-                if child is parent: continue
-                issubchild=0
-                for subchild in child.iter():
-                    if child is subchild:
-                        retlist.append(y)
-                        break
-            print(retlist)
-            return retlist
-
-        for oscXML in itemlist(oscsXML):
+        oscXMLlist = oscsXML.findall('Осциллограф')
+        for oscXML in oscXMLlist:
+            oscname = oscXML.find('Имя').text
             oscdict = dict()
-            paramsdict = dict()
             parsXML = oscXML.find('Параметры')
-            for par in itemlist(parsXML):
-                paramdict = dict()
-                for f in itemlist(par):
-                    paramdict[f.tag] = f.text
-                paramsdict[par.tag] = paramdict
-            oscdict[parsXML.tag] = paramsdict
+            parsdict = dict()
+            parXMLlist = parsXML.findall('Параметр')
+            for parXML in parXMLlist:
+                pardict = dict()
+                for parvalue in parXML.iter():
+                    if parvalue is parXML: continue
+                    pardict[parvalue.tag] = parvalue.text
+                parsdict[pardict['Имя']] = pardict
+            oscdict[parsXML.tag] = parsdict
+
             chsXML = oscXML.find('Каналы')
             chsdict = dict()
-            for ch in itemlist( chsXML):
+            chXMLlist = chsXML.findall('Канал')
+            for chXML in chXMLlist:
                 chdict = dict()
-                for f in itemlist(ch):
-                    chdict[f.tag] = f.text
-                chsdict[chdict['Номер']] = chsdict
+                for chvalue in chXML.iter():
+                    if chvalue is chXML: continue
+                    chdict[chvalue.tag] = chvalue.text
+                chsdict[chdict['Номер']] = chdict
             oscdict[chsXML.tag] = chsdict
-            self.oscDict[oscXML.tag] = oscdict
-        print(self.oscDict)
+            self.oscDict[oscname] = oscdict
 
     def __str__(self):
         return f'Experiment {len(self.rawdatalist)}'

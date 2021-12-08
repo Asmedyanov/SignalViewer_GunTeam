@@ -84,4 +84,41 @@ class OscilloscopPage(QFrame):
         selectPage = self.tabWidget.widget(1)
         selectTable = selectPage.findChildren(QTableWidget)[0]
         selectTable.setRowCount(0)
-        self.chanalDict=dict()
+        self.chanalDict = dict()
+
+    def clearParams(self):
+        selectPage = self.tabWidget.widget(0)
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectTable.setRowCount(0)
+        self.parametersDict = dict()
+
+    def clear(self):
+        self.clearParams()
+        self.clearChanals()
+
+    def chanalFromDict(self, chdict):
+        selectPage = self.tabWidget.widget(1)
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectRow = selectTable.rowCount()
+        selectTable.insertRow(selectRow)
+        chnomer = chdict['Номер']
+        self.chanalDict[chnomer] = dict()
+        for j in range(selectTable.horizontalHeader().count()):
+            selectTable.setItem(selectRow, j, QTableWidgetItem())
+            self.chanalDict[chnomer][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
+            self.chanalDict[chnomer][selectTable.horizontalHeaderItem(j).text()].setText(
+                chdict[selectTable.horizontalHeaderItem(j).text()]
+            )
+    def paramFromDict(self, pardict):
+        selectPage = self.tabWidget.widget(0)
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectRow = selectTable.rowCount()
+        selectTable.insertRow(selectRow)
+        parname = pardict['Имя']
+        self.parametersDict[parname] = dict()
+        for j in range(selectTable.horizontalHeader().count()):
+            selectTable.setItem(selectRow, j, QTableWidgetItem())
+            self.parametersDict[parname][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
+            self.parametersDict[parname][selectTable.horizontalHeaderItem(j).text()].setText(
+                pardict[selectTable.horizontalHeaderItem(j).text()]
+            )

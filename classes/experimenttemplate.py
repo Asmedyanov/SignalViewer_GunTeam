@@ -13,7 +13,7 @@ class ExperimentTemplateEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        # self.loadFile(default_file)
+        self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -104,6 +104,8 @@ class ExperimentTemplateEditor(QMainWindow):
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')
         for oscXML in oscXMLlist:
+            oscname = oscXML.find('Имя').text
+            self.mainOscDict[oscname].clear()
             oscdict = dict()
             parsXML = oscXML.find('Параметры')
             parsdict = dict()
@@ -114,6 +116,7 @@ class ExperimentTemplateEditor(QMainWindow):
                     if parvalue is parXML: continue
                     pardict[parvalue.tag] = parvalue.text
                 parsdict[pardict['Имя']] = pardict
+                self.mainOscDict[oscname].paramFromDict(pardict)
             oscdict[parsXML.tag] = parsdict
 
             chsXML = oscXML.find('Каналы')
@@ -125,7 +128,9 @@ class ExperimentTemplateEditor(QMainWindow):
                     if chvalue is chXML: continue
                     chdict[chvalue.tag] = chvalue.text
                 chsdict[chdict['Номер']] = chdict
+                self.mainOscDict[oscname].chanalFromDict(chdict)
             oscdict[chsXML.tag] = chsdict
+
 
     def cancel(self):
         self.loadFile(default_file)
