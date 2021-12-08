@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -36,31 +36,39 @@
              <property name="sortingEnabled">
               <bool>true</bool>
              </property>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
              <row>
               <property name="text">
-               <string>Маска</string>
+               <string>0</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>f_диск</string>
+               <string>1</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>t_сдвиг</string>
+               <string>2</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>Старт</string>
+               <string>3</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>Стоп</string>
+               <string>4</string>
               </property>
              </row>
+             <column>
+              <property name="text">
+               <string>Имя</string>
+              </property>
+             </column>
              <column>
               <property name="text">
                <string>Значение</string>
@@ -73,27 +81,37 @@
              </column>
              <item row="0" column="0">
               <property name="text">
-               <string>*.bin</string>
+               <string>Маска</string>
               </property>
              </item>
              <item row="0" column="1">
+              <property name="text">
+               <string>*.bin</string>
+              </property>
+             </item>
+             <item row="0" column="2">
               <property name="text">
                <string>0</string>
               </property>
              </item>
              <item row="1" column="0">
               <property name="text">
-               <string>1.0e7</string>
+               <string>Частота</string>
               </property>
              </item>
              <item row="1" column="1">
+              <property name="text">
+               <string>1.0e7</string>
+              </property>
+             </item>
+             <item row="1" column="2">
               <property name="text">
                <string>1</string>
               </property>
              </item>
              <item row="2" column="0">
               <property name="text">
-               <string>0</string>
+               <string>Сдвиг времени</string>
               </property>
              </item>
              <item row="2" column="1">
@@ -101,22 +119,37 @@
                <string>0</string>
               </property>
              </item>
-             <item row="3" column="0">
+             <item row="2" column="2">
               <property name="text">
                <string>0</string>
               </property>
              </item>
+             <item row="3" column="0">
+              <property name="text">
+               <string>Старт</string>
+              </property>
+             </item>
              <item row="3" column="1">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="3" column="2">
               <property name="text">
                <string>1</string>
               </property>
              </item>
              <item row="4" column="0">
               <property name="text">
-               <string>0</string>
+               <string>Стоп</string>
               </property>
              </item>
              <item row="4" column="1">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="4" column="2">
               <property name="text">
                <string>1</string>
               </property>
@@ -136,6 +169,9 @@
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <widget class="QTableWidget" name="tableWidget_2">
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
              <row>
               <property name="text">
                <string>1</string>

@@ -2,8 +2,7 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
 from classes.oscsettings import OscilloscopPage
 import xml.etree.ElementTree as xml
-
-default_file = 'experiment_templates\default.xml'
+from constants import *
 
 
 class ExperimentTemplateEditor(QMainWindow):
@@ -14,7 +13,7 @@ class ExperimentTemplateEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        #self.loadFile(default_file)
+        # self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -61,10 +60,13 @@ class ExperimentTemplateEditor(QMainWindow):
         oscsXML = xml.Element('Осциллографы')
         for oscname, osc in self.mainOscDict.items():
             osc.initChanals()
-            oscXML = xml.Element(oscname)
+            oscXML = xml.Element('Осциллограф')
+            nameXML = xml.Element('Имя')
+            nameXML.text = oscname
+            oscXML.append(nameXML)
             parsXML = xml.Element('Параметры')
             for parname, par in osc.parametersDict.items():
-                parXML = xml.Element(parname)
+                parXML = xml.Element('Параметр')
                 for fname, f in par.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
@@ -100,27 +102,30 @@ class ExperimentTemplateEditor(QMainWindow):
             return
         rootXML = xml.ElementTree(file=name).getroot()
         oscsXML = rootXML.find('Осциллографы')
-        for oscname, osc in self.mainOscDict.items():
-            oscXML = oscsXML.find(oscname)
+        oscXMLlist = oscsXML.findall('Осциллограф')
+        for oscXML in oscXMLlist:
+            oscdict = dict()
             parsXML = oscXML.find('Параметры')
-            for parname, par in osc.parametersDict.items():
-                parXML = parsXML.find(parname)
-                for fname, f in par.items():
-                    fXML = parXML.find(fname)
-                    f.setText(fXML.text)
+            parsdict = dict()
+            parXMLlist = parsXML.findall('Параметр')
+            for parXML in parXMLlist:
+                pardict = dict()
+                for parvalue in parXML.iter():
+                    if parvalue is parXML: continue
+                    pardict[parvalue.tag] = parvalue.text
+                parsdict[pardict['Имя']] = pardict
+            oscdict[parsXML.tag] = parsdict
+
             chsXML = oscXML.find('Каналы')
-            chXMLall = chsXML.findall('Канал')
-            osc.clearChanals()
-            for chXML in chXMLall:
-                numXML = chXML.find('Номер')
-                try:
-                    ch = osc.chanalDict[numXML.text]
-                except:
-                    osc.addChanalInTable(numXML.text)
-                    ch = osc.chanalDict[numXML.text]
-                for fname, f in ch.items():
-                    fXML = chXML.find(fname)
-                    f.setText(fXML.text)
+            chsdict = dict()
+            chXMLlist = chsXML.findall('Канал')
+            for chXML in chXMLlist:
+                chdict = dict()
+                for chvalue in chXML.iter():
+                    if chvalue is chXML: continue
+                    chdict[chvalue.tag] = chvalue.text
+                chsdict[chdict['Номер']] = chdict
+            oscdict[chsXML.tag] = chsdict
 
     def cancel(self):
         self.loadFile(default_file)

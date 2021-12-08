@@ -66,7 +66,6 @@ class MainWindow(QMainWindow):
                                         ';;'.join(filterlist))[0]
         addeddatalist = filefunctions.addFile(self.lastFileName)
         self.experiment.addRawdataList(addeddatalist)
-        print(self.experiment)
 
     def clearAll(self):
         self.experiment.clear()
