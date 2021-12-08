@@ -95,7 +95,7 @@ class ExperimentTemplateEditor(QMainWindow):
 
     def loadFile(self, default=None):
         name = default
-        if (default is None) or (default is not str):
+        if type(default) is not str:
             name = QFileDialog.getOpenFileName(self, 'Откройте файл шаблона эксперимента', "./experiment_templates", )[
                 0]
         if len(name) == 0:
@@ -103,6 +103,7 @@ class ExperimentTemplateEditor(QMainWindow):
         rootXML = xml.ElementTree(file=name).getroot()
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')
+        self.returnOscDict = dict()
         for oscXML in oscXMLlist:
             oscname = oscXML.find('Имя').text
             self.mainOscDict[oscname].clear()
@@ -130,7 +131,8 @@ class ExperimentTemplateEditor(QMainWindow):
                 chsdict[chdict['Номер']] = chdict
                 self.mainOscDict[oscname].chanalFromDict(chdict)
             oscdict[chsXML.tag] = chsdict
-
+            self.returnOscDict[oscname] = oscdict
+        self.master.experiment.oscDict = self.returnOscDict
 
     def cancel(self):
         self.loadFile(default_file)

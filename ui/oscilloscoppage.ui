@@ -199,12 +199,12 @@
              </column>
              <column>
               <property name="text">
-               <string>Диагниагностика</string>
+               <string>Диагностика</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Подподпись</string>
+               <string>Подпись</string>
               </property>
              </column>
              <column>

@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
                                         "Добавьте файл",
                                         "D:/1.Clouds/GUN_TEAM/Experiments",
                                         ';;'.join(filterlist))[0]
-        addeddatalist = filefunctions.addFile(self.lastFileName)
+        addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
 
     def clearAll(self):
@@ -74,4 +74,4 @@ class MainWindow(QMainWindow):
             plot.canvas.draw()
 
     def oscSettings(self):
-        self.expTemplate = ExperimentTemplateEditor()
+        self.expTemplate = ExperimentTemplateEditor(self)

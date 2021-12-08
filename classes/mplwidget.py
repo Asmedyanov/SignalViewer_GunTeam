@@ -36,13 +36,21 @@ class MplWidget(QWidget):
             return
         gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
         axes = gs.subplots(sharex=True)  # массив графиков
-
-        for i, data in enumerate(datalist):
-            axes[i].plot(data['T'], data['V'])
-            axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
-            gun_team_axes_stile(axes[i])
-        # Подписать горизонтальную ось
-        axes[n - 1].set_xlabel('Время, сек')
-        # Подписать заголовок
-        axes[0].set_title('Данные')
+        try:
+            data=datalist[0]
+            axes.plot(data['T'], data['V'])
+            axes.set_ylabel(data.label)  # Подписать вертикальные оси
+            gun_team_axes_stile(axes)
+            axes.set_xlabel('Время, сек')
+            # Подписать заголовок
+            axes.set_title('Данные')
+        except:
+            for i, data in enumerate(datalist):
+                axes[i].plot(data['T'], data['V'])
+                axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
+                gun_team_axes_stile(axes[i])
+            # Подписать горизонтальную ось
+            axes[n - 1].set_xlabel('Время, сек')
+            # Подписать заголовок
+            axes[0].set_title('Данные')
         self.canvas.draw()

@@ -17,32 +17,43 @@ import pickle as pk
 mks = 1.0e6
 
 
-def Open_A_CSV(a):
+def Open_A_CSV(a, master):
     """
     Открытие файла типа A*.CSV по строке a
     """
+    shorta = a.split('/')[-1]
     mask = 'A*.CSV'
-    if not fnmatch(a, mask):
+    if not fnmatch(shorta, mask):
         # print(f'file is not {mask}')
         return None
 
-    data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
-                       names=['T', 'V1', 'V2'])
-    stmin = data['V1'].min()
-    stmax = data['V1'].max()
-    st = 0.5 * (stmax + stmin)
-    t0 = data['T'].loc[data['V1'] < st].values.min()
-    time = data['T'] - t0
-    values1 = data['V1']
-    values2 = data['V2']
+    osc = master.getOSC(mask)
+    nameslist = [
+        'P', 'P1', 'P2', 'T'
+    ]
+    chlist = list(osc['Каналы'].keys())
+    chlist.sort()
+    for i in chlist:
+        nameslist.append(f'CH{i}')
+    data = pd.read_csv(a, skiprows=10, error_bad_lines=False,
+                       names=nameslist, engine='python')
+    for ch in osc['Каналы'].values():
+        if ch['Диагностика'] == 'Запуск':
+            startdata = data[f'CH{ch["Номер"]}']
+            stmin = startdata.min()
+            stmax = startdata.max()
+            st = 0.5 * (stmax + stmin)
+            t0 = data['T'].loc[startdata < st].values.min()
+    time = data['T']-t0
     returnlist = [
-        RawData(mask, time, values1),
-        RawData(mask, time, values2)
+        RawData(osc['Каналы'][i]['Подпись'], time, data[f'CH{i}']) for i in osc['Каналы'].keys() if
+        osc['Каналы'][i]['Отображение'] == '1'
+
     ]
     return returnlist
 
 
-def Open_F_CSV(a):
+def Open_F_CSV(a, master):
     """
     Открытие файла типа F*.CSV по строке a
     """
@@ -50,13 +61,16 @@ def Open_F_CSV(a):
     if not fnmatch(a, mask):
         # print(f'file is not {mask}')
         return None
+
+    osc = master.getOSC(mask)
+
     data = pd.read_csv(a, skiprows=19, error_bad_lines=False, names=[
         'T', 'V', 'e'], skipinitialspace=True)
     returnlist = [RawData(mask, data['T'], data['V'])]
     return returnlist
 
 
-def Open_PRN(a):
+def Open_PRN(a, master):
     """
     Открытие файла типа *.PRN по строке a
     """
@@ -65,7 +79,7 @@ def Open_PRN(a):
     if not fnmatch(a, mask):
         # print(f'file is not {mask}')
         return None
-
+    osc = master.getOSC(mask)
     parametr_data = pd.read_csv(a, nrows=29, error_bad_lines=False,
                                 names=['P', 'V1', 'V5'])
     parametrDict = {parametr_data['P'][i]: parametr_data['V1'][i] for i in range(len(parametr_data))}
@@ -84,7 +98,7 @@ def Open_PRN(a):
     return returnlist
 
 
-def Open_bin(a):
+def Open_bin(a, master):
     """
     Открытие файла типа *.bin по строке a
     """
@@ -93,22 +107,24 @@ def Open_bin(a):
     if not fnmatch(a, mask):
         # print(f'file is not {mask}')
         return None
+
+    osc = master.getOSC(mask)
     f = open(a, 'rb')
     value0 = np.fromfile(f, dtype='>i2').byteswap().newbyteorder()
     dt = 0.1e-6
-    t0 = (2.3 - 310.0 - 300) * 1.0e-6
+    t0 = float(osc['Параметры']['Сдвиг времени']['Значение'])
     Nsemp = (value0[0] << 16) + value0[1]
-    time = np.arange(Nsemp) * dt - t0
+    time = np.arange(Nsemp) * dt + t0
     returnlist = []
-    for k in range(2 * 4):
+    for k in [int(i) for i in osc['Каналы'].keys()]:
         values = (value0[4 + k::16] - (1 << 11)) * (1.6 / (1 << 11))
         if np.min(values) == np.max(values):
             continue
-        returnlist.append(RawData(f'{mask} #{k}', time, values))
+        returnlist.append(RawData(osc['Каналы'][str(k)]['Подпись'], time, values))
     return returnlist
 
 
-def Open_tek_csv(a):
+def Open_tek_csv(a, master):
     """
     Открытие файла типа tek*.CSV по строке a
     """
@@ -116,6 +132,7 @@ def Open_tek_csv(a):
     if not fnmatch(a, mask):
         # print(f'file is not {mask}')
         return None
+    osc = master.getOSC(mask)
     data = pd.read_csv(a, skiprows=20)
     time = data['TIME']
     returnlist = [

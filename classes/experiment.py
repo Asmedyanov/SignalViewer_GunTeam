@@ -19,7 +19,7 @@ class Experiment:
 
     def loadDefaultSettings(self, ):
         self.oscDict = dict()
-        rootXML = xml.ElementTree(file = default_file).getroot()
+        rootXML = xml.ElementTree(file=default_file).getroot()
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')
         for oscXML in oscXMLlist:
@@ -47,6 +47,11 @@ class Experiment:
                 chsdict[chdict['Номер']] = chdict
             oscdict[chsXML.tag] = chsdict
             self.oscDict[oscname] = oscdict
+
+    def getOSC(self, mask):
+        for osc in self.oscDict.values():
+            if osc['Параметры']['Маска']['Значение'] == mask:
+                return osc
 
     def __str__(self):
         return f'Experiment {len(self.rawdatalist)}'
