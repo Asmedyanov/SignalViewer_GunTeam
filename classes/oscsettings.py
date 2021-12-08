@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QFrame, QTableWidget, QPushButton
+from PyQt5.QtWidgets import QFrame, QTableWidget, QPushButton, QTableWidgetItem
 
 
 class OscilloscopPage(QFrame):
@@ -28,7 +28,7 @@ class OscilloscopPage(QFrame):
         for i in range(parametersTable.verticalHeader().count()):
             parametr = dict()
             for j in range(parametersTable.horizontalHeader().count()):
-                parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)  # .text()
+                parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)
             self.parametersDict[parametersTable.verticalHeaderItem(i).text()] = parametr
 
     def initChanals(self):
@@ -37,8 +37,9 @@ class OscilloscopPage(QFrame):
         for i in range(chanalTable.verticalHeader().count()):
             chanal = dict()
             for j in range(chanalTable.horizontalHeader().count()):
-                chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)  # .text()
-            self.chanalDict[chanalTable.item(i,0).text()] = chanal
+                chanal[chanalTable.horizontalHeaderItem(j).text()] = chanalTable.item(i, j)
+            if len(chanalTable.item(i, 0).text()) != 0:
+                self.chanalDict[chanalTable.item(i, 0).text()] = chanal
 
     def initButtons(self):
         self.mainButtonDict = dict()
@@ -48,10 +49,31 @@ class OscilloscopPage(QFrame):
         self.mainButtonDict['Удалить'].clicked.connect(self.remClick)
 
     def addClick(self):
-        selectPage=self.tabWidget.widget(self.tabWidget.currentIndex())
-        selectTable=selectPage.findChildren(QTableWidget)[0]
+        if not self.tabWidget.currentIndex():
+            return
+        selectPage = self.tabWidget.widget(self.tabWidget.currentIndex())
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectRow = selectTable.rowCount()
+        selectTable.insertRow(selectRow)
+
+    def remClick(self):
+        if not self.tabWidget.currentIndex():
+            return
+        selectPage = self.tabWidget.widget(self.tabWidget.currentIndex())
+        selectTable = selectPage.findChildren(QTableWidget)[0]
         selectRow = selectTable.rowCount()
         selectTable.insertRow(selectRow)
 
     def remClick(self):
         pass
+
+    def addChanalInTable(self, chanal):
+        selectPage = self.tabWidget.widget(1)
+        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectRow = selectTable.rowCount()
+        selectTable.insertRow(selectRow)
+        self.chanalDict[chanal] = dict()
+        for j in range(selectTable.horizontalHeader().count()):
+            selectTable.setItem(selectRow, j, QTableWidgetItem())
+            self.chanalDict[chanal][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
+        self.chanalDict[chanal]['Номер'].setText(chanal)

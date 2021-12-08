@@ -23,7 +23,7 @@ def Open_A_CSV(a):
     """
     mask = 'A*.CSV'
     if not fnmatch(a, mask):
-        #print(f'file is not {mask}')
+        # print(f'file is not {mask}')
         return None
 
     data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
@@ -48,7 +48,7 @@ def Open_F_CSV(a):
     """
     mask = 'F*.CSV'
     if not fnmatch(a, mask):
-        #print(f'file is not {mask}')
+        # print(f'file is not {mask}')
         return None
     data = pd.read_csv(a, skiprows=19, error_bad_lines=False, names=[
         'T', 'V', 'e'], skipinitialspace=True)
@@ -63,17 +63,16 @@ def Open_PRN(a):
 
     mask = '*.PRN'
     if not fnmatch(a, mask):
-        #print(f'file is not {mask}')
+        # print(f'file is not {mask}')
         return None
 
     parametr_data = pd.read_csv(a, nrows=29, error_bad_lines=False,
                                 names=['P', 'V1', 'V5'])
-    parametr_data.set_index('P')
+    parametrDict = {parametr_data['P'][i]: parametr_data['V1'][i] for i in range(len(parametr_data))}
     namesch = ['CH' + str(i) for i in range(1, 5)]
-    CHDisplay = np.array(
-        parametr_data.loc[parametr_data['P'].str.contains('Disp')].V1 == 'On')
-    t0 = float(parametr_data.V1['Trigger Address'])
-    dt = float(parametr_data.V1['Delta(second)'])
+    CHDisplay = [parametrDict[f'CH{i} Display'] == 'On' for i in [1, 2, 3, 4]]
+    t0 = float(parametrDict['Trigger Address'])
+    dt = float(parametrDict['Delta(second)'])
     data = pd.read_csv(a, sep=' ', skiprows=30,
                        error_bad_lines=False,
                        names=namesch)
@@ -81,7 +80,7 @@ def Open_PRN(a):
     returnlist = []
     for k in range(len(CHDisplay)):
         if CHDisplay[k] == True:
-            returnlist.append(RawData(f'{mask} #{k+1}', time, data[f'CH{k+1}']))
+            returnlist.append(RawData(f'{mask} #{k + 1}', time, data[f'CH{k + 1}']))
     return returnlist
 
 
@@ -92,7 +91,7 @@ def Open_bin(a):
 
     mask = '*.bin'
     if not fnmatch(a, mask):
-        #print(f'file is not {mask}')
+        # print(f'file is not {mask}')
         return None
     f = open(a, 'rb')
     value0 = np.fromfile(f, dtype='>i2').byteswap().newbyteorder()
@@ -115,7 +114,7 @@ def Open_tek_csv(a):
     """
     mask = 'tek*.CSV'
     if not fnmatch(a, mask):
-        #print(f'file is not {mask}')
+        # print(f'file is not {mask}')
         return None
     data = pd.read_csv(a, skiprows=20)
     time = data['TIME']

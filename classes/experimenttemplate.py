@@ -60,6 +60,7 @@ class ExperimentTemplateEditor(QMainWindow):
         rootXML = xml.Element('Эксперимент')
         oscsXML = xml.Element('Осциллографы')
         for oscname, osc in self.mainOscDict.items():
+            osc.initChanals()
             oscXML = xml.Element(oscname)
             parsXML = xml.Element('Параметры')
             for parname, par in osc.parametersDict.items():
@@ -91,11 +92,10 @@ class ExperimentTemplateEditor(QMainWindow):
         mainTree.write(name, encoding="UTF-8")
 
     def loadFile(self, default=None):
-        if default is None:
+        name = default
+        if (default is None) or (default is not str):
             name = QFileDialog.getOpenFileName(self, 'Откройте файл шаблона эксперимента', "./experiment_templates", )[
                 0]
-        else:
-            name = default
         if len(name) == 0:
             return
         rootXML = xml.ElementTree(file=name).getroot()
@@ -112,7 +112,11 @@ class ExperimentTemplateEditor(QMainWindow):
             chXMLall = chsXML.findall('Канал')
             for chXML in chXMLall:
                 numXML = chXML.find('Номер')
-                ch = osc.chanalDict[numXML.text]
+                try:
+                    ch = osc.chanalDict[numXML.text]
+                except:
+                    osc.addChanalInTable(numXML.text)
+                    ch = osc.chanalDict[numXML.text]
                 for fname, f in ch.items():
                     fXML = chXML.find(fname)
                     f.setText(fXML.text)
