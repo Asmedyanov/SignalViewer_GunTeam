@@ -61,11 +61,12 @@ class OscilloscopPage(QFrame):
             return
         selectPage = self.tabWidget.widget(self.tabWidget.currentIndex())
         selectTable = selectPage.findChildren(QTableWidget)[0]
-        selectRow = selectTable.rowCount()
-        selectTable.insertRow(selectRow)
-
-    def remClick(self):
-        pass
+        try:
+            selectRow = selectTable.selectionModel().selectedRows()[0].row()
+            print(selectRow)
+        except:
+            selectRow = selectTable.rowCount()-1
+        selectTable.removeRow(selectRow)
 
     def addChanalInTable(self, chanal):
         selectPage = self.tabWidget.widget(1)
