@@ -15,43 +15,83 @@ from fnmatch import fnmatch
 import pickle as pk
 
 mks = 1.0e6
+def Open_A_CSV_short(a,master):
+    """
+        Открытие файла типа A*.CSV по строке a
+        """
+    shorta = a.split('/')[-1]
+    mask = 'A*.CSV'
+    if not fnmatch(shorta, mask):
+        # print(f'file is not {mask}')
+        return None
+    try:
+        osc = master.getOSC(mask)
+        nameslist = [
+            'T'
+        ]
+        chlist = list(osc['Каналы'].keys())
+        chlist.sort()
+        for i in chlist:
+            nameslist.append(f'CH{i}')
+        data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
+                           names=nameslist)
+        for ch in osc['Каналы'].values():
+            if ch['Диагностика'] == 'Запуск':
+                startdata = data[f'CH{ch["Номер"]}']
+                stmin = startdata.min()
+                stmax = startdata.max()
+                st = 0.5 * (stmax + stmin)
+                t0 = data['T'].loc[startdata < st].values.min()
+        time = data['T'] - t0
+        returnlist = [
+            RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
+            osc['Каналы'].keys() if
+            osc['Каналы'][i]['Отображение'] == '1'
+
+        ]
+        return returnlist
+    except:
+        return None
 
 
-def Open_A_CSV(a, master):
+def Open_A_CSV_full(a, master):
     """
     Открытие файла типа A*.CSV по строке a
     """
     shorta = a.split('/')[-1]
     mask = 'A*.CSV'
     if not fnmatch(shorta, mask):
-        # print(f'file is not {mask}')
         return None
 
-    osc = master.getOSC(mask)
-    nameslist = [
-        'P', 'P1', 'P2', 'T'
-    ]
-    chlist = list(osc['Каналы'].keys())
-    chlist.sort()
-    for i in chlist:
-        nameslist.append(f'CH{i}')
-    data = pd.read_csv(a, skiprows=10, error_bad_lines=False,
-                       names=nameslist, engine='python')
-    for ch in osc['Каналы'].values():
-        if ch['Диагностика'] == 'Запуск':
-            startdata = data[f'CH{ch["Номер"]}']
-            stmin = startdata.min()
-            stmax = startdata.max()
-            st = 0.5 * (stmax + stmin)
-            t0 = data['T'].loc[startdata < st].values.min()
-    time = data['T'] - t0
-    returnlist = [
-        RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
-        osc['Каналы'].keys() if
-        osc['Каналы'][i]['Отображение'] == '1'
+    try:
+        osc = master.getOSC(mask)
+        nameslist = [
+            'P', 'P1', 'P2', 'T'
+        ]
+        chlist = list(osc['Каналы'].keys())
+        chlist.sort()
+        for i in chlist:
+            nameslist.append(f'CH{i}')
+        data = pd.read_csv(a, skiprows=10, error_bad_lines=False,
+                           names=nameslist, engine='python')
+        for ch in osc['Каналы'].values():
+            if ch['Диагностика'] == 'Запуск':
+                startdata = data[f'CH{ch["Номер"]}']
+                stmin = startdata.min()
+                stmax = startdata.max()
+                st = 0.5 * (stmax + stmin)
+                t0 = data['T'].loc[startdata < st].values.min()
+        time = data['T'] - t0
 
-    ]
-    return returnlist
+        returnlist = [
+            RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
+            osc['Каналы'].keys() if
+            osc['Каналы'][i]['Отображение'] == '1'
+
+        ]
+        return returnlist
+    except:
+        return None
 
 
 def Open_F_CSV(a, master):
