@@ -120,6 +120,8 @@ def Open_bin(a, master):
         values = (value0[4 + k::16] - (1 << 11)) * (1.6 / (1 << 11))
         if np.min(values) == np.max(values):
             continue
+        if osc['Каналы'][str(k)]['Отображение'] == '0':
+            continue
         returnlist.append(RawData(osc['Каналы'][str(k)]['Подпись'], time, values))
     return returnlist
 
