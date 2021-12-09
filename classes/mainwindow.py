@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
         uic.loadUi('ui/mainwindow.ui', self)
         self.fileList = []
         self.experiment = Experiment(self)
+        self.foldername = ''
         self.initActions()
         self.initTabs()
         self.show()
@@ -63,6 +64,8 @@ class MainWindow(QMainWindow):
                                         constants.experiments_dir,
                                         ';;'.join(constants.filter_list))[0]
         self.fileList.append(self.lastFileName)
+        folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        self.foldername=folderName
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
         file = open('lastfilename.txt', 'w')
@@ -77,6 +80,7 @@ class MainWindow(QMainWindow):
                                         constants.experiments_dir,
                                         ';;'.join(constants.filter_list))[0]
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        self.foldername = '/'.join(folderName.split('/')[-2:])
         curentDir = os.getcwd()
         os.chdir(folderName)
         for fileName in os.listdir():

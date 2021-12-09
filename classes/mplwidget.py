@@ -29,7 +29,7 @@ class MplWidget(QWidget):
         self.vbl.addWidget(NavigationToolbar2QT(self.canvas, self))
         self.setLayout(self.vbl)
 
-    def plot(self, datalist):
+    def plot(self, datalist, header = ''):
         self.canvas.fig.clear()
         n = len(datalist)  # Длина массива баз данных каналов
         if (n == 0):
@@ -38,19 +38,19 @@ class MplWidget(QWidget):
         axes = gs.subplots(sharex=True)  # массив графиков
         try:
             data=datalist[0]
-            axes.plot(data['T'], data['V'])
+            axes.plot(data['T']*1.0e6, data['V'])
             axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
-            axes.set_xlabel('Время, сек')
+            axes.set_xlabel('t, mks')
             # Подписать заголовок
-            axes.set_title('Данные')
+            axes.set_title(f'Данные {header}')
         except:
             for i, data in enumerate(datalist):
-                axes[i].plot(data['T'], data['V'])
+                axes[i].plot(data['T']*1.0e6, data['V'])
                 axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                 gun_team_axes_stile(axes[i])
             # Подписать горизонтальную ось
-            axes[n - 1].set_xlabel('Время, сек')
+            axes[n - 1].set_xlabel('t, мкс')
             # Подписать заголовок
-            axes[0].set_title('Данные')
+            axes[0].set_title(f'Данные {header}')
         self.canvas.draw()

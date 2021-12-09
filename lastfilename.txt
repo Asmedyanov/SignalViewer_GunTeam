@@ -1,6 +1,2 @@
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V1/AKIP0001.CSV
-AKIP0003.CSV
-v3.bin
-AKIP0021.CSV
-v21.bin
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V18/v18.bin
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V3/AKIP0003.CSV
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V3/v3.bin

@@ -15,20 +15,22 @@ class Experiment:
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
-        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist)
-        #self.upDateRowSpectra()
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, self.master.foldername)
+        # self.upDateRowSpectra()
         self.upDataDiacnosticData()
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []
         for rawdata in self.rawdatalist:
             self.rawSpectraList.append(SpectrData(rawdata))
-        self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList)
+        self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList, self.master.foldername)
+
     def upDataDiacnosticData(self):
         self.diagnosticDataList = []
         for rawdata in self.rawdatalist:
             self.diagnosticDataList.append(DiagnosticData(rawdata, self))
-        self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList)
+        self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList, self.master.foldername)
+
     def clear(self):
         self.rawdatalist = []
 

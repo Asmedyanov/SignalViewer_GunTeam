@@ -45,7 +45,7 @@ def Diagnostic_belt(rawdata, master):
     tfinish = 100.0e-6
     ffinish = 1.0 / 5.0e-7
     fstart = 1.0
-    mult = -8*100. / 0.14 * 1.0e-3
+    mult = -8 * 100. / 0.14 * 1.0e-3
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
 
@@ -102,12 +102,14 @@ def interferometer(d):
 
 def preinterferometer(data):
     d = data
-    d['V'] = np.nan_to_num(d['V'])
-    # master.array_plots[0].plot(d)
     # сдвинем минимум в 0
-    d['V'] = d['V'] - d['V'].min()
+    mininterf = d['V'].loc[d['T'] > d['T'].mean()].min()
+    d['V'] = d['V'] - mininterf
+    maxinterf = d['V'].loc[d['T'] > d['T'].mean()].max()
+    d['V'] = np.where(d['V'] > maxinterf, maxinterf, d['V'])
+    d['V'] = np.where(d['V'] < 0, 0, d['V'])
     # Пересчитаем в фазу
-    d['V'] = np.arccos(1.0 - (2.0 * d['V'] / d['V'].max()))
+    d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
     d = my_fft_filter_com(d, 1.0 / 120.0e-6, 1.0 / 1.0e-7)
@@ -131,7 +133,7 @@ def Diagnostic_Interferometer(rawdata, master):
     tstart = 0
     tfinish = 100.0e-6
     ffinish = 1.0 / 5.0e-7
-    fstart = 1.0 / 1.0e2
+    fstart = 1.0e2
     mult = 1
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = preinterferometer(ret)
