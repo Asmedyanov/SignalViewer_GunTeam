@@ -44,9 +44,10 @@ def Open_A_CSV(a, master):
             stmax = startdata.max()
             st = 0.5 * (stmax + stmin)
             t0 = data['T'].loc[startdata < st].values.min()
-    time = data['T']-t0
+    time = data['T'] - t0
     returnlist = [
-        RawData(osc['Каналы'][i]['Подпись'], time, data[f'CH{i}']) for i in osc['Каналы'].keys() if
+        RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
+        osc['Каналы'].keys() if
         osc['Каналы'][i]['Отображение'] == '1'
 
     ]
@@ -84,7 +85,7 @@ def Open_PRN(a, master):
                                 names=['P', 'V1', 'V5'])
     parametrDict = {parametr_data['P'][i]: parametr_data['V1'][i] for i in range(len(parametr_data))}
     namesch = ['CH' + str(i) for i in range(1, 5)]
-    CHDisplay = [parametrDict[f'CH{i} Display'] == 'On' for i in [1, 2, 3, 4]]
+    # CHDisplay = [parametrDict[f'CH{i} Display'] == 'On' for i in osc['Каналы'].keys()]
     t0 = float(parametrDict['Trigger Address'])
     dt = float(parametrDict['Delta(second)'])
     data = pd.read_csv(a, sep=' ', skiprows=30,
@@ -92,9 +93,9 @@ def Open_PRN(a, master):
                        names=namesch)
     time = [(i - t0) * dt for i in range(len(data))]
     returnlist = []
-    for k in range(len(CHDisplay)):
-        if CHDisplay[k] == True:
-            returnlist.append(RawData(f'{mask} #{k + 1}', time, data[f'CH{k + 1}']))
+    for k, ch in osc['Каналы'].items():
+        if ch['Отображение'] != '0':
+            returnlist.append(RawData(ch['Подпись'], ch['Диагностика'], time, data[f'CH{k}']))
     return returnlist
 
 
@@ -112,18 +113,16 @@ def Open_bin(a, master):
     f = open(a, 'rb')
     value0 = np.fromfile(f, dtype='>i2').byteswap().newbyteorder()
     fd = float(osc['Параметры']['Частота']['Значение'])
-    dt = 1.0/fd
+    dt = 1.0 / fd
     t0 = float(osc['Параметры']['Сдвиг времени']['Значение'])
     Nsemp = (value0[0] << 16) + value0[1]
     time = np.arange(Nsemp) * dt + t0
     returnlist = []
     for k in [int(i) for i in osc['Каналы'].keys()]:
         values = (value0[4 + k::16] - (1 << 11)) * (1.6 / (1 << 11))
-        if np.min(values) == np.max(values):
-            continue
         if osc['Каналы'][str(k)]['Отображение'] == '0':
             continue
-        returnlist.append(RawData(osc['Каналы'][str(k)]['Подпись'], time, values))
+        returnlist.append(RawData(osc['Каналы'][str(k)]['Подпись'], osc['Каналы'][str(k)]['Диагностика'], time, values))
     return returnlist
 
 

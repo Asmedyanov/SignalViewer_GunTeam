@@ -3,9 +3,10 @@ import numpy as np
 
 
 class RawData(DataFrame):
-    def __init__(self, label='rawdata', time=np.array([]), values=np.array([])):
+    def __init__(self, label='rawdata', diagnostic='Делитель', time=np.array([]), values=np.array([])):
         super(RawData, self).__init__()
         self.label = label
+        self.diagnostic = diagnostic
         self['T'] = time
         self['V'] = values
 
