@@ -9,9 +9,6 @@ class SpectrData(DataFrame):
         time = data['T'].values
         value = data['V'].values
         self.label = data.label
-        mintime = time.min()
-        maxtime = time.max()
-        ltime = maxtime - mintime
         timeSteps = np.gradient(time)
         meanStep = np.mean(timeSteps)
         yvalue = np.abs(fft(value))

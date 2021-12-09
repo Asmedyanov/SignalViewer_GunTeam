@@ -1,6 +1,7 @@
 from constants import *
 import xml.etree.ElementTree as xml
 from classes.spectrdata import SpectrData
+from classes.diagnosticdata import DiagnosticData
 
 
 class Experiment:
@@ -8,20 +9,26 @@ class Experiment:
         self.master = master
         self.rawdatalist = []
         self.rawSpectraList = []
+        self.diagnosticDataList = []
         self.oscDict = dict()
         self.loadDefaultSettings()
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist)
-        self.upDateRowSpectra()
+        #self.upDateRowSpectra()
+        self.upDataDiacnosticData()
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []
         for rawdata in self.rawdatalist:
             self.rawSpectraList.append(SpectrData(rawdata))
         self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList)
-
+    def upDataDiacnosticData(self):
+        self.diagnosticDataList = []
+        for rawdata in self.rawdatalist:
+            self.diagnosticDataList.append(DiagnosticData(rawdata, self))
+        self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList)
     def clear(self):
         self.rawdatalist = []
 
