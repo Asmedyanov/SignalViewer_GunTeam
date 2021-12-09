@@ -9,7 +9,10 @@ class RawData(DataFrame):
         self.diagnostic = diagnostic
         self['T'] = time
         self['V'] = values
-
+    def samlePeriod(self):
+        timeSteps= np.gradient(self['T'])
+        meanStep = np.mean(timeSteps)
+        return meanStep
     def __str__(self):
         try:
             mintime = np.min(self['T'])

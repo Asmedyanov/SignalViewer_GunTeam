@@ -1,17 +1,26 @@
 from constants import *
 import xml.etree.ElementTree as xml
+from classes.spectrdata import SpectrData
 
 
 class Experiment:
     def __init__(self, master):
         self.master = master
         self.rawdatalist = []
+        self.rawSpectraList = []
         self.oscDict = dict()
         self.loadDefaultSettings()
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist)
+        self.upDateRowSpectra()
+
+    def upDateRowSpectra(self):
+        self.rawSpectraList = []
+        for rawdata in self.rawdatalist:
+            self.rawSpectraList.append(SpectrData(rawdata))
+        self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList)
 
     def clear(self):
         self.rawdatalist = []
