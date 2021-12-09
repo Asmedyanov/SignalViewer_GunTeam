@@ -79,6 +79,7 @@
     <addaction name="action"/>
     <addaction name="action_2"/>
     <addaction name="action_4"/>
+    <addaction name="action_24"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -263,6 +264,14 @@
   <action name="action_23">
    <property name="text">
     <string>Примеры</string>
+   </property>
+  </action>
+  <action name="action_24">
+   <property name="text">
+    <string>Открыть прошлую сессию</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
  </widget>

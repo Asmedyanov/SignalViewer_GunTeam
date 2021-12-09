@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
         currentmenu['Группировать папку по выстрелам'].triggered.connect(self.groupFolder)
+        currentmenu['Открыть прошлую сессию'].triggered.connect(self.openResent)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu = self.mainActionsDict['Настройки']
@@ -64,6 +65,10 @@ class MainWindow(QMainWindow):
         self.fileList.append(self.lastFileName)
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
+        file = open('lastfilename.txt', 'w')
+        for name in self.fileList:
+            file.write(f'{name}\n')
+        file.close()
 
     def addFolder(self):
         self.lastFileName = \
@@ -72,11 +77,18 @@ class MainWindow(QMainWindow):
                                         constants.experiments_dir,
                                         ';;'.join(constants.filter_list))[0]
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        curentDir = os.getcwd()
         os.chdir(folderName)
         for fileName in os.listdir():
-            self.fileList.append(self.lastFileName)
+            self.fileList.append(fileName)
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+        os.chdir(curentDir)
+        file = open('lastfilename.txt', 'w')
+        for name in self.fileList:
+            file.write(f'{folderName}/{name}\n')
+        file.close()
+
     def groupFolder(self):
         lastFileName = \
             QFileDialog.getOpenFileName(self,
@@ -84,15 +96,25 @@ class MainWindow(QMainWindow):
                                         constants.experiments_dir,
                                         ';;'.join(constants.filter_list))[0]
         folderName = '/'.join(lastFileName.split('/')[:-1])
+        currentDir = os.getcwd()
         os.chdir(folderName)
-        for name in os.listdir():
+        for name in os.listdir(folderName):
             for name in os.listdir():
                 numlist = re.findall(r'\d*\.\d+|\d+', name)
                 n_exper = int(numlist[0])
                 if len(numlist) == 0:
                     continue
-                os.makedirs('V' + str(n_exper), exist_ok=True)
-                os.rename(name, 'V' + str(n_exper) + '/' + name)
+                os.makedirs(f'V{n_exper}', exist_ok=True)
+                os.rename(name, f'V{n_exper}/{name}')
+        os.chdir(currentDir)
+
+    def openResent(self):
+        file = open('lastfilename.txt', 'r')
+        namelist = file.read().split('\n')[:-1]
+        for fileName in namelist:
+            self.fileList.append(fileName)
+            addeddatalist = filefunctions.addFile(fileName, self.experiment)
+            self.experiment.addRawdataList(addeddatalist)
 
     def clearAll(self):
         self.experiment.clear()
