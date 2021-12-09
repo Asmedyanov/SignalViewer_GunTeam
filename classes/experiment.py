@@ -6,7 +6,6 @@ class Experiment:
     def __init__(self, master):
         self.master = master
         self.rawdatalist = []
-        self.chanalDict = dict()
         self.oscDict = dict()
         self.loadDefaultSettings()
 

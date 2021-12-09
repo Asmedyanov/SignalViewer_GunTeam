@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi('ui/mainwindow.ui', self)
+        self.fileList = []
         self.experiment = Experiment(self)
         self.initActions()
         self.initTabs()
@@ -64,6 +65,7 @@ class MainWindow(QMainWindow):
                                         "Добавьте файл",
                                         "D:/1.Clouds/GUN_TEAM/Experiments",
                                         ';;'.join(filterlist))[0]
+        self.fileList.append(self.lastFileName)
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
 
@@ -75,3 +77,9 @@ class MainWindow(QMainWindow):
 
     def oscSettings(self):
         self.expTemplate = ExperimentTemplateEditor(self)
+
+    def upDate(self):
+        self.clearAll()
+        for filename in self.fileList:
+            addeddatalist = filefunctions.addFile(filename, self.experiment)
+            self.experiment.addRawdataList(addeddatalist)

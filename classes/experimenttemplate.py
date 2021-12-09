@@ -133,9 +133,29 @@ class ExperimentTemplateEditor(QMainWindow):
             oscdict[chsXML.tag] = chsdict
             self.returnOscDict[oscname] = oscdict
         self.master.experiment.oscDict = self.returnOscDict
+        self.master.upDate()
 
     def cancel(self):
         self.loadFile(default_file)
 
     def apply(self):
-        pass
+        self.returnOscDict = dict()
+        for osckey, osc in self.mainOscDict.items():
+            oscdict = dict()
+            parsdict = dict()
+            for parkey, par in osc.parametersDict.items():
+                pardict = dict()
+                for fkey, f in par.items():
+                    pardict[fkey] = f.text()
+                parsdict[parkey] = pardict
+            oscdict['Параметры'] = parsdict
+            chsdict = dict()
+            for chkey, ch in osc.chanalDict.items():
+                chdict = dict()
+                for fkey, f in ch.items():
+                    chdict[fkey] = f.text()
+                chsdict[chkey] = chdict
+            oscdict['Каналы'] = chsdict
+            self.returnOscDict[osckey] = oscdict
+        self.master.experiment.oscDict = self.returnOscDict
+        self.master.upDate()
