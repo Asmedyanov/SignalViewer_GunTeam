@@ -38,19 +38,18 @@
          <attribute name="title">
           <string>Итоговые спектры</string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-        </widget>
-        <widget class="QWidget" name="tab_6">
-         <attribute name="title">
-          <string>Кросскорреляции</string>
-         </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_6"/>
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
           <string>Сырые спектры</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_5"/>
+        </widget>
+        <widget class="QWidget" name="tab_6">
+         <attribute name="title">
+          <string>Кросскорреляции</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_6"/>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
@@ -144,6 +143,9 @@
    <property name="text">
     <string>Добавить папку</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="action_3">
    <property name="text">
@@ -153,6 +155,9 @@
   <action name="action_4">
    <property name="text">
     <string>Группировать папку по выстрелам</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="action_5">

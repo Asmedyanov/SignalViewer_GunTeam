@@ -111,7 +111,8 @@ def Open_bin(a, master):
     osc = master.getOSC(mask)
     f = open(a, 'rb')
     value0 = np.fromfile(f, dtype='>i2').byteswap().newbyteorder()
-    dt = 0.1e-6
+    fd = float(osc['Параметры']['Частота']['Значение'])
+    dt = 1.0/fd
     t0 = float(osc['Параметры']['Сдвиг времени']['Значение'])
     Nsemp = (value0[0] << 16) + value0[1]
     time = np.arange(Nsemp) * dt + t0

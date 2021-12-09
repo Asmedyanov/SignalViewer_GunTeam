@@ -4,6 +4,8 @@ from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
 from classes.experiment import Experiment
 from classes.experimenttemplate import ExperimentTemplateEditor
+import os
+import constants
 
 
 class MainWindow(QMainWindow):
@@ -45,29 +47,34 @@ class MainWindow(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
+        currentmenu['Добавить папку'].triggered.connect(self.addFolder)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu = self.mainActionsDict['Настройки']
         currentmenu['Осциллографы'].triggered.connect(self.oscSettings)
 
     def addFile(self):
-        filterlist = [
-            'Любые файлы (*.*)',
-            'АЦП Хильченко(*.bin)',
-            'Дистанционный АКИП(A*.CSV)',
-            'Старый Тектроникс (F*\d.CSV)',
-            'Лекрой (*.PRN)',
-            'Дистанционный АКИП (INT*.CSV)',
-            'Старый Тектроникс (tek*.csv)'
-        ]
         self.lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Добавьте файл",
-                                        "D:/1.Clouds/GUN_TEAM/Experiments",
-                                        ';;'.join(filterlist))[0]
+                                        constants.experiments_dir,
+                                        ';;'.join(constants.filter_list))[0]
         self.fileList.append(self.lastFileName)
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
+
+    def addFolder(self):
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить",
+                                        constants.experiments_dir,
+                                        ';;'.join(constants.filter_list))[0]
+        folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        os.chdir(folderName)
+        for fileName in os.listdir():
+            self.fileList.append(self.lastFileName)
+            addeddatalist = filefunctions.addFile(fileName, self.experiment)
+            self.experiment.addRawdataList(addeddatalist)
 
     def clearAll(self):
         self.experiment.clear()
