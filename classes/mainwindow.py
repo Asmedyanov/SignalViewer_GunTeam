@@ -6,6 +6,7 @@ from classes.experiment import Experiment
 from classes.experimenttemplate import ExperimentTemplateEditor
 import os
 import constants
+import re
 
 
 class MainWindow(QMainWindow):
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
+        currentmenu['Группировать папку по выстрелам'].triggered.connect(self.groupFolder)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu = self.mainActionsDict['Настройки']
@@ -75,6 +77,22 @@ class MainWindow(QMainWindow):
             self.fileList.append(self.lastFileName)
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+    def groupFolder(self):
+        lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите группировать по выстрелам",
+                                        constants.experiments_dir,
+                                        ';;'.join(constants.filter_list))[0]
+        folderName = '/'.join(lastFileName.split('/')[:-1])
+        os.chdir(folderName)
+        for name in os.listdir():
+            for name in os.listdir():
+                numlist = re.findall(r'\d*\.\d+|\d+', name)
+                n_exper = int(numlist[0])
+                if len(numlist) == 0:
+                    continue
+                os.makedirs('V' + str(n_exper), exist_ok=True)
+                os.rename(name, 'V' + str(n_exper) + '/' + name)
 
     def clearAll(self):
         self.experiment.clear()
