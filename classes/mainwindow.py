@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog
 from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
 from classes.experiment import Experiment
-from classes.experimenttemplate import ExperimentTemplateEditor
+from classes.oscilloscopeeditor import OscilloscopeEditor
+from classes.diagnosticeditor import DiagnosticEditor
 import os
 import constants
 import re
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow):
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu = self.mainActionsDict['Настройки']
         currentmenu['Осциллографы'].triggered.connect(self.oscSettings)
+        currentmenu['Диагностики'].triggered.connect(self.diaSettings)
 
     def addFile(self):
         self.lastFileName = \
@@ -127,7 +129,9 @@ class MainWindow(QMainWindow):
             plot.canvas.draw()
 
     def oscSettings(self):
-        self.expTemplate = ExperimentTemplateEditor(self)
+        self.oscTemplate = OscilloscopeEditor(self)
+    def diaSettings(self):
+        self.diaTemplate = DiagnosticEditor(self)
 
     def upDate(self):
         self.clearAll()

@@ -250,6 +250,9 @@
    <property name="text">
     <string>Диагностики</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+D</string>
+   </property>
   </action>
   <action name="action_21">
    <property name="text">

@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -57,6 +57,21 @@
              <row>
               <property name="text">
                <string>3</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>4</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>5</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>6</string>
               </property>
              </row>
              <column>
@@ -132,6 +147,51 @@
              <item row="3" column="2">
               <property name="text">
                <string>1</string>
+              </property>
+             </item>
+             <item row="4" column="0">
+              <property name="text">
+               <string>Единицы времени</string>
+              </property>
+             </item>
+             <item row="4" column="1">
+              <property name="text">
+               <string>мкс</string>
+              </property>
+             </item>
+             <item row="4" column="2">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="5" column="0">
+              <property name="text">
+               <string>Единицы величины</string>
+              </property>
+             </item>
+             <item row="5" column="1">
+              <property name="text">
+               <string>кА</string>
+              </property>
+             </item>
+             <item row="5" column="2">
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item row="6" column="0">
+              <property name="text">
+               <string>Подпись</string>
+              </property>
+             </item>
+             <item row="6" column="1">
+              <property name="text">
+               <string>I</string>
+              </property>
+             </item>
+             <item row="6" column="2">
+              <property name="text">
+               <string>0</string>
               </property>
              </item>
             </widget>

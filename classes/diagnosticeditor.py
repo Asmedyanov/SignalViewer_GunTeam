@@ -1,19 +1,19 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
-from classes.oscsettings import OscilloscopPage
+from classes.diagnosticpage import DiagnosticPage
 import xml.etree.ElementTree as xml
 from constants import *
 
 
-class ExperimentTemplateEditor(QMainWindow):
+class DiagnosticEditor(QMainWindow):
     def __init__(self, master=None):
         self.master = master
-        super(ExperimentTemplateEditor, self).__init__()
-        uic.loadUi('ui/experimenttemplate.ui', self)
+        super(DiagnosticEditor, self).__init__()
+        uic.loadUi('ui/diagnosticeditor.ui', self)
         self.initActions()
         self.initTabs()
         self.initButtons()
-        self.loadFile(default_file)
+        #self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -24,15 +24,15 @@ class ExperimentTemplateEditor(QMainWindow):
         self.mainTabPageDict = dict()
         for text, i in self.mainTabTextDict.items():
             self.mainTabPageDict[text] = self.tabWidget.widget(i)
-        self.mainOscDict = dict()
+        self.mainDiaDict = dict()
         for text, page in self.mainTabPageDict.items():
-            oscpage = OscilloscopPage()
-            self.mainOscDict[text] = oscpage
+            Diapage = DiagnosticPage()
+            self.mainDiaDict[text] = Diapage
             try:
-                page.layout().addWidget(oscpage)
+                page.layout().addWidget(Diapage)
             except:
                 layout = QVBoxLayout()
-                layout.addWidget(oscpage)
+                layout.addWidget(Diapage)
                 page.setLayout(layout)
 
     def initActions(self):
@@ -57,33 +57,33 @@ class ExperimentTemplateEditor(QMainWindow):
 
     def save(self):
         rootXML = xml.Element('Эксперимент')
-        oscsXML = xml.Element('Осциллографы')
-        for oscname, osc in self.mainOscDict.items():
-            osc.initChanals()
-            oscXML = xml.Element('Осциллограф')
+        DiasXML = xml.Element('Осциллографы')
+        for Dianame, Dia in self.mainDiaDict.items():
+            Dia.initChanals()
+            DiaXML = xml.Element('Осциллограф')
             nameXML = xml.Element('Имя')
-            nameXML.text = oscname
-            oscXML.append(nameXML)
+            nameXML.text = Dianame
+            DiaXML.append(nameXML)
             parsXML = xml.Element('Параметры')
-            for parname, par in osc.parametersDict.items():
+            for parname, par in Dia.parametersDict.items():
                 parXML = xml.Element('Параметр')
                 for fname, f in par.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
                     parXML.append(fXML)
                 parsXML.append(parXML)
-            oscXML.append(parsXML)
+            DiaXML.append(parsXML)
             chsXML = xml.Element('Каналы')
-            for chname, ch in osc.chanalDict.items():
+            for chname, ch in Dia.chanalDict.items():
                 chXML = xml.Element('Канал')
                 for fname, f in ch.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
                     chXML.append(fXML)
                 chsXML.append(chXML)
-            oscXML.append(chsXML)
-            oscsXML.append(oscXML)
-        rootXML.append(oscsXML)
+            DiaXML.append(chsXML)
+            DiasXML.append(DiaXML)
+        rootXML.append(DiasXML)
 
         name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
         if len(name) == 0:
@@ -101,14 +101,14 @@ class ExperimentTemplateEditor(QMainWindow):
         if len(name) == 0:
             return
         rootXML = xml.ElementTree(file=name).getroot()
-        oscsXML = rootXML.find('Осциллографы')
-        oscXMLlist = oscsXML.findall('Осциллограф')
-        self.returnOscDict = dict()
-        for oscXML in oscXMLlist:
-            oscname = oscXML.find('Имя').text
-            self.mainOscDict[oscname].clear()
-            oscdict = dict()
-            parsXML = oscXML.find('Параметры')
+        DiasXML = rootXML.find('Осциллографы')
+        DiaXMLlist = DiasXML.findall('Осциллограф')
+        self.returnDiaDict = dict()
+        for DiaXML in DiaXMLlist:
+            Dianame = DiaXML.find('Имя').text
+            self.mainDiaDict[Dianame].clear()
+            Diadict = dict()
+            parsXML = DiaXML.find('Параметры')
             parsdict = dict()
             parXMLlist = parsXML.findall('Параметр')
             for parXML in parXMLlist:
@@ -117,10 +117,10 @@ class ExperimentTemplateEditor(QMainWindow):
                     if parvalue is parXML: continue
                     pardict[parvalue.tag] = parvalue.text
                 parsdict[pardict['Имя']] = pardict
-                self.mainOscDict[oscname].paramFromDict(pardict)
-            oscdict[parsXML.tag] = parsdict
+                self.mainDiaDict[Dianame].paramFromDict(pardict)
+            Diadict[parsXML.tag] = parsdict
 
-            chsXML = oscXML.find('Каналы')
+            chsXML = DiaXML.find('Каналы')
             chsdict = dict()
             chXMLlist = chsXML.findall('Канал')
             for chXML in chXMLlist:
@@ -129,33 +129,33 @@ class ExperimentTemplateEditor(QMainWindow):
                     if chvalue is chXML: continue
                     chdict[chvalue.tag] = chvalue.text
                 chsdict[chdict['Номер']] = chdict
-                self.mainOscDict[oscname].chanalFromDict(chdict)
-            oscdict[chsXML.tag] = chsdict
-            self.returnOscDict[oscname] = oscdict
-        self.master.experiment.oscDict = self.returnOscDict
+                self.mainDiaDict[Dianame].chanalFromDict(chdict)
+            Diadict[chsXML.tag] = chsdict
+            self.returnDiaDict[Dianame] = Diadict
+        self.master.experiment.DiaDict = self.returnDiaDict
         self.master.upDate()
 
     def cancel(self):
         self.loadFile(default_file)
 
     def apply(self):
-        self.returnOscDict = dict()
-        for osckey, osc in self.mainOscDict.items():
-            oscdict = dict()
+        self.returnDiaDict = dict()
+        for Diakey, Dia in self.mainDiaDict.items():
+            Diadict = dict()
             parsdict = dict()
-            for parkey, par in osc.parametersDict.items():
+            for parkey, par in Dia.parametersDict.items():
                 pardict = dict()
                 for fkey, f in par.items():
                     pardict[fkey] = f.text()
                 parsdict[parkey] = pardict
-            oscdict['Параметры'] = parsdict
+            Diadict['Параметры'] = parsdict
             chsdict = dict()
-            for chkey, ch in osc.chanalDict.items():
+            for chkey, ch in Dia.chanalDict.items():
                 chdict = dict()
                 for fkey, f in ch.items():
                     chdict[fkey] = f.text()
                 chsdict[chkey] = chdict
-            oscdict['Каналы'] = chsdict
-            self.returnOscDict[osckey] = oscdict
-        self.master.experiment.oscDict = self.returnOscDict
+            Diadict['Каналы'] = chsdict
+            self.returnDiaDict[Diakey] = Diadict
+        self.master.experiment.DiaDict = self.returnDiaDict
         self.master.upDate()
