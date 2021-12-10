@@ -24,8 +24,7 @@ def my_fft_filter_com(data, fstart, ffinish):
     fend = ffinish
     fw = 1e3
     # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
-    fwindow = np.where(((W > fstart) & (W < fend)), 1, 0)
-    # fwindow=fwindow/np.sum(fwindow)
+    fwindow = np.where(((W >= fstart) & (W <= fend)), 1, 0)
     cut_signal = irfft(cut_f_signal * fwindow)
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
@@ -50,7 +49,23 @@ def Diagnostic_belt(rawdata, master):
     mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
-
+    ret['V'] = ret['V'] * mult
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.label = f'{label}, {dim}'
+    return ret
+def Diagnostic_piezo(rawdata, master):
+    diagnostic = 'Пьезодатчик'
+    if rawdata.diagnostic != diagnostic:
+        return None
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
+    ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
@@ -168,7 +183,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     ret = my_fft_filter_com(ret, fstart, ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = np.abs(ret['V']-retmin) * mult
+    ret['V'] = np.abs(ret['V'] - retmin) * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.label = f'{label}, {dim}'

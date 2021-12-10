@@ -109,7 +109,7 @@ class OscilloscopeEditor(QMainWindow):
         rootXML.append(oscsXML)
         mainTree = xml.ElementTree(rootXML)
         mainTree.write(name, encoding="UTF-8")
-        if len(rootXML.findall('Диагностики'))==0:
+        if len(rootXML.findall('Диагностики')) == 0:
             self.master.diaSettings()
             self.master.diaTemplate.save(name)
             self.master.diaTemplate.close()

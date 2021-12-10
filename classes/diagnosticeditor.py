@@ -13,7 +13,10 @@ class DiagnosticEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        self.loadFile(default_file)
+        try:
+            self.loadFile(master.exptempFileName)
+        except:
+            self.loadFile(default_file)
         self.show()
 
     def initTabs(self):

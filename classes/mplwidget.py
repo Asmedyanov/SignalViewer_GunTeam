@@ -48,9 +48,12 @@ class MplWidget(QWidget):
             axes.set_title(f'Данные {header}')
         except:
             for i, data in enumerate(datalist):
-                axes[i].plot(data['T'] * 1.0e6, data['V'])
-                axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
-                gun_team_axes_stile(axes[i])
+                try:
+                    axes[i].plot(data['T'] * 1.0e6, data['V'])
+                    axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
+                    gun_team_axes_stile(axes[i])
+                except:
+                    continue
 
             # Подписать горизонтальную ось
             axes[n - 1].set_xlabel('t, мкс')
