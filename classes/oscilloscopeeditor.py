@@ -57,9 +57,13 @@ class OscilloscopeEditor(QMainWindow):
         self.mainButtonDict['Отменить'].clicked.connect(self.cancel)
         self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
-    def save(self):
-        name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
-        if len(name) == 0:
+    def save(self, fileName=None):
+        if type(fileName) is not str:
+            name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
+                0]
+        else:
+            name = fileName
+        if name == '':
             return
         try:
             try:
@@ -105,6 +109,10 @@ class OscilloscopeEditor(QMainWindow):
         rootXML.append(oscsXML)
         mainTree = xml.ElementTree(rootXML)
         mainTree.write(name, encoding="UTF-8")
+        if len(rootXML.findall('Диагностики'))==0:
+            self.master.diaSettings()
+            self.master.diaTemplate.save(name)
+            self.master.diaTemplate.close()
 
     def loadFile(self, default=None):
         name = default

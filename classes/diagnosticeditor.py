@@ -55,9 +55,15 @@ class DiagnosticEditor(QMainWindow):
         self.mainButtonDict['Отменить'].clicked.connect(self.cancel)
         self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
-    def save(self):
-        name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
-        if len(name) == 0:
+    def save(self, fileName=None):
+        if type(fileName) is not str:
+            name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
+                0]
+        else:
+            name = fileName
+        if type(name) is not str:
+            return
+        if name == '':
             return
         try:
             try:
@@ -103,6 +109,10 @@ class DiagnosticEditor(QMainWindow):
         rootXML.append(DiasXML)
         mainTree = xml.ElementTree(rootXML)
         mainTree.write(name, encoding="UTF-8")
+        if len(rootXML.findall('Осциллографы')) == 0:
+            self.master.oscSettings()
+            self.master.oscTemplate.save(name)
+            self.master.oscTemplate.close()
 
     def loadFile(self, default=None):
         name = default

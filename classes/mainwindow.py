@@ -48,6 +48,8 @@ class MainWindow(QMainWindow):
             self.mainActionsDict[menu.title()] = dict()
             for act in menu.actions():
                 self.mainActionsDict[menu.title()][act.text()] = act
+        currentmenu = self.mainActionsDict['Шаблон эксперимента']
+        currentmenu['Открыть шаблон эксперимента'].triggered.connect(self.openExperimentTemplate)
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
@@ -137,6 +139,15 @@ class MainWindow(QMainWindow):
 
     def diaSettings(self):
         self.diaTemplate = DiagnosticEditor(self)
+
+    def openExperimentTemplate(self):
+        self.exptempFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Добавьте файл",
+                                        './experiment_templates',
+                                        ';;'.join(constants.filter_list))[0]
+        if self.exptempFileName !='':
+            self.experiment.loadSettings(self.exptempFileName)
 
     def upDate(self):
         # self.clearAll()

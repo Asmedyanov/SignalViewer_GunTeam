@@ -12,7 +12,7 @@ class Experiment:
         self.diagnosticDataList = []
         self.oscDict = dict()
         self.diaDict = dict()
-        self.loadDefaultSettings()
+        self.loadSettings()
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
@@ -35,9 +35,9 @@ class Experiment:
     def clear(self):
         self.rawdatalist = []
 
-    def loadDefaultSettings(self, ):
+    def loadSettings(self, filename = default_file):
         self.oscDict = dict()
-        rootXML = xml.ElementTree(file=default_file).getroot()
+        rootXML = xml.ElementTree(file=filename).getroot()
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')
         for oscXML in oscXMLlist:
