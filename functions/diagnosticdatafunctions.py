@@ -54,7 +54,7 @@ def Diagnostic_belt(rawdata, master):
     ret['V'] = ret['V'] * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label},{dim}'
+    ret.label = f'{label}, {dim}'
     return ret
 
 
@@ -140,7 +140,7 @@ def Diagnostic_Interferometer(rawdata, master):
     ret['V'] = ret['V'] * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label},{dim}'
+    ret.label = f'{label}, {dim}'
     return ret
 
 
@@ -148,7 +148,7 @@ def calorimetr(data):
     u = data['V'].values
     t = data['T'].values
     U0 = 1.1
-    R0 = 1.0e3
+    R0 = 910.0
     r = R0 * u / (U0 - u)
     dataret = RawData('', data.diagnostic, t, r)
     return dataret
@@ -171,5 +171,5 @@ def Diagnostic_Calorimetr(rawdata, master):
     ret['V'] = np.abs(ret['V']-retmin) * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label},{dim}'
+    ret.label = f'{label}, {dim}'
     return ret
