@@ -7,12 +7,15 @@ class RawData(DataFrame):
         super(RawData, self).__init__()
         self.label = label
         self.diagnostic = diagnostic
+        self.timeDim = 'сек'
         self['T'] = time
         self['V'] = values
+
     def samlePeriod(self):
-        timeSteps= np.gradient(self['T'])
+        timeSteps = np.gradient(self['T'])
         meanStep = np.mean(timeSteps)
         return meanStep
+
     def __str__(self):
         try:
             mintime = np.min(self['T'])

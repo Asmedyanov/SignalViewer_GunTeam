@@ -2,6 +2,7 @@
 from classes.mplcanvas import MplCanvas
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
+import constants
 
 
 def gun_team_axes_stile(axis):
@@ -38,25 +39,28 @@ class MplWidget(QWidget):
             return
         gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
         axes = gs.subplots(sharex=True)  # массив графиков
+        timescale = 'сек'
         try:
             data = datalist[0]
-            axes.plot(data['T'] * 1.0e6, data['V'])
+            timescale = data.timeDim
+            axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
             axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
-            axes.set_xlabel('t, mks')
+            axes.set_xlabel(f't, {timescale}')
             # Подписать заголовок
             axes.set_title(f'Данные {header}')
         except:
             for i, data in enumerate(datalist):
                 try:
-                    axes[i].plot(data['T'] * 1.0e6, data['V'])
+                    timescale = data.timeDim
+                    axes[i].plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
                 except:
                     continue
 
             # Подписать горизонтальную ось
-            axes[n - 1].set_xlabel('t, мкс')
+            axes[n - 1].set_xlabel(f't, {timescale}')
             # Подписать заголовок
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()

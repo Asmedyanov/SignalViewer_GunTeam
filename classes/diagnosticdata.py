@@ -18,3 +18,4 @@ class DiagnosticData(DataFrame):
         self['T'] = returndata['T']
         self['V'] = returndata['V']
         self.label = returndata.label
+        self.timeDim = returndata.timeDim

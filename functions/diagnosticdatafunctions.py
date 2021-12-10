@@ -53,7 +53,10 @@ def Diagnostic_belt(rawdata, master):
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.label = f'{label}, {dim}'
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
     return ret
+
+
 def Diagnostic_piezo(rawdata, master):
     diagnostic = 'Пьезодатчик'
     if rawdata.diagnostic != diagnostic:
@@ -70,6 +73,7 @@ def Diagnostic_piezo(rawdata, master):
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.label = f'{label}, {dim}'
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
     return ret
 
 
@@ -156,6 +160,7 @@ def Diagnostic_Interferometer(rawdata, master):
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.label = f'{label}, {dim}'
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
     return ret
 
 
@@ -186,5 +191,6 @@ def Diagnostic_Calorimetr(rawdata, master):
     ret['V'] = np.abs(ret['V'] - retmin) * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
     ret.label = f'{label}, {dim}'
     return ret
