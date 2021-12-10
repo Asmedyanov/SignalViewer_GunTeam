@@ -134,8 +134,9 @@ def Open_PRN(a, master):
     time = [(i - t0) * dt for i in range(len(data))]
     returnlist = []
     for k, ch in osc['Каналы'].items():
-        if ch['Отображение'] != '0':
-            returnlist.append(RawData(ch['Подпись'], ch['Диагностика'], time, data[f'CH{k}']))
+        if ch['Отображение'] == '0':
+            continue
+        returnlist.append(RawData(ch['Подпись'], ch['Диагностика'], time, data[f'CH{k}']))
     return returnlist
 
 

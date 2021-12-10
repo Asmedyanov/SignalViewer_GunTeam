@@ -161,12 +161,12 @@ class DiagnosticEditor(QMainWindow):
                 parsdict[parkey] = pardict
             Diadict['Параметры'] = parsdict
             chsdict = dict()
-            for chkey, ch in Dia.chanalDict.items():
+            for chkey, ch in Dia.statDict.items():
                 chdict = dict()
                 for fkey, f in ch.items():
                     chdict[fkey] = f.text()
                 chsdict[chkey] = chdict
-            Diadict['Каналы'] = chsdict
+            Diadict['Диагностики'] = chsdict
             self.returnDiaDict[Diakey] = Diadict
-        self.master.experiment.DiaDict = self.returnDiaDict
+        self.master.experiment.diaDict = self.returnDiaDict
         self.master.upDate()

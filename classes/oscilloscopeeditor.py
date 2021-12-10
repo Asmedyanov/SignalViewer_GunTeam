@@ -1,7 +1,9 @@
+import xml.etree.ElementTree as xml
+
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
+
 from classes.oscsettings import OscilloscopPage
-import xml.etree.ElementTree as xml
 from constants import *
 
 
@@ -71,6 +73,9 @@ class OscilloscopeEditor(QMainWindow):
                 rootXML = xml.Element('Эксперимент')
         except:
             rootXML = xml.Element('Эксперимент')
+        oscsXML = rootXML.find('Осциллографы')
+        if oscsXML is not None:
+            rootXML.remove(oscsXML)
         oscsXML = xml.Element('Осциллографы')
         for oscname, osc in self.mainOscDict.items():
             osc.initChanals()

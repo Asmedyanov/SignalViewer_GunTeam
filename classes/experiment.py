@@ -11,12 +11,13 @@ class Experiment:
         self.rawSpectraList = []
         self.diagnosticDataList = []
         self.oscDict = dict()
+        self.diaDict = dict()
         self.loadDefaultSettings()
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, self.master.foldername)
-        # self.upDateRowSpectra()
+        #self.upDateRowSpectra()
         self.upDataDiacnosticData()
 
     def upDateRowSpectra(self):
@@ -52,7 +53,6 @@ class Experiment:
                     pardict[parvalue.tag] = parvalue.text
                 parsdict[pardict['Имя']] = pardict
             oscdict[parsXML.tag] = parsdict
-
             chsXML = oscXML.find('Каналы')
             chsdict = dict()
             chXMLlist = chsXML.findall('Канал')
@@ -64,11 +64,42 @@ class Experiment:
                 chsdict[chdict['Номер']] = chdict
             oscdict[chsXML.tag] = chsdict
             self.oscDict[oscname] = oscdict
+        diasXML = rootXML.find('Диагностики')
+        diaXMLlist = diasXML.findall('Диагностика')
+        for diaXML in diaXMLlist:
+            dianame = diaXML.find('Имя').text
+            diadict = dict()
+            parsXML = diaXML.find('Параметры')
+            parsdict = dict()
+            parXMLlist = parsXML.findall('Параметр')
+            for parXML in parXMLlist:
+                pardict = dict()
+                for parvalue in parXML.iter():
+                    if parvalue is parXML: continue
+                    pardict[parvalue.tag] = parvalue.text
+                parsdict[pardict['Имя']] = pardict
+            diadict[parsXML.tag] = parsdict
+            statsXML = diaXML.find('Статистики')
+            statsdict = dict()
+            statXMLlist = statsXML.findall('Статистика')
+            for statXML in statXMLlist:
+                statdict = dict()
+                for statvalue in statXML.iter():
+                    if statvalue is statXML: continue
+                    statdict[statvalue.tag] = statvalue.text
+                statsdict[statdict['Измерение']] = statdict
+            diadict[statsXML.tag] = statsdict
+            self.diaDict[dianame] = diadict
 
     def getOSC(self, mask):
         for osc in self.oscDict.values():
             if osc['Параметры']['Маска']['Значение'] == mask:
                 return osc
+
+    def getDia(self, dia0):
+        for dianame, dia in self.diaDict.items():
+            if dianame == dia0:
+                return dia
 
     def __str__(self):
         return f'Experiment {len(self.rawdatalist)}'

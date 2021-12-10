@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
                                         ';;'.join(constants.filter_list))[0]
         self.fileList.append(self.lastFileName)
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
-        self.foldername=folderName
+        self.foldername = '/'.join(folderName.split('/')[-2:])
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
         file = open('lastfilename.txt', 'w')
@@ -86,13 +86,13 @@ class MainWindow(QMainWindow):
         curentDir = os.getcwd()
         os.chdir(folderName)
         for fileName in os.listdir():
-            self.fileList.append(fileName)
+            self.fileList.append(f'{folderName}/{fileName}')
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
         os.chdir(curentDir)
         file = open('lastfilename.txt', 'w')
         for name in self.fileList:
-            file.write(f'{folderName}/{name}\n')
+            file.write(f'{name}\n')
         file.close()
 
     def groupFolder(self):
@@ -115,26 +115,32 @@ class MainWindow(QMainWindow):
         os.chdir(currentDir)
 
     def openResent(self):
+        self.clearAll()
         file = open('lastfilename.txt', 'r')
         namelist = file.read().split('\n')[:-1]
         for fileName in namelist:
             self.fileList.append(fileName)
+            folderName = '/'.join(fileName.split('/')[:-1])
+            self.foldername = '/'.join(folderName.split('/')[-2:])
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
 
     def clearAll(self):
         self.experiment.clear()
+        self.fileList = []
         for plot in self.mainPlotDict.values():
             plot.canvas.fig.clear()
             plot.canvas.draw()
 
     def oscSettings(self):
         self.oscTemplate = OscilloscopeEditor(self)
+
     def diaSettings(self):
         self.diaTemplate = DiagnosticEditor(self)
 
     def upDate(self):
-        self.clearAll()
+        # self.clearAll()
+        self.experiment.rawdatalist = []
         for filename in self.fileList:
             addeddatalist = filefunctions.addFile(filename, self.experiment)
             self.experiment.addRawdataList(addeddatalist)

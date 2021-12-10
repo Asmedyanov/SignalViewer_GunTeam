@@ -3,6 +3,7 @@ from classes.mplcanvas import MplCanvas
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 
+
 def gun_team_axes_stile(axis):
     # Включить вспомогательные засечки на шкалах
     axis.minorticks_on()
@@ -20,6 +21,7 @@ def gun_team_axes_stile(axis):
     axis.tick_params(direction='in', top=True, right=True)
     axis.ticklabel_format(style='sci')
 
+
 class MplWidget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)  # Inherit from QWidget
@@ -29,7 +31,7 @@ class MplWidget(QWidget):
         self.vbl.addWidget(NavigationToolbar2QT(self.canvas, self))
         self.setLayout(self.vbl)
 
-    def plot(self, datalist, header = ''):
+    def plot(self, datalist, header=''):
         self.canvas.fig.clear()
         n = len(datalist)  # Длина массива баз данных каналов
         if (n == 0):
@@ -37,18 +39,21 @@ class MplWidget(QWidget):
         gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
         axes = gs.subplots(sharex=True)  # массив графиков
         try:
-            data=datalist[0]
-            axes.plot(data['T']*1.0e6, data['V'])
+            data = datalist[0]
+            axes.plot(data['T'] * 1.0e6, data['V'])
             axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
             axes.set_xlabel('t, mks')
             # Подписать заголовок
             axes.set_title(f'Данные {header}')
         except:
-            for i, data in enumerate(datalist):
-                axes[i].plot(data['T']*1.0e6, data['V'])
-                axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
-                gun_team_axes_stile(axes[i])
+            for i, data0 in enumerate(datalist):
+                try:
+                    axes[i].plot(data['T'] * 1.0e6, data['V'])
+                    axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
+                    gun_team_axes_stile(axes[i])
+                except:
+                    continue
             # Подписать горизонтальную ось
             axes[n - 1].set_xlabel('t, мкс')
             # Подписать заголовок

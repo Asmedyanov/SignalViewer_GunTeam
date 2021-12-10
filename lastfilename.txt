@@ -1,2 +1,7 @@
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V3/AKIP0003.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V3/v3.bin
+
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0000.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0001.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0002.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0003.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0004.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0005.PRN

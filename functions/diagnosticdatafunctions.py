@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.fft import rfft, irfft, fftfreq
+from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 import pandas as pd
 from classes.rawdata import RawData
 from scipy.signal import argrelextrema
@@ -23,8 +23,9 @@ def my_fft_filter_com(data, fstart, ffinish):
     fstart = fstart
     fend = ffinish
     fw = 1e3
-    fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
-    fwindow = np.where(((W > fstart) & (W < fend)), 1, fwindow)
+    # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
+    fwindow = np.where(((W > fstart) & (W < fend)), 1, 0)
+    # fwindow=fwindow/np.sum(fwindow)
     cut_signal = irfft(cut_f_signal * fwindow)
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
@@ -41,16 +42,19 @@ def Diagnostic_belt(rawdata, master):
     diagnostic = 'Пояс'
     if rawdata.diagnostic != diagnostic:
         return None
-    tstart = 0
-    tfinish = 100.0e-6
-    ffinish = 1.0 / 5.0e-7
-    fstart = 1.0
-    mult = -8 * 100. / 0.14 * 1.0e-3
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
 
     ret['V'] = ret['V'] * mult
-    ret.label = 'I, kA'
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.label = f'{label},{dim}'
     return ret
 
 
@@ -113,15 +117,9 @@ def preinterferometer(data):
     # вычислим неплазменную часть
 
     d = my_fft_filter_com(d, 1.0 / 120.0e-6, 1.0 / 1.0e-7)
-    # d=my_fft_filter_interf(d)
 
-    # master.array_plots[0].plot(d)
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul
-
-    # вычислим плотность плазмы
-    d['V'] = d['V'] * 7.00979
-    # d['label'] = 'фаза'
     dataret = RawData('$n_{e}, 10^{15} см^{-3}$', d.diagnostic, d['T'].values, d['V'].values)
     return dataret
 
@@ -130,14 +128,48 @@ def Diagnostic_Interferometer(rawdata, master):
     diagnostic = 'Интерферометр'
     if rawdata.diagnostic != diagnostic:
         return None
-    tstart = 0
-    tfinish = 100.0e-6
-    ffinish = 1.0 / 5.0e-7
-    fstart = 1.0e2
-    mult = 1
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    # ret.label = 'ne, cm^-3'
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.label = f'{label},{dim}'
+    return ret
+
+
+def calorimetr(data):
+    u = data['V'].values
+    t = data['T'].values
+    U0 = 1.1
+    R0 = 1.0e3
+    r = R0 * u / (U0 - u)
+    dataret = RawData('', data.diagnostic, t, r)
+    return dataret
+
+
+def Diagnostic_Calorimetr(rawdata, master):
+    diagnostic = 'Калориметр'
+    if rawdata.diagnostic != diagnostic:
+        return None
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
+    ret = calorimetr(rawdata)
+    ret = my_fft_filter_com(ret, fstart, ffinish)
+    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    ret = ininterval(ret, tstart, tfinish)
+    ret['V'] = np.abs(ret['V']-retmin) * mult
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.label = f'{label},{dim}'
     return ret
