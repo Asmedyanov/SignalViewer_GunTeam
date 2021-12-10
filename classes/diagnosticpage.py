@@ -98,7 +98,7 @@ class DiagnosticPage(QFrame):
 
     def statFromDict(self, diadict):
         selectPage = self.tabWidget.widget(1)
-        selectTable = selectPage.finddiaildren(QTableWidget)[0]
+        selectTable = selectPage.findChildren(QTableWidget)[0]
         selectRow = selectTable.rowCount()
         selectTable.insertRow(selectRow)
         dianomer = diadict['Измерение']

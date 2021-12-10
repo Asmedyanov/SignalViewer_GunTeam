@@ -13,7 +13,7 @@ class DiagnosticEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        # self.loadFile(default_file)
+        self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -112,8 +112,8 @@ class DiagnosticEditor(QMainWindow):
         if len(name) == 0:
             return
         rootXML = xml.ElementTree(file=name).getroot()
-        DiasXML = rootXML.find('Осциллографы')
-        DiaXMLlist = DiasXML.findall('Осциллограф')
+        DiasXML = rootXML.find('Диагностики')
+        DiaXMLlist = DiasXML.findall('Диагностика')
         self.returnDiaDict = dict()
         for DiaXML in DiaXMLlist:
             Dianame = DiaXML.find('Имя').text
@@ -131,17 +131,17 @@ class DiagnosticEditor(QMainWindow):
                 self.mainDiaDict[Dianame].paramFromDict(pardict)
             Diadict[parsXML.tag] = parsdict
 
-            chsXML = DiaXML.find('Каналы')
-            chsdict = dict()
-            chXMLlist = chsXML.findall('Канал')
-            for chXML in chXMLlist:
-                chdict = dict()
-                for chvalue in chXML.iter():
-                    if chvalue is chXML: continue
-                    chdict[chvalue.tag] = chvalue.text
-                chsdict[chdict['Номер']] = chdict
-                self.mainDiaDict[Dianame].chanalFromDict(chdict)
-            Diadict[chsXML.tag] = chsdict
+            statsXML = DiaXML.find('Статистики')
+            statsdict = dict()
+            statXMLlist = statsXML.findall('Статистика')
+            for statXML in statXMLlist:
+                statdict = dict()
+                for statvalue in statXML.iter():
+                    if statvalue is statXML: continue
+                    statdict[statvalue.tag] = statvalue.text
+                statsdict[statdict['Измерение']] = statdict
+                self.mainDiaDict[Dianame].statFromDict(statdict)
+            Diadict[statsXML.tag] = statsdict
             self.returnDiaDict[Dianame] = Diadict
         self.master.experiment.DiaDict = self.returnDiaDict
         self.master.upDate()
