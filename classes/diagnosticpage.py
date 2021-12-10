@@ -96,18 +96,18 @@ class DiagnosticPage(QFrame):
         self.clearParams()
         self.clearStatistic()
 
-    def statFromDict(self, chdict):
+    def statFromDict(self, diadict):
         selectPage = self.tabWidget.widget(1)
-        selectTable = selectPage.findChildren(QTableWidget)[0]
+        selectTable = selectPage.finddiaildren(QTableWidget)[0]
         selectRow = selectTable.rowCount()
         selectTable.insertRow(selectRow)
-        chnomer = chdict['Номер']
-        self.statDict[chnomer] = dict()
+        dianomer = diadict['Измерение']
+        self.statDict[dianomer] = dict()
         for j in range(selectTable.horizontalHeader().count()):
             selectTable.setItem(selectRow, j, QTableWidgetItem())
-            self.statDict[chnomer][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
-            self.statDict[chnomer][selectTable.horizontalHeaderItem(j).text()].setText(
-                chdict[selectTable.horizontalHeaderItem(j).text()]
+            self.statDict[dianomer][selectTable.horizontalHeaderItem(j).text()] = selectTable.item(selectRow, j)
+            self.statDict[dianomer][selectTable.horizontalHeaderItem(j).text()].setText(
+                diadict[selectTable.horizontalHeaderItem(j).text()]
             )
     def paramFromDict(self, pardict):
         selectPage = self.tabWidget.widget(0)

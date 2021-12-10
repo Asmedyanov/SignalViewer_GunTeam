@@ -13,7 +13,7 @@ class DiagnosticEditor(QMainWindow):
         self.initActions()
         self.initTabs()
         self.initButtons()
-        #self.loadFile(default_file)
+        # self.loadFile(default_file)
         self.show()
 
     def initTabs(self):
@@ -56,11 +56,28 @@ class DiagnosticEditor(QMainWindow):
         self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
     def save(self):
-        rootXML = xml.Element('Эксперимент')
-        DiasXML = xml.Element('Осциллографы')
+        name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
+        if len(name) == 0:
+            return
+        try:
+            try:
+                mainTree = xml.ElementTree(file=name)
+            except:
+                file = open(name, 'w')
+                file.close()
+                mainTree = xml.ElementTree(file=name)
+            rootXML = mainTree.getroot()
+            if rootXML.tag != 'Эксперимент':
+                rootXML = xml.Element('Эксперимент')
+        except:
+            rootXML = xml.Element('Эксперимент')
+        DiasXML = rootXML.find('Диагностики')
+        if DiasXML is not None:
+            rootXML.remove(DiasXML)
+        DiasXML = xml.Element('Диагностики')
         for Dianame, Dia in self.mainDiaDict.items():
-            Dia.initChanals()
-            DiaXML = xml.Element('Осциллограф')
+            Dia.initStatistic()
+            DiaXML = xml.Element('Диагностика')
             nameXML = xml.Element('Имя')
             nameXML.text = Dianame
             DiaXML.append(nameXML)
@@ -73,24 +90,18 @@ class DiagnosticEditor(QMainWindow):
                     parXML.append(fXML)
                 parsXML.append(parXML)
             DiaXML.append(parsXML)
-            chsXML = xml.Element('Каналы')
-            for chname, ch in Dia.chanalDict.items():
-                chXML = xml.Element('Канал')
-                for fname, f in ch.items():
+            statsXML = xml.Element('Статистики')
+            for statname, stat in Dia.statDict.items():
+                statXML = xml.Element('Статистика')
+                for fname, f in stat.items():
                     fXML = xml.Element(fname)
                     fXML.text = f.text()
-                    chXML.append(fXML)
-                chsXML.append(chXML)
-            DiaXML.append(chsXML)
+                    statXML.append(fXML)
+                statsXML.append(statXML)
+            DiaXML.append(statsXML)
             DiasXML.append(DiaXML)
         rootXML.append(DiasXML)
-
-        name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[0]
-        if len(name) == 0:
-            return
-
         mainTree = xml.ElementTree(rootXML)
-
         mainTree.write(name, encoding="UTF-8")
 
     def loadFile(self, default=None):
