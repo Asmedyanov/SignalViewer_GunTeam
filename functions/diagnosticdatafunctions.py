@@ -70,8 +70,7 @@ def my_fft_filter_com(data, fstart, ffinish):
     # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
     cut_signal = irfft(cut_f_signal * fwindow)
-    new_time = np.arange(0, cut_signal.size) * meanStep
-    dataret = RawData(data.label, data.diagnostic, new_time, cut_signal)
+    dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
     return dataret
 
@@ -302,10 +301,14 @@ def Diagnostic_Calorimetr(rawdata, master):
     return ret
 
 
-def reflectomert(data):
-    u = data['V'].values
-    t = data['T'].values
+def get_init_value(data):
     u0 = data['V'].loc[data['T'] < 0].mean()
+    return u0
+
+
+def reflectomert(data, u0):
+    u = np.where(data['V'].values < 0, 0, data['V'].values)
+    t = data['T'].values
     u = np.abs(u - u0)
     umax = np.max(u)
     T = u / umax
@@ -323,16 +326,18 @@ def Diagnostic_Reflectometr(rawdata, master):
     ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
     fstart = float(dia['Параметры']['Частота старт']['Значение'])
     mult = float(dia['Параметры']['Множитель']['Значение'])
-    ret = reflectomert(rawdata)
-    ret = my_fft_filter_com(ret, fstart, ffinish)
-    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    u0 = get_init_value(ret)
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = np.abs(ret['V'] - retmin) * mult
+    ret = reflectomert(ret, u0)
+    #ret['V'] = ret['V'] * mult
+
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
     ret.label = f'{label}, {dim}'
     return ret
+
 
 def Diagnostic_Start(rawdata, master):
     diagnostic = 'Запуск'
@@ -345,9 +350,9 @@ def Diagnostic_Start(rawdata, master):
     fstart = float(dia['Параметры']['Частота старт']['Значение'])
     mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
-    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    # retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = np.abs(ret['V'] - retmin) * mult
+    ret['V'] = ret['V'] * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.timeDim = dia['Параметры']['Единицы времени']['Значение']

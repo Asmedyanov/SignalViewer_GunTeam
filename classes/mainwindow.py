@@ -148,6 +148,7 @@ class MainWindow(QMainWindow):
                                         ';;'.join(constants.filter_list))[0]
         if self.exptempFileName !='':
             self.experiment.loadSettings(self.exptempFileName)
+        self.setWindowTitle(f'Просмотр сигналов по шаблону {self.exptempFileName.split("/")[-1]}')
 
     def upDate(self):
         # self.clearAll()

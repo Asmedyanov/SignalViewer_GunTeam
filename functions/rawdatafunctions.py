@@ -44,7 +44,7 @@ def Open_A_CSV_short(a, master):
                 stmin = startdata.min()
                 stmax = startdata.max()
                 st = 0.5 * (stmax + stmin)
-                t0 = data['T'].loc[startdata < st].values.min()
+                t0 = data['T'].loc[startdata < st].min()
                 break
         time = data['T'] - t0
         returnlist = [

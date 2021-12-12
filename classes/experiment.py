@@ -19,7 +19,7 @@ class Experiment:
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, self.master.foldername)
         #self.upDateRowSpectra()
         self.upDataDiacnosticData()
-        self.upDateDiaSpectra()
+        #self.upDateDiaSpectra()
 
 
     def upDateRowSpectra(self):
