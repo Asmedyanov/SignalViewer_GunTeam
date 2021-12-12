@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as xml
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton, QInputDialog
 
 from classes.oscsettings import OscilloscopPage
 from constants import *
@@ -48,6 +48,9 @@ class OscilloscopeEditor(QMainWindow):
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Сохранить'].triggered.connect(self.save)
         currentmenu['Открыть'].triggered.connect(self.loadFile)
+        currentmenu = self.mainActionsDict['Редактировать']
+        currentmenu['Добавить осциллограф'].triggered.connect(self.addOsc)
+        currentmenu['Удалить осциллограф'].triggered.connect(self.remOSC)
 
     def initButtons(self):
         self.mainButtonDict = dict()
@@ -125,8 +128,12 @@ class OscilloscopeEditor(QMainWindow):
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')
         self.returnOscDict = dict()
+        self.mainOscDict = dict()
+        self.tabWidget.clear()
         for oscXML in oscXMLlist:
             oscname = oscXML.find('Имя').text
+            self.tabWidget.addTab(OscilloscopPage(), oscname)
+            self.mainOscDict[oscname] = self.tabWidget.widget(len(self.mainOscDict))
             self.mainOscDict[oscname].clear()
             oscdict = dict()
             parsXML = oscXML.find('Параметры')
@@ -180,3 +187,13 @@ class OscilloscopeEditor(QMainWindow):
             self.returnOscDict[osckey] = oscdict
         self.master.experiment.oscDict = self.returnOscDict
         self.master.upDate()
+
+    def addOsc(self, name=None):
+        text, ok = QInputDialog().getText(self, 'Введите название нового осциллографа', 'Название осциллографа:')
+        if not (ok and text):
+            return
+        self.tabWidget.addTab(OscilloscopPage(), text)
+        self.mainOscDict[text] = self.tabWidget.widget(len(self.mainOscDict))
+
+    def remOSC(self):
+        pass
