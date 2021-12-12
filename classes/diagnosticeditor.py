@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QPushButton, QInputDialog
 from classes.diagnosticpage import DiagnosticPage
 import xml.etree.ElementTree as xml
 from constants import *
@@ -49,6 +49,9 @@ class DiagnosticEditor(QMainWindow):
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Сохранить'].triggered.connect(self.save)
         currentmenu['Открыть'].triggered.connect(self.loadFile)
+        currentmenu = self.mainActionsDict['Редактировать']
+        currentmenu['Добавить диагностику'].triggered.connect(self.addDia)
+        currentmenu['Удалить диагностику'].triggered.connect(self.remDia)
 
     def initButtons(self):
         self.mainButtonDict = dict()
@@ -128,8 +131,12 @@ class DiagnosticEditor(QMainWindow):
         DiasXML = rootXML.find('Диагностики')
         DiaXMLlist = DiasXML.findall('Диагностика')
         self.returnDiaDict = dict()
+        self.mainDiaDict = dict()
+        self.tabWidget.clear()
         for DiaXML in DiaXMLlist:
             Dianame = DiaXML.find('Имя').text
+            self.tabWidget.addTab(DiagnosticPage(), Dianame)
+            self.mainDiaDict[Dianame] = self.tabWidget.widget(len(self.mainDiaDict))
             self.mainDiaDict[Dianame].clear()
             Diadict = dict()
             parsXML = DiaXML.find('Параметры')
@@ -183,3 +190,13 @@ class DiagnosticEditor(QMainWindow):
             self.returnDiaDict[Diakey] = Diadict
         self.master.experiment.diaDict = self.returnDiaDict
         self.master.upDate()
+
+    def addDia(self, name=None):
+        text, ok = QInputDialog().getText(self, 'Введите название новой диагностики', 'Название диагностики:')
+        if not (ok and text):
+            return
+        self.tabWidget.addTab(DiagnosticPage(), text)
+        self.mainDiaDict[text] = self.tabWidget.widget(len(self.mainDiaDict))
+
+    def remDia(self):
+        pass
