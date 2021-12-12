@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Diagnostic Templat editor</string>
+   <string>Oscilloscope Templat editor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>6</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>true</bool>
@@ -36,37 +36,27 @@
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Пояс</string>
+          <string>АЦП_Хильченко</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Интерферометр</string>
+          <string>АКИП</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>Рефлектометр</string>
+          <string>Лекрой</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>Калориметр</string>
+          <string>Старый_Тектроникс</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
-          <string>Пьезодатчик</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="tab_6">
-         <attribute name="title">
-          <string>ПМИ-27</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="tab_7">
-         <attribute name="title">
-          <string>Делитель напряжения</string>
+          <string>Новый_Тектроникс</string>
          </attribute>
         </widget>
        </widget>
@@ -161,7 +151,7 @@
   </action>
   <action name="action_4">
    <property name="text">
-    <string>Добавить диагностику</string>
+    <string>Добавить осциллограф</string>
    </property>
    <property name="shortcut">
     <string>Ctrl++</string>
@@ -169,7 +159,7 @@
   </action>
   <action name="action_5">
    <property name="text">
-    <string>Удалить диагностику</string>
+    <string>Удалить осциллограф</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
