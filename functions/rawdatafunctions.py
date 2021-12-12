@@ -15,7 +15,9 @@ from fnmatch import fnmatch
 import pickle as pk
 
 mks = 1.0e6
-def Open_A_CSV_short(a,master):
+
+
+def Open_A_CSV_short(a, master):
     """
         Открытие файла типа A*.CSV по строке a
         """
@@ -35,6 +37,7 @@ def Open_A_CSV_short(a,master):
             nameslist.append(f'CH{i}')
         data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
                            names=nameslist)
+        t0 = 0
         for ch in osc['Каналы'].values():
             if ch['Диагностика'] == 'Запуск':
                 startdata = data[f'CH{ch["Номер"]}']
@@ -42,6 +45,7 @@ def Open_A_CSV_short(a,master):
                 stmax = startdata.max()
                 st = 0.5 * (stmax + stmin)
                 t0 = data['T'].loc[startdata < st].values.min()
+                break
         time = data['T'] - t0
         returnlist = [
             RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in

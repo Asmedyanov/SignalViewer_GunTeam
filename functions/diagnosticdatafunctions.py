@@ -2,7 +2,52 @@ import numpy as np
 from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 import pandas as pd
 from classes.rawdata import RawData
-from scipy.signal import argrelextrema
+from scipy.signal import argrelextrema, find_peaks, butter, filtfilt
+from scipy.interpolate import interp1d, splrep, splev
+import matplotlib.pyplot as plt
+
+
+def my_fft(value, df, dt):
+    fmax = 0.5 / dt
+    n = value.size
+    nf = int(fmax / df)
+    kf = np.arange(nf)
+    kt = -2j * np.pi * np.arange(n) / n
+
+    def mode(k):
+        np.sum(value * np.exp(k * kt))
+
+    retvalue = np.vectorize(mode)(kf)
+    return retvalue
+
+
+def my_fft_filter_fin(data, fstart, ffinish):
+    # data = data.dropna()
+    # data.index = pd.RangeIndex(len(data.index))
+    signal = data['V'].values
+    time = data['T'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+    '''wn1 = 2 * fstart * meanStep
+    wn2 = 2 * ffinish * meanStep'''
+    fmax = 0.5 / meanStep
+    df = 1.0
+    nf = int(fmax / df)
+    f_signal = rfft(signal, n=nf)
+    W = fftfreq(f_signal.size, d=meanStep)[:int(f_signal.size)]
+
+    # If our original signal time was in seconds, this is now in Hz
+    cut_f_signal = f_signal.copy()
+    fstart = fstart
+    fend = ffinish
+    fw = 1e3
+    # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
+    fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
+    cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
+    new_time = np.arange(0, cut_signal.size) * meanStep
+    dataret = RawData(data.label, data.diagnostic, new_time, cut_signal)
+
+    return dataret
 
 
 def my_fft_filter_com(data, fstart, ffinish):
@@ -12,8 +57,34 @@ def my_fft_filter_com(data, fstart, ffinish):
     time = data['T'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
+    '''wn1 = 2 * fstart * meanStep
+    wn2 = 2 * ffinish * meanStep'''
+    f_signal = rfft(signal, )
+    W = fftfreq(f_signal.size, d=meanStep)[:int(f_signal.size)]
 
-    f_signal = rfft(signal)
+    # If our original signal time was in seconds, this is now in Hz
+    cut_f_signal = f_signal.copy()
+    fstart = fstart
+    fend = ffinish
+    fw = 1e3
+    # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
+    fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
+    cut_signal = irfft(cut_f_signal * fwindow)
+    new_time = np.arange(0, cut_signal.size) * meanStep
+    dataret = RawData(data.label, data.diagnostic, new_time, cut_signal)
+
+    return dataret
+
+
+def my_fft_filter_back(data, fstart, ffinish):
+    # data = data.dropna()
+    # data.index = pd.RangeIndex(len(data.index))
+    signal = data['V'].values
+    time = data['T'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+
+    f_signal = fft(signal)
     W = fftfreq(signal.size, d=meanStep)[:int(f_signal.size)]
     # W = W[:int(f_signal.size / 2)]
     # f_signal=f_signal[:int(f_signal.size/2)]
@@ -24,8 +95,8 @@ def my_fft_filter_com(data, fstart, ffinish):
     fend = ffinish
     fw = 1e3
     # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
-    fwindow = np.where(((W >= fstart) & (W <= fend)), 1, 0)
-    cut_signal = irfft(cut_f_signal * fwindow)
+    fwindow = np.where(((np.abs(W) <= fstart) | (np.abs(W) >= fend)), 1, 0)
+    cut_signal = np.abs(ifft(cut_f_signal * fwindow))
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
     return dataret
@@ -143,6 +214,40 @@ def preinterferometer(data):
     return dataret
 
 
+def get_up_envelope(data):
+    plt.cla()
+    pic_width = 0.125 / 200.0
+    pic_dist = 1.0 / 200.0
+    pic_ampl_proc = 60.0
+    signal = data['V'].values
+    time = data['T'].values
+    pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
+    pic_ampl = 1.0e-2 * pic_ampl_proc * pic_max
+    tgrad = np.gradient(time)
+    dt = np.mean(tgrad)
+    pic_width_n = int(pic_width / dt)
+    pic_dist_n = int(pic_dist / dt)
+    pic_array_raw = find_peaks(signal, width=[0.8 * pic_width_n, 8 * pic_width_n], prominence=pic_ampl)[0]
+    pic_array_raw_time = time[pic_array_raw]
+    pic_array_raw_value = signal[pic_array_raw]
+    # plt.plot(time, signal)
+    # plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
+    f = interp1d(pic_array_raw_time, pic_array_raw_value, kind='cubic', bounds_error=False, fill_value=0.0)
+    env_up = f(time)
+    signal = -signal
+    pic_array_raw = find_peaks(signal, width=[0.2 * pic_width_n, 4 * pic_width_n], prominence=pic_ampl)[0]
+    pic_array_raw_time = time[pic_array_raw]
+    pic_array_raw_value = signal[pic_array_raw]
+    f = interp1d(pic_array_raw_time, pic_array_raw_value, kind='cubic', bounds_error=False, fill_value=0.0)
+    env_down = -f(time)
+    env_com = 0.5 * (env_down + env_up)
+    dataret = RawData('$n_{e}, 10^{15} см^{-3}$', data.diagnostic, data['T'].values, data['V'].values - env_com)
+    return dataret
+
+    # plt.plot(time, env)
+    # plt.show()
+
+
 def Diagnostic_Interferometer(rawdata, master):
     diagnostic = 'Интерферометр'
     if rawdata.diagnostic != diagnostic:
@@ -153,7 +258,8 @@ def Diagnostic_Interferometer(rawdata, master):
     ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
     fstart = float(dia['Параметры']['Частота старт']['Значение'])
     mult = float(dia['Параметры']['Множитель']['Значение'])
-    ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    ret = my_fft_filter_com(rawdata, 1, ffinish)
+    ret = my_fft_filter_fin(ret, fstart, ffinish)
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
@@ -186,6 +292,59 @@ def Diagnostic_Calorimetr(rawdata, master):
     mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = calorimetr(rawdata)
     ret = my_fft_filter_com(ret, fstart, ffinish)
+    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    ret = ininterval(ret, tstart, tfinish)
+    ret['V'] = np.abs(ret['V'] - retmin) * mult
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    ret.label = f'{label}, {dim}'
+    return ret
+
+
+def reflectomert(data):
+    u = data['V'].values
+    t = data['T'].values
+    u0 = data['V'].loc[data['T'] < 0].mean()
+    u = np.abs(u - u0)
+    umax = np.max(u)
+    T = u / umax
+    dataret = RawData('', data.diagnostic, t, T)
+    return dataret
+
+
+def Diagnostic_Reflectometr(rawdata, master):
+    diagnostic = 'Рефлектометр'
+    if rawdata.diagnostic != diagnostic:
+        return None
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
+    ret = reflectomert(rawdata)
+    ret = my_fft_filter_com(ret, fstart, ffinish)
+    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    ret = ininterval(ret, tstart, tfinish)
+    ret['V'] = np.abs(ret['V'] - retmin) * mult
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    ret.label = f'{label}, {dim}'
+    return ret
+
+def Diagnostic_Start(rawdata, master):
+    diagnostic = 'Запуск'
+    if rawdata.diagnostic != diagnostic:
+        return None
+    dia = master.getDia(diagnostic)
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
+    ret = my_fft_filter_com(rawdata, fstart, ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult

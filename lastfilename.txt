@@ -1,6 +1,1 @@
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0000.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0001.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0002.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0003.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0004.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-07-02-calorimeter/2021-07-02-calorimeter/WAVE/TERM0005.PRN
+D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V1/AKIP0001.CSV

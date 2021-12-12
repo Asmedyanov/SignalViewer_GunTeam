@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>7</number>
         </property>
         <property name="documentMode">
          <bool>true</bool>
@@ -67,6 +67,11 @@
         <widget class="QWidget" name="tab_7">
          <attribute name="title">
           <string>Делитель напряжения</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_8">
+         <attribute name="title">
+          <string>Запуск</string>
          </attribute>
         </widget>
        </widget>

@@ -19,12 +19,19 @@ class Experiment:
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, self.master.foldername)
         #self.upDateRowSpectra()
         self.upDataDiacnosticData()
+        self.upDateDiaSpectra()
+
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []
         for rawdata in self.rawdatalist:
             self.rawSpectraList.append(SpectrData(rawdata))
         self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList, self.master.foldername)
+    def upDateDiaSpectra(self):
+        self.diaSpectraList = []
+        for rawdata in self.diagnosticDataList:
+            self.diaSpectraList.append(SpectrData(rawdata))
+        self.master.mainPlotDict['Итоговые спектры'].plot(self.diaSpectraList, self.master.foldername)
 
     def upDataDiacnosticData(self):
         self.diagnosticDataList = []

@@ -42,7 +42,10 @@ class MplWidget(QWidget):
         timescale = 'сек'
         try:
             data = datalist[0]
-            timescale = data.timeDim
+            try:
+                timescale = data.timeDim
+            except:
+                timescale = 'сек'
             axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
             axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
@@ -52,7 +55,10 @@ class MplWidget(QWidget):
         except:
             for i, data in enumerate(datalist):
                 try:
-                    timescale = data.timeDim
+                    try:
+                        timescale = data.timeDim
+                    except:
+                        timescale = 'сек'
                     axes[i].plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
