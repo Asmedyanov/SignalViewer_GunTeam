@@ -47,6 +47,7 @@ class OscilloscopeEditor(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Сохранить'].triggered.connect(self.save)
+        currentmenu['Сохранить как'].triggered.connect(self.saveAs)
         currentmenu['Открыть'].triggered.connect(self.loadFile)
         currentmenu = self.mainActionsDict['Редактировать']
         currentmenu['Добавить осциллограф'].triggered.connect(self.addOsc)
@@ -60,12 +61,18 @@ class OscilloscopeEditor(QMainWindow):
         self.mainButtonDict['Отменить'].clicked.connect(self.cancel)
         self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
-    def save(self, fileName=None):
+    def saveAs(self, fileName=None):
         if type(fileName) is not str:
-            name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
-                0]
+            self.fileName = \
+                QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
+                    0]
         else:
-            name = fileName
+            self.fileName = fileName
+        self.save()
+
+    def save(self):
+        name = self.fileName
+
         if name == '':
             return
         try:
@@ -114,7 +121,7 @@ class OscilloscopeEditor(QMainWindow):
         mainTree.write(name, encoding="UTF-8")
         if len(rootXML.findall('Диагностики')) == 0:
             self.master.diaSettings()
-            self.master.diaTemplate.save(name)
+            self.master.diaTemplate.saveAs(name)
             self.master.diaTemplate.close()
 
     def loadFile(self, default=None):
@@ -124,6 +131,8 @@ class OscilloscopeEditor(QMainWindow):
                 0]
         if len(name) == 0:
             return
+        self.fileName = name
+        self.setWindowTitle(f'Осциллографы файл {name.split("/")[-1]}')
         rootXML = xml.ElementTree(file=name).getroot()
         oscsXML = rootXML.find('Осциллографы')
         oscXMLlist = oscsXML.findall('Осциллограф')

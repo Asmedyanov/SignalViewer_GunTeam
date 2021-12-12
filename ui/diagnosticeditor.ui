@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>6</number>
+         <number>0</number>
         </property>
         <property name="documentMode">
          <bool>true</bool>
@@ -119,6 +119,7 @@
     <addaction name="action_2"/>
     <addaction name="action_3"/>
     <addaction name="action_7"/>
+    <addaction name="action_8"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -186,6 +187,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>Сохранить как</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>

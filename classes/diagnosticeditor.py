@@ -48,6 +48,7 @@ class DiagnosticEditor(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Сохранить'].triggered.connect(self.save)
+        currentmenu['Сохранить как'].triggered.connect(self.saveAs)
         currentmenu['Открыть'].triggered.connect(self.loadFile)
         currentmenu = self.mainActionsDict['Редактировать']
         currentmenu['Добавить диагностику'].triggered.connect(self.addDia)
@@ -61,12 +62,17 @@ class DiagnosticEditor(QMainWindow):
         self.mainButtonDict['Отменить'].clicked.connect(self.cancel)
         self.mainButtonDict['Применить'].clicked.connect(self.apply)
 
-    def save(self, fileName=None):
+    def saveAs(self, fileName=None):
         if type(fileName) is not str:
-            name = QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
+            self.fileName = \
+            QFileDialog.getSaveFileName(self, 'Сохраните файл шаблона эксперимента', "./experiment_templates", )[
                 0]
         else:
-            name = fileName
+            self.fileName = fileName
+        self.save()
+
+    def save(self):
+        name = self.fileName
         if type(name) is not str:
             return
         if name == '':
@@ -117,7 +123,7 @@ class DiagnosticEditor(QMainWindow):
         mainTree.write(name, encoding="UTF-8")
         if len(rootXML.findall('Осциллографы')) == 0:
             self.master.oscSettings()
-            self.master.oscTemplate.save(name)
+            self.master.oscTemplate.saveAs(name)
             self.master.oscTemplate.close()
 
     def loadFile(self, default=None):
@@ -127,6 +133,8 @@ class DiagnosticEditor(QMainWindow):
                 0]
         if len(name) == 0:
             return
+        self.fileName = name
+        self.setWindowTitle(f'Диагностики файл {name.split("/")[-1]}')
         rootXML = xml.ElementTree(file=name).getroot()
         DiasXML = rootXML.find('Диагностики')
         DiaXMLlist = DiasXML.findall('Диагностика')
