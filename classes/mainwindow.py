@@ -1,5 +1,7 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog,QApplication
+from PyQt5.QtGui import QImage
+import io
 from classes.mplwidget import MplWidget
 import functions.filefunctions as filefunctions
 from classes.experiment import Experiment
@@ -58,6 +60,7 @@ class MainWindow(QMainWindow):
         currentmenu['Открыть прошлую сессию'].triggered.connect(self.openResent)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
+        currentmenu['Копировать в буфер обмена'].triggered.connect(self.copyToBuffer)
         currentmenu = self.mainActionsDict['Настройки']
         currentmenu['Осциллографы'].triggered.connect(self.oscSettings)
         currentmenu['Диагностики'].triggered.connect(self.diaSettings)
@@ -169,3 +172,10 @@ class MainWindow(QMainWindow):
         for filename in self.fileList:
             addeddatalist = filefunctions.addFile(filename, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+
+    def copyToBuffer(self):
+        buf = io.BytesIO()
+        self.tabWidget.currentWidget().findChild(MplWidget).canvas.fig.savefig(buf)
+        QApplication.clipboard().setImage(QImage.fromData(buf.getvalue()))
+        buf.close()
+

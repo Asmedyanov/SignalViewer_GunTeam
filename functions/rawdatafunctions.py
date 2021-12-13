@@ -98,12 +98,13 @@ def Open_A_CSV_full(a, master):
         return None
 
 
-def Open_F_CSV(a, master):
+def Open_F_1CSV(a, master):
     """
     Открытие файла типа F*.CSV по строке a
     """
-    mask = 'F*.CSV'
-    if not fnmatch(a, mask):
+    shorta = a.split('/')[-1]
+    mask = 'F*1.CSV'
+    if not fnmatch(shorta, mask):
         # print(f'file is not {mask}')
         return None
 
@@ -111,7 +112,7 @@ def Open_F_CSV(a, master):
 
     data = pd.read_csv(a, skiprows=19, error_bad_lines=False, names=[
         'T', 'V', 'e'], skipinitialspace=True)
-    returnlist = [RawData(mask, data['T'], data['V'])]
+    returnlist = [RawData(osc['Каналы']['0']['Подпись'], osc['Каналы']['0']['Диагностика'], data['T'], data['V'])]
     return returnlist
 
 

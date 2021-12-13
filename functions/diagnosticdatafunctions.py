@@ -139,6 +139,7 @@ def Diagnostic_piezo(rawdata, master):
     mult = float(dia['Параметры']['Множитель']['Значение'])
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
+    ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
     ret['V'] = ret['V'] * mult
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
@@ -205,7 +206,7 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0 / 120.0e-6, 1.0 / 1.0e-7)
+    d = my_fft_filter_com(d, 1.0 / 80.0e-6, 1.0 / 1.0e-6)
 
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul
@@ -302,7 +303,7 @@ def Diagnostic_Calorimetr(rawdata, master):
 
 
 def get_init_value(data):
-    u0 = data['V'].loc[data['T'] < 0].mean()
+    u0 = data['V'].loc[data['T'] < 5.0e-6].mean()
     return u0
 
 
@@ -330,7 +331,7 @@ def Diagnostic_Reflectometr(rawdata, master):
     u0 = get_init_value(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret = reflectomert(ret, u0)
-    #ret['V'] = ret['V'] * mult
+    # ret['V'] = ret['V'] * mult
 
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']

@@ -29,7 +29,7 @@ class DiagnosticPage(QFrame):
             parametr = dict()
             for j in range(parametersTable.horizontalHeader().count()):
                 parametr[parametersTable.horizontalHeaderItem(j).text()] = parametersTable.item(i, j)
-            self.parametersDict[parametersTable.verticalHeaderItem(i).text()] = parametr
+            self.parametersDict[parametersTable.item(i, 0).text()] = parametr
 
     def initStatistic(self):
         self.statDict = dict()
@@ -49,28 +49,29 @@ class DiagnosticPage(QFrame):
         self.mainButtonDict['Удалить'].clicked.connect(self.remClick)
 
     def addClick(self):
-        if not self.tabWidget.currentIndex():
-            return
-        selectPage = self.tabWidget.widget(self.tabWidget.currentIndex())
+        selectPage = self.tabWidget.currentWidget()
         selectTable = selectPage.findChildren(QTableWidget)[0]
         selectRow = selectTable.rowCount()
         selectTable.insertRow(selectRow)
+        for n in range(selectTable.horizontalHeader().count()):
+            selectTable.setItem(selectRow, n, QTableWidgetItem(selectTable.item(selectRow - 1, n).text()+'_new'))
+        self.initStatistic()
+        self.initParameters()
 
     def remClick(self):
-        if not self.tabWidget.currentIndex():
-            return
-        selectPage = self.tabWidget.widget(self.tabWidget.currentIndex())
+
+        selectPage = self.tabWidget.currentWidget()
         selectTable = selectPage.findChildren(QTableWidget)[0]
         try:
             selectRow = selectTable.selectionModel().selectedRows()[0].row()
-            print(selectRow)
         except:
             selectRow = selectTable.rowCount() - 1
         selectTable.removeRow(selectRow)
         self.initStatistic()
+        self.initParameters()
 
     def addstatInTable(self, stat):
-        selectPage = self.tabWidget.widget(1)
+        selectPage = self.tabWidget.currentWidget
         selectTable = selectPage.findChildren(QTableWidget)[0]
         selectRow = selectTable.rowCount()
         selectTable.insertRow(selectRow)
@@ -109,6 +110,7 @@ class DiagnosticPage(QFrame):
             self.statDict[dianomer][selectTable.horizontalHeaderItem(j).text()].setText(
                 diadict[selectTable.horizontalHeaderItem(j).text()]
             )
+
     def paramFromDict(self, pardict):
         selectPage = self.tabWidget.widget(0)
         selectTable = selectPage.findChildren(QTableWidget)[0]

@@ -101,6 +101,7 @@
     <addaction name="action_13"/>
     <addaction name="action_14"/>
     <addaction name="action_15"/>
+    <addaction name="action_26"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -287,6 +288,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+E</string>
+   </property>
+  </action>
+  <action name="action_26">
+   <property name="text">
+    <string>Копировать в буфер обмена</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>
