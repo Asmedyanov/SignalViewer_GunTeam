@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
                 self.mainActionsDict[menu.title()][act.text()] = act
         currentmenu = self.mainActionsDict['Шаблон эксперимента']
         currentmenu['Открыть шаблон эксперимента'].triggered.connect(self.openExperimentTemplate)
+        currentmenu['Открыть последний шаблон эксперимента'].triggered.connect(self.openLastExperimentTemplate)
         currentmenu = self.mainActionsDict['Файл']
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
@@ -140,15 +141,27 @@ class MainWindow(QMainWindow):
     def diaSettings(self):
         self.diaTemplate = DiagnosticEditor(self)
 
-    def openExperimentTemplate(self):
-        self.exptempFileName = \
-            QFileDialog.getOpenFileName(self,
-                                        "Добавьте файл",
-                                        './experiment_templates',
-                                        ';;'.join(constants.filter_list))[0]
-        if self.exptempFileName !='':
+    def openExperimentTemplate(self, name=None):
+        if (name is None) or (name == '') or (type(name) is not str):
+            self.exptempFileName = \
+                QFileDialog.getOpenFileName(self,
+                                            "Добавьте файл",
+                                            './experiment_templates',
+                                            ';;'.join(constants.filter_list))[0]
+        else:
+            self.exptempFileName = name
+        if self.exptempFileName != '':
             self.experiment.loadSettings(self.exptempFileName)
         self.setWindowTitle(f'Просмотр сигналов по шаблону {self.exptempFileName.split("/")[-1]}')
+        file = open('lastexpname.txt', 'w')
+        file.write(self.exptempFileName)
+        file.close()
+
+    def openLastExperimentTemplate(self):
+        with open('lastexpname.txt', 'r') as file:
+            name = file.read()
+            file.close()
+            self.openExperimentTemplate(name)
 
     def upDate(self):
         # self.clearAll()
