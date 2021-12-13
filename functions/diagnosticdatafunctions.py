@@ -7,6 +7,21 @@ from scipy.interpolate import interp1d, splrep, splev
 import matplotlib.pyplot as plt
 
 
+def get_parameters(dia):
+    tstart = float(dia['Параметры']['Время старт']['Значение'])
+    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
+    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
+    fstart = float(dia['Параметры']['Частота старт']['Значение'])
+    mult = float(dia['Параметры']['Множитель']['Значение'])
+    return tstart, tfinish, fstart, ffinish, mult
+
+def set_parameters(dia,ret):
+    label = dia['Параметры']['Подпись']['Значение']
+    dim = dia['Параметры']['Единицы величины']['Значение']
+    ret.label = f'{label}, {dim}'
+    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+
+
 def my_fft(value, df, dt):
     fmax = 0.5 / dt
     n = value.size
@@ -112,18 +127,11 @@ def Diagnostic_belt(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label}, {dim}'
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    set_parameters(dia,ret)
     return ret
 
 
@@ -132,19 +140,12 @@ def Diagnostic_piezo(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
     ret['V'] = ret['V'] * mult
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label}, {dim}'
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    set_parameters(dia,ret)
     return ret
 
 
@@ -253,20 +254,13 @@ def Diagnostic_Interferometer(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, 1, ffinish)
     ret = my_fft_filter_fin(ret, fstart, ffinish)
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.label = f'{label}, {dim}'
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    set_parameters(dia,ret)
     return ret
 
 
@@ -285,20 +279,13 @@ def Diagnostic_Calorimetr(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
     ret = my_fft_filter_com(ret, fstart, ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
-    ret.label = f'{label}, {dim}'
+    set_parameters(dia,ret)
     return ret
 
 
@@ -322,21 +309,14 @@ def Diagnostic_Reflectometr(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     u0 = get_init_value(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret = reflectomert(ret, u0)
     # ret['V'] = ret['V'] * mult
 
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
-    ret.label = f'{label}, {dim}'
+    set_parameters(dia,ret)
     return ret
 
 
@@ -345,17 +325,10 @@ def Diagnostic_Start(rawdata, master):
     if rawdata.diagnostic != diagnostic:
         return None
     dia = master.getDia(diagnostic)
-    tstart = float(dia['Параметры']['Время старт']['Значение'])
-    tfinish = float(dia['Параметры']['Время финиш']['Значение'])
-    ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
-    fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     # retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    label = dia['Параметры']['Подпись']['Значение']
-    dim = dia['Параметры']['Единицы величины']['Значение']
-    ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
-    ret.label = f'{label}, {dim}'
+    set_parameters(dia, ret)
     return ret
