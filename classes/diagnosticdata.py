@@ -19,3 +19,4 @@ class DiagnosticData(DataFrame):
         self['V'] = returndata['V']
         self.label = returndata.label
         self.timeDim = returndata.timeDim
+        self.Overlay = returndata.Overlay

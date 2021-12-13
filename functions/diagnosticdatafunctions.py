@@ -15,11 +15,16 @@ def get_parameters(dia):
     mult = float(dia['Параметры']['Множитель']['Значение'])
     return tstart, tfinish, fstart, ffinish, mult
 
-def set_parameters(dia,ret):
+
+def set_parameters(dia, ret):
     label = dia['Параметры']['Подпись']['Значение']
     dim = dia['Параметры']['Единицы величины']['Значение']
     ret.label = f'{label}, {dim}'
     ret.timeDim = dia['Параметры']['Единицы времени']['Значение']
+    try:
+        ret.Overlay = dia['Параметры']['Наложение']['Значение']
+    except:
+        ret.Overlay = '0'
 
 
 def my_fft(value, df, dt):
@@ -131,7 +136,7 @@ def Diagnostic_belt(rawdata, master):
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    set_parameters(dia,ret)
+    set_parameters(dia, ret)
     return ret
 
 
@@ -145,7 +150,7 @@ def Diagnostic_piezo(rawdata, master):
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
     ret['V'] = ret['V'] * mult
-    set_parameters(dia,ret)
+    set_parameters(dia, ret)
     return ret
 
 
@@ -260,7 +265,7 @@ def Diagnostic_Interferometer(rawdata, master):
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
-    set_parameters(dia,ret)
+    set_parameters(dia, ret)
     return ret
 
 
@@ -285,7 +290,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult
-    set_parameters(dia,ret)
+    set_parameters(dia, ret)
     return ret
 
 
@@ -298,6 +303,7 @@ def reflectomert(data, u0):
     u = np.where(data['V'].values < 0, 0, data['V'].values)
     t = data['T'].values
     u = np.abs(u - u0)
+    u = u - np.min(u)
     umax = np.max(u)
     T = u / umax
     dataret = RawData('', data.diagnostic, t, T)
@@ -316,7 +322,9 @@ def Diagnostic_Reflectometr(rawdata, master):
     ret = reflectomert(ret, u0)
     # ret['V'] = ret['V'] * mult
 
-    set_parameters(dia,ret)
+    set_parameters(dia, ret)
+    if (ret.Overlay != '1'):
+        print('Проблема 326')
     return ret
 
 

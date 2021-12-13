@@ -34,7 +34,16 @@ class MplWidget(QWidget):
 
     def plot(self, datalist, header=''):
         self.canvas.fig.clear()
-        n = len(datalist)  # Длина массива баз данных каналов
+        overlaylist = []
+        seriallist = []
+        for data in datalist:
+            if data.Overlay == '0':
+                seriallist.append(data)
+            else:
+                overlaylist.append(data)
+        n = len(seriallist)
+        if len(overlaylist) != 0:
+            n += 1
         if (n == 0):
             return
         gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
@@ -53,7 +62,7 @@ class MplWidget(QWidget):
             # Подписать заголовок
             axes.set_title(f'Данные {header}')
         except:
-            for i, data in enumerate(datalist):
+            for i, data in enumerate(seriallist):
                 try:
                     try:
                         timescale = data.timeDim
@@ -62,6 +71,19 @@ class MplWidget(QWidget):
                     axes[i].plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
+                except:
+                    continue
+            for i, data in enumerate(overlaylist):
+                try:
+                    try:
+                        timescale = data.timeDim
+                    except:
+                        timescale = 'сек'
+                    axes[n - 1].plot(data['T'] * constants.timeScaleDict[timescale], data['V'],
+                                     label=f'{data.label} #{i}')
+                    axes[n - 1].set_ylabel('Сравнимые')
+                    axes[n - 1].legend()  # Подписать вертикальные оси
+                    gun_team_axes_stile(axes[n - 1])
                 except:
                     continue
 

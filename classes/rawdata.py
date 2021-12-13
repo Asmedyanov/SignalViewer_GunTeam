@@ -8,6 +8,7 @@ class RawData(DataFrame):
         self.label = label
         self.diagnostic = diagnostic
         self.timeDim = 'сек'
+        self.Overlay = '0'
         self['T'] = time
         self['V'] = values
 
