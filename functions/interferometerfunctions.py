@@ -2,6 +2,8 @@ from scipy.signal import argrelextrema, find_peaks, butter, filtfilt
 from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
+
+
 def interferometer(d):
     dt = 0.1  # np.nan_to_num(np.gradient(d['T'])).mean()
     # Выделем участок с плазмой
@@ -60,7 +62,9 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0 / 80.0e-6, 1.0 / 0.5e-6)
+    d = my_fft_filter_com(d, 1.0 / 50.0e-6, 1.0 / 0.5e-6)
+    if np.abs(np.min(d['V'])) > np.abs(np.max(d['V'])):
+        d['V'] = -d['V']
 
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul
@@ -68,13 +72,22 @@ def preinterferometer(data):
     return dataret
 
 
-def post_interferometer(data0):
-    data = my_fft_filter_com(data0, 200.0, 1.0 / 2.0e-6)
-    pic_width = 50.0e-6
+def post_interferometer(data):
+    # data = my_fft_filter_com(data0, 200.0, 1.0 / 2.0e-6)
+    plt.cla()
+    pic_width = 10.0e-6
     pic_dist = (49.5 - 26.4) * 1.0e-6
     pic_ampl_proc = 60.0
     signal = data['V'].values
     time = data['T'].values
+    plt.plot(time, signal)
+
+    data1 = my_fft_filter_com(data, 10.0, 1.0 / 2.5e-6)
+    signal1 = data1['V'].values
+    grsignal = np.abs(np.gradient(signal1))
+    grsignal = grsignal / np.max(grsignal)
+    plt.plot(time[:grsignal.size], grsignal)
+
     pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
     pic_ampl = 1.0e-2 * pic_ampl_proc * pic_max
     tgrad = np.gradient(time)
@@ -82,19 +95,19 @@ def post_interferometer(data0):
     pic_width_n = int(pic_width / dt)
     pic_dist_n = int(pic_dist / dt)
     pic_array_raw_up = \
-        find_peaks(signal, width=[0.1 * pic_width_n, 2.0 * pic_width_n])[0]
+        find_peaks(grsignal, width=[0.1 * pic_width_n, 2.0 * pic_width_n])[0][1:-1]
 
     pic_array_raw_time = time[pic_array_raw_up]
-    pic_array_raw_value = signal[pic_array_raw_up]
-    plt.plot(time, signal)
+    pic_array_raw_value = grsignal[pic_array_raw_up]
     plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
-    pic_array_raw_down = \
-        find_peaks(-signal, width=[0.1 * pic_width_n, 2.0 * pic_width_n])[0]
+    time_plasma_start = 0
+    for k, v in enumerate(pic_array_raw_value):
+        try:
+            if v > pic_array_raw_value[k - 1] * 3:
+                time_plasma_start = 0.5*(pic_array_raw_time[k] + pic_array_raw_time[k-1])
+                break
+        except:
+            continue
+    print(f'Время старта плазмы {time_plasma_start}')
 
-    pic_array_raw_time = time[pic_array_raw_down]
-    pic_array_raw_value = signal[pic_array_raw_down]
-    plt.plot(time, signal)
-    plt.plot(pic_array_raw_time, pic_array_raw_value, 'bo')
     plt.show()
-    print(f'Верхние пики {len(pic_array_raw_up)}')
-    print(f'Нижние пики {len(pic_array_raw_down)}')
