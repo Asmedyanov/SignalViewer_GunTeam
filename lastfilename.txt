@@ -1,5 +1,2 @@
-D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V50/AKIP0050.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V50/F0050CH1.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V50/F0050CH2.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V50/STAT0050.PRN
-D:/1.Clouds/GUN_TEAM/Experiments/2021-04-19-speed-statistic/2021-04-19-speed-statistic/WAVE/V50/v50data-16-04-2021u21p1t1700x0y0.bin
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/AKIP0027.CSV
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/v27.bin

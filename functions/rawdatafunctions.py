@@ -33,8 +33,14 @@ def Open_A_CSV_short(a, master):
         ]
         chlist = list(osc['Каналы'].keys())
         chlist.sort()
+        header = pd.read_csv(a, nrows=1)
         for i in chlist:
-            nameslist.append(f'CH{i}')
+            try:
+                name = f'CH{i}'
+                if header[name][0] == 'Volt':
+                    nameslist.append(name)
+            except:
+                continue
         data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
                            names=nameslist)
         t0 = 0
@@ -47,12 +53,14 @@ def Open_A_CSV_short(a, master):
                 t0 = data['T'].loc[startdata < st].min()
                 break
         time = data['T'] - t0
-        returnlist = [
-            RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
-            osc['Каналы'].keys() if
-            osc['Каналы'][i]['Отображение'] == '1'
-
-        ]
+        returnlist = []
+        for i in osc['Каналы'].keys():
+            try:
+                rd = RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}'])
+                if osc['Каналы'][i]['Отображение'] == '1':
+                    returnlist.append(rd)
+            except:
+                continue
         return returnlist
     except:
         return None
