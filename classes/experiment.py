@@ -108,5 +108,7 @@ class Experiment:
             if dianame == dia0:
                 return dia
 
+
+
     def __str__(self):
         return f'Experiment {len(self.rawdatalist)}'
