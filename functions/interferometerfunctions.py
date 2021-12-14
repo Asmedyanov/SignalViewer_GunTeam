@@ -63,12 +63,16 @@ def preinterferometer(data):
     # вычислим неплазменную часть
 
     d = my_fft_filter_com(d, 1.0 / 50.0e-6, 1.0 / 0.5e-6)
-    if np.abs(np.min(d['V'])) > np.abs(np.max(d['V'])):
-        d['V'] = -d['V']
 
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul
-    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
+    no_plasma_data = d.loc[d['T'] < 20.0e-6]
+    no_plasma_time = no_plasma_data['T'].values
+    no_plasma_values = no_plasma_data['V'].values
+    line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
+    line_approx = np.poly1d(line_coef)(d['T'].values)
+
+    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values-line_approx)
     return dataret
 
 
@@ -103,11 +107,64 @@ def post_interferometer(data):
     time_plasma_start = 0
     for k, v in enumerate(pic_array_raw_value):
         try:
-            if v > pic_array_raw_value[k - 1] * 3:
-                time_plasma_start = 0.5*(pic_array_raw_time[k] + pic_array_raw_time[k-1])
+            if v > np.mean(pic_array_raw_value[:k]) * 3:
+                time_plasma_start = 0.5 * (pic_array_raw_time[k] + pic_array_raw_time[k - 1])
                 break
         except:
             continue
+    time_plasma_stop = time_plasma_start
+    for k, v in enumerate(pic_array_raw_value):
+        try:
+            if v > np.mean(pic_array_raw_value[k:]) * 2:
+                time_plasma_stop = 0.5 * (pic_array_raw_time[k] + pic_array_raw_time[k + 1])
+                # if time_plasma_stop > time_plasma_start:
+                #   break
+        except:
+            continue
     print(f'Время старта плазмы {time_plasma_start}')
+    print(f'Время конца плазмы {time_plasma_stop}')
+    no_plasma_data = data.loc[((data['T'] > time_plasma_start) & (data['T'] < time_plasma_stop))]
+    no_plasma_signal = no_plasma_data['V'].values
+    no_plasma_time = no_plasma_data['T'].values
 
+    no_plasma_interp = np.interp(time, no_plasma_time, no_plasma_signal)
+    clear_plasma_signal = signal - no_plasma_interp
+    plt.plot(time, clear_plasma_signal)
     plt.show()
+
+
+def post_interferometer_2(data):
+    # выделим участок с плазмой:
+    data_plasma = data.loc[((data['T'] > 22.0e-6) & (data['T'] < 57.0e-6))]
+    plasma_signal = data_plasma['V'].values
+    plasma_time = data_plasma['T'].values
+
+    #   plt.plot(plasma_time, plasma_signal)
+    pic_w_min = 1.0e-6
+    pic_w_max = 10.0e-6
+    tgrad = np.gradient(plasma_time)
+    dt = np.mean(tgrad)
+    pic_width_min = int(pic_w_min / dt)
+    pic_width_max = int(pic_w_max / dt)
+    rev_pics = find_peaks(-plasma_signal, width=[pic_width_min, pic_width_max])[0]
+    if len(rev_pics)==0:
+        return data
+    pic_array_raw_time = plasma_time[rev_pics]
+    pic_array_raw_value = plasma_signal[rev_pics]
+    #    plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
+    left_pic = rev_pics[0]
+    right_pic = rev_pics[-1]
+    over_signal = plasma_signal[left_pic:right_pic]
+    liner_base_signal = np.linspace(over_signal[0], over_signal[-1], over_signal.size)
+    reversed_signal = 2 * liner_base_signal - over_signal
+    reversed_time = plasma_time[left_pic:right_pic]
+    #    plt.plot(reversed_time, reversed_signal)
+    signal = data['V'].values
+    time = data['T'].values
+    real_start_index = np.where(time == reversed_time[0])[0][0]
+    real_stop_index = np.where(time == reversed_time[-1])[0][0]
+    signal.flat[real_start_index:real_stop_index] = reversed_signal
+    dataret = RawData('', data.diagnostic, time, -signal)
+
+    #    plt.show()
+    return dataret

@@ -1,2 +1,2 @@
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V12/AKIP0012.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V12/v12.bin
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/AKIP0027.CSV
+D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/v27.bin

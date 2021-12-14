@@ -63,10 +63,11 @@ def Diagnostic_Interferometer(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, 1, ffinish)
-    ret = my_fft_filter_fin(ret, fstart, ffinish)
+    #ret = my_fft_filter_fin(ret, fstart, ffinish)
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
-    post_interferometer(ret)
+    if rawdata.label=='ne2':
+        ret = post_interferometer_2(ret)
     ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
     return ret
