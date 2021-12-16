@@ -15,7 +15,7 @@ import re
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi('ui/mainwindow.ui', self)
+        uic.loadUi('./ui/mainwindow.ui', self)
         self.fileList = []
         self.experiment = Experiment(self)
         self.foldername = ''

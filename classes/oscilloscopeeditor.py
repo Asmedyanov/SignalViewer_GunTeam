@@ -11,7 +11,7 @@ class OscilloscopeEditor(QMainWindow):
     def __init__(self, master=None):
         self.master = master
         super(OscilloscopeEditor, self).__init__()
-        uic.loadUi('ui/oscilloscopeeditor.ui', self)
+        uic.loadUi('./ui/oscilloscopeeditor.ui', self)
         self.initActions()
         self.initTabs()
         self.initButtons()

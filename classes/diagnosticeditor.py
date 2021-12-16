@@ -9,7 +9,7 @@ class DiagnosticEditor(QMainWindow):
     def __init__(self, master=None):
         self.master = master
         super(DiagnosticEditor, self).__init__()
-        uic.loadUi('ui/diagnosticeditor.ui', self)
+        uic.loadUi('./ui/diagnosticeditor.ui', self)
         self.initActions()
         self.initTabs()
         self.initButtons()

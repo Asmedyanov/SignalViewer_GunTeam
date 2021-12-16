@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFrame, QTableWidget, QPushButton, QTableWidgetItem
 class DiagnosticPage(QFrame):
     def __init__(self, template=None):
         super(DiagnosticPage, self).__init__()
-        uic.loadUi('ui/diagnosticpage.ui', self)
+        uic.loadUi('./ui/diagnosticpage.ui', self)
         self.initTabs()
         self.initParameters()
         self.initStatistic()

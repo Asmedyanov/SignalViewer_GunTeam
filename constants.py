@@ -1,5 +1,5 @@
 default_file = './experiment_templates/default.xml'
-experiments_dir = 'D:/1.Clouds/GUN_TEAM/Experiments'
+experiments_dir = './Examples'
 filter_list = [
     'Любые файлы (*.*)',
     'АЦП Хильченко(*.bin)',

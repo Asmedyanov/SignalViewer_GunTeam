@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFrame, QTableWidget, QPushButton, QTableWidgetItem
 class OscilloscopPage(QFrame):
     def __init__(self, template=None):
         super(OscilloscopPage, self).__init__()
-        uic.loadUi('ui/oscilloscoppage.ui', self)
+        uic.loadUi('./ui/oscilloscoppage.ui', self)
         self.initTabs()
         self.initParameters()
         self.initChanals()

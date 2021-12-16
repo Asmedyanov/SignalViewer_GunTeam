@@ -1,2 +1,2 @@
-D:/PHDbuffer/SoftWare/SignalViewer/Examples/V27/AKIP0027.CSV
-D:/PHDbuffer/SoftWare/SignalViewer/Examples/V27/v27.bin
+C:/Users/n.asmedyanov/PycharmProjects/SignalViewer_GunTeam/Examples/V27/AKIP0027.CSV
+C:/Users/n.asmedyanov/PycharmProjects/SignalViewer_GunTeam/Examples/V27/v27.bin
