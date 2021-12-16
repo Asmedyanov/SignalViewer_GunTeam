@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog,QApplication
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QApplication
 from PyQt5.QtGui import QImage
 import io
 from classes.mplwidget import MplWidget
@@ -161,10 +161,13 @@ class MainWindow(QMainWindow):
         file.close()
 
     def openLastExperimentTemplate(self):
-        with open('lastexpname.txt', 'r') as file:
+        try:
+            file = open('lastexpname.txt', 'r')
             name = file.read()
             file.close()
             self.openExperimentTemplate(name)
+        except:
+            return
 
     def upDate(self):
         # self.clearAll()
@@ -178,4 +181,3 @@ class MainWindow(QMainWindow):
         self.tabWidget.currentWidget().findChild(MplWidget).canvas.fig.savefig(buf)
         QApplication.clipboard().setImage(QImage.fromData(buf.getvalue()))
         buf.close()
-
