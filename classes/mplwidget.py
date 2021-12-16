@@ -93,11 +93,4 @@ class MplWidget(QWidget):
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
 
-    def contextMenuEvent(self, event):
-        contextMenu = QMenu(self)
-        newAct = contextMenu.addAction("Метка")
-        openAct = contextMenu.addAction("Линейка")
-        quitAct = contextMenu.addAction("Прямоугольник")
-        action = contextMenu.exec_(self.mapToGlobal(event.pos()))
-        if action == quitAct:
-            self.close()
+
