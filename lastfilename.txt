@@ -1,2 +1,2 @@
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/AKIP0027.CSV
-D:/1.Clouds/GUN_TEAM/Experiments/09-12-2021/V27/v27.bin
+D:/PHDbuffer/SoftWare/SignalViewer/Examples/V27/AKIP0027.CSV
+D:/PHDbuffer/SoftWare/SignalViewer/Examples/V27/v27.bin

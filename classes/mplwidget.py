@@ -1,6 +1,6 @@
 # Matplotlib widget
 from classes.mplcanvas import MplCanvas
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenu
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 import constants
 
@@ -92,3 +92,12 @@ class MplWidget(QWidget):
             # Подписать заголовок
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
+
+    def contextMenuEvent(self, event):
+        contextMenu = QMenu(self)
+        newAct = contextMenu.addAction("Метка")
+        openAct = contextMenu.addAction("Линейка")
+        quitAct = contextMenu.addAction("Прямоугольник")
+        action = contextMenu.exec_(self.mapToGlobal(event.pos()))
+        if action == quitAct:
+            self.close()
