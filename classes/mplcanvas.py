@@ -6,7 +6,10 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PyQt5.QtWidgets import QMenu
 
-
+def formPlotStr(n,x,y):
+    #if x>100 and y>100:
+    outstring = f'№{n:d} ({x:1.3g}, {y:1.3g})'
+    return outstring
 class MplCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -58,7 +61,7 @@ class MplCanvas(FigureCanvas):
             return
         xdata = float(getattr(event, 'xdata'))
         ydata = float(getattr(event, 'ydata'))
-        outputstring = '№ %d (%3.2e, %3.2e)' % (
+        outputstring = formPlotStr(
             len(self.textlist) + 1, xdata, ydata)
         for axis in self.fig.axes:
             if axis == event.inaxes:
