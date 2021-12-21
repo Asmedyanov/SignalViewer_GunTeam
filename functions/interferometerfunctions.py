@@ -62,15 +62,15 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0 / 50.0e-6, 1.0 / 0.5e-6)
+    d = my_fft_filter_com(d, 1.0/100.0e-6, 1.0 / 0.1e-6)
 
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul
-    no_plasma_data = d.loc[d['T'] < 20.0e-6]
-    no_plasma_time = no_plasma_data['T'].values
-    no_plasma_values = no_plasma_data['V'].values
-    line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
-    line_approx = np.poly1d(line_coef)(d['T'].values)
+    #no_plasma_data = d.loc[d['T'] < 20.0e-6]
+    #no_plasma_time = no_plasma_data['T'].values
+    #no_plasma_values = no_plasma_data['V'].values
+    #line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
+    line_approx =0# np.poly1d(line_coef)(d['T'].values)
 
     dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values-line_approx)
     return dataret

@@ -94,9 +94,10 @@ def my_fft_filter_com(data, fstart, ffinish):
     cut_f_signal = f_signal.copy()
     fstart = fstart
     fend = ffinish
-    fw = 1e3
-    # fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
-    fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
+    fw = 1428.5714285714287*4
+    fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
+    fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, fwindow)
+
     cut_signal = irfft(cut_f_signal * fwindow)
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 

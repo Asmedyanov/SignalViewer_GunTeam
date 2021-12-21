@@ -1,3 +1,1 @@
-D:/1.Clouds/Google/NIKITA/PD_NSU_AND_BINP/ASP/PHD/SOFTWARE/PERMONENT_SOFT/SignalViewer_GunTeam/Examples/V27/AKIP0027.CSV
-D:/1.Clouds/Google/NIKITA/PD_NSU_AND_BINP/ASP/PHD/SOFTWARE/PERMONENT_SOFT/SignalViewer_GunTeam/Examples/V27/desktop.ini
-D:/1.Clouds/Google/NIKITA/PD_NSU_AND_BINP/ASP/PHD/SOFTWARE/PERMONENT_SOFT/SignalViewer_GunTeam/Examples/V27/v27.bin
+D:/1.Clouds/GUN_TEAM/Experiments/2021-12-21-ÂÏÄ-טםנופונמלוענ/V21/v21.bin

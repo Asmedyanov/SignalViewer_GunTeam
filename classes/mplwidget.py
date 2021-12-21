@@ -49,19 +49,20 @@ class MplWidget(QWidget):
         gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
         axes = gs.subplots(sharex=True)  # массив графиков
         timescale = 'сек'
-        try:
-            data = datalist[0]
-            try:
-                timescale = data.timeDim
-            except:
-                timescale = 'сек'
-            axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
-            axes.set_ylabel(data.label)  # Подписать вертикальные оси
+        if n == 1:
+            for data in datalist:
+                try:
+                    timescale = data.timeDim
+                except:
+                    timescale = 'сек'
+                axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'],label = data.label)
+                #axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
             axes.set_xlabel(f't, {timescale}')
+            axes.legend()
             # Подписать заголовок
             axes.set_title(f'Данные {header}')
-        except:
+        else:
             for i, data in enumerate(seriallist):
                 try:
                     try:
@@ -92,5 +93,3 @@ class MplWidget(QWidget):
             # Подписать заголовок
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
-
-

@@ -112,12 +112,16 @@ class MainWindow(QMainWindow):
         os.chdir(folderName)
         for name in os.listdir(folderName):
             for name in os.listdir():
-                with re.findall(r'\d*\.\d+|\d+', name) as numlist:
+                try:
+                    numlist = re.findall(r'\d*\.\d+|\d+', name)
+
                     n_exper = int(numlist[0])
                     if len(numlist) == 0:
                         continue
                     os.makedirs(f'V{n_exper}', exist_ok=True)
                     os.rename(name, f'V{n_exper}/{name}')
+                except:
+                    pass
         os.chdir(currentDir)
 
     def openResent(self):
