@@ -62,7 +62,7 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0/100.0e-6, 1.0 / 0.1e-6)
+    d = my_fft_filter_com(d, 1.0/95.0e-6, 1.0 / 0.1e-6)
 
     nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     d['V'] = d['V'] - nnul

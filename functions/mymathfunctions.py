@@ -95,7 +95,8 @@ def my_fft_filter_com(data, fstart, ffinish):
     fstart = fstart
     fend = ffinish
     fw = 1428.5714285714287*4
-    fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
+    fwindow = np.exp(-np.power((W - fstart) / fw, 4)) + np.exp(-np.power((W - fend) / fw, 4))
+    fwindow = fwindow/np.max(fwindow)
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, fwindow)
 
     cut_signal = irfft(cut_f_signal * fwindow)

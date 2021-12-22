@@ -59,8 +59,11 @@ class MplCanvas(FigureCanvas):
     def on_click(self, event):
         if event.dblclick != 1:
             return
-        xdata = float(getattr(event, 'xdata'))
-        ydata = float(getattr(event, 'ydata'))
+        try:
+            xdata = float(getattr(event, 'xdata'))
+            ydata = float(getattr(event, 'ydata'))
+        except:
+            return
         outputstring = formPlotStr(
             len(self.textlist) + 1, xdata, ydata)
         for axis in self.fig.axes:
