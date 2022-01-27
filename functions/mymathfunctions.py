@@ -95,9 +95,32 @@ def my_fft_filter_com(data, fstart, ffinish):
     fstart = fstart
     fend = ffinish
     fw = 1428.5714285714287*4
-    fwindow = np.exp(-np.power((W - fstart) / fw, 4)) + np.exp(-np.power((W - fend) / fw, 4))
+    fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
     fwindow = fwindow/np.max(fwindow)
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, fwindow)
+
+    cut_signal = irfft(cut_f_signal * fwindow)
+    dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
+
+    return dataret
+
+def my_fft_filter_sharp(data, fstart, ffinish):
+    # data = data.dropna()
+    # data.index = pd.RangeIndex(len(data.index))
+    signal = data['V'].values
+    time = data['T'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+    '''wn1 = 2 * fstart * meanStep
+    wn2 = 2 * ffinish * meanStep'''
+    f_signal = rfft(signal, )
+    W = fftfreq(f_signal.size, d=meanStep)[:int(f_signal.size)]
+
+    # If our original signal time was in seconds, this is now in Hz
+    cut_f_signal = f_signal.copy()
+    fstart = fstart
+    fend = ffinish
+    fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
 
     cut_signal = irfft(cut_f_signal * fwindow)
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)

@@ -62,17 +62,18 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0/95.0e-6, 1.0 / 0.1e-6)
+    d = my_fft_filter_com(d, 1.0 / 95.0e-6, 1.0 / 0.1e-6)
 
-    nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
+    # nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
+    nnul = d['V'].loc[((d['T'] < 10.0e-6) & (d['T'] > 5.0e-6))].mean()
     d['V'] = d['V'] - nnul
-    #no_plasma_data = d.loc[d['T'] < 20.0e-6]
-    #no_plasma_time = no_plasma_data['T'].values
-    #no_plasma_values = no_plasma_data['V'].values
-    #line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
-    line_approx =0# np.poly1d(line_coef)(d['T'].values)
+    # no_plasma_data = d.loc[d['T'] < 20.0e-6]
+    # no_plasma_time = no_plasma_data['T'].values
+    # no_plasma_values = no_plasma_data['V'].values
+    # line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
+    line_approx = 0  # np.poly1d(line_coef)(d['T'].values)
 
-    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values-line_approx)
+    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values - line_approx)
     return dataret
 
 
@@ -147,7 +148,7 @@ def post_interferometer_2(data):
     pic_width_min = int(pic_w_min / dt)
     pic_width_max = int(pic_w_max / dt)
     rev_pics = find_peaks(-plasma_signal, width=[pic_width_min, pic_width_max])[0]
-    if len(rev_pics)==0:
+    if len(rev_pics) == 0:
         return data
     pic_array_raw_time = plasma_time[rev_pics]
     pic_array_raw_value = plasma_signal[rev_pics]

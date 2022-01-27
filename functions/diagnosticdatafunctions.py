@@ -50,7 +50,7 @@ def Diagnostic_piezo(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
+    #ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
     ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
     return ret
@@ -66,8 +66,8 @@ def Diagnostic_Interferometer(rawdata, master):
     #ret = my_fft_filter_fin(ret, fstart, ffinish)
     ret = preinterferometer(ret)
     ret = ininterval(ret, tstart, tfinish)
-    if rawdata.label=='ne2':
-        ret = post_interferometer_2(ret)
+    #if rawdata.label=='ne2':
+    #    ret = post_interferometer_2(ret)
     ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
     return ret
@@ -76,7 +76,7 @@ def Diagnostic_Interferometer(rawdata, master):
 def calorimetr(data):
     u = data['V'].values
     t = data['T'].values
-    U0 = 1.1
+    U0 = 1.5
     R0 = 910.0
     r = R0 * u / (U0 - u)
     dataret = RawData('', data.diagnostic, t, r)
@@ -90,7 +90,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
-    ret = my_fft_filter_com(ret, fstart, ffinish)
+    ret = my_fft_filter_sharp(ret, fstart, ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult
