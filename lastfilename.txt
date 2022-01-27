@@ -1,1 +1,2 @@
-D:/1. Clouds/GUN_TEAM/Experiments/25-01-2022/COLO0015.PRN
+D:/1. Clouds/GUN_TEAM/Experiments/25-01-2022/V0/COLO0012.PRN
+D:/1. Clouds/GUN_TEAM/Experiments/25-01-2022/V0/v0.bin

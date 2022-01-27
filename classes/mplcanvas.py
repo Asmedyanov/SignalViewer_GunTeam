@@ -31,8 +31,9 @@ class MplCanvas(FigureCanvas):
     def contextMenuEvent(self, event):
         self.event = event
         contextMenu = QMenu(self)
-        newAct = contextMenu.addAction("Метка", self.activateMark)
-        newAct = contextMenu.addAction("Умная метка", self.activateCleverMark)
+        #newAct = contextMenu.addAction("Метка", self.activateMark)
+        newMark = contextMenu.addAction("Умная метка", self.activateCleverMark)
+        removeAllMarks = contextMenu.addAction("Удалить все метки", self.clear_annotations)
         openAct = contextMenu.addAction("Линейка")
         quitAct = contextMenu.addAction("Прямоугольник")
         selected_action = contextMenu.exec_(event.globalPos())
@@ -43,6 +44,8 @@ class MplCanvas(FigureCanvas):
         for k in self.textlist:
             k.remove()
         self.textlist = []
+        self.fig.canvas.draw()
+
 
     def activateMark(self):
         try:
