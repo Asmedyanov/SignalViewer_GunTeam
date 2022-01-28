@@ -37,10 +37,14 @@ class MplWidget(QWidget):
         overlaylist = []
         seriallist = []
         for data in datalist:
-            if data.Overlay == '0':
+            try:
+                Overlay = data.Overlay
+                if data.Overlay == '0':
+                    seriallist.append(data)
+                else:
+                    overlaylist.append(data)
+            except:
                 seriallist.append(data)
-            else:
-                overlaylist.append(data)
         n = len(seriallist)
         if len(overlaylist) != 0:
             n += 1

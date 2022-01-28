@@ -14,7 +14,9 @@ def get_parameters(dia):
     tfinish = float(dia['Параметры']['Время финиш']['Значение'])
     ffinish = float(dia['Параметры']['Частота финиш']['Значение'])
     fstart = float(dia['Параметры']['Частота старт']['Значение'])
-    mult = float(dia['Параметры']['Множитель']['Значение'])
+    mult = dia['Параметры']['Множитель']['Значение']
+    if mult != 'На себя':
+        mult = float(mult)
     return tstart, tfinish, fstart, ffinish, mult
 
 
@@ -50,8 +52,13 @@ def Diagnostic_piezo(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
-    #ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
-    ret['V'] = ret['V'] * mult
+    # ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
+    if mult == 'На себя':
+        ret['V'] = ret['V'] * (-1)
+        ret = norm_data(ret)
+
+    else:
+        ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
     return ret
 
@@ -62,13 +69,23 @@ def Diagnostic_Interferometer(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    ret = my_fft_filter_com(rawdata, 1, ffinish)
-    #ret = my_fft_filter_fin(ret, fstart, ffinish)
-    ret = preinterferometer(ret)
+    data = my_fft_filter_com(rawdata, 1.0, ffinish)
+    data = fase_interferometr(data)
+    data = ininterval(data, tstart, tfinish)
+    rev_x = find_revers(data)
+    ret = preinterferometer(rawdata,fstart)
     ret = ininterval(ret, tstart, tfinish)
-    #if rawdata.label=='ne2':
+    if len(rev_x) == 2:
+        rev_y = [ret['V'].loc[ret['T'] > rev_x[0]].min(),
+                 ret['V'].loc[ret['T'] < rev_x[1]].max()]
+        ret = scale_up_interferometr(ret, rev_x, rev_y)
+
+    # if rawdata.label=='ne2':
     #    ret = post_interferometer_2(ret)
-    ret['V'] = ret['V'] * mult
+    if mult == 'На себя':
+        ret = norm_data(ret)
+    else:
+        ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
     return ret
 

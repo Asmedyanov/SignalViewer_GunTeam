@@ -1,4 +1,4 @@
-from scipy.signal import argrelextrema, find_peaks, butter, filtfilt
+from scipy.signal import argrelextrema, find_peaks, butter, filtfilt, peak_prominences
 from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -50,7 +50,7 @@ def interferometer(d):
     return dataplasma
 
 
-def preinterferometer(data):
+def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
     mininterf = d['V'].loc[d['T'] > d['T'].mean()].min()
@@ -62,7 +62,25 @@ def preinterferometer(data):
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
 
-    d = my_fft_filter_com(d, 1.0 / 95.0e-6, 1.0 / 0.1e-6)
+    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
+    return dataret
+
+
+def preinterferometer(data,f_start):
+    d = data
+    # сдвинем минимум в 0
+    mininterf = d['V'].loc[d['T'] > d['T'].mean()].min()
+    d['V'] = d['V'] - mininterf
+    maxinterf = d['V'].loc[d['T'] > d['T'].mean()].max()
+    d['V'] = np.where(d['V'] > maxinterf, maxinterf, d['V'])
+    d['V'] = np.where(d['V'] < 0, 0, d['V'])
+    # Пересчитаем в фазу
+    d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
+    # вычислим неплазменную часть
+
+    #d = my_fft_filter_com(d, 1.0 / 95.0e-6, 1.0 / 0.1e-6)
+    d = my_fft_filter_com(d, f_start, 1.0 / 0.1e-6)
+    print(f_start)
 
     # nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     nnul = d['V'].loc[((d['T'] < 10.0e-6) & (d['T'] > 5.0e-6))].mean()
@@ -71,67 +89,66 @@ def preinterferometer(data):
     # no_plasma_time = no_plasma_data['T'].values
     # no_plasma_values = no_plasma_data['V'].values
     # line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
-    line_approx = 0  # np.poly1d(line_coef)(d['T'].values)
+    # line_approx = 0  # np.poly1d(line_coef)(d['T'].values)
 
-    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values - line_approx)
+    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
     return dataret
 
 
-def post_interferometer(data):
+def scale_up_interferometr(data, rev_x, rev_y):
+    signal = data['V'].values
+    time = data['T'].values
+    new_signal = -np.where((time > rev_x[0]) & (time < rev_x[1]),
+                           2 * min(rev_y) - signal, signal)
+    dataret = RawData('', data.diagnostic, time, new_signal)
+    return dataret
+
+
+def find_revers(data):
     # data = my_fft_filter_com(data0, 200.0, 1.0 / 2.0e-6)
-    plt.cla()
+    # plt.cla()
     pic_width = 10.0e-6
     pic_dist = (49.5 - 26.4) * 1.0e-6
     pic_ampl_proc = 60.0
     signal = data['V'].values
     time = data['T'].values
+
+    # data1 = my_fft_filter_com(data, 10.0, 1.0 / 1.0e-6)
+    # signal1 = data1['V'].values
+    # signal = signal1
+    # time = data1['T'].values
     plt.plot(time, signal)
+    # grsignal = np.abs(np.gradient(signal1))
+    # grsignal = grsignal / np.max(grsignal)
+    # plt.plot(time[:grsignal.size], grsignal)
 
-    data1 = my_fft_filter_com(data, 10.0, 1.0 / 2.5e-6)
-    signal1 = data1['V'].values
-    grsignal = np.abs(np.gradient(signal1))
-    grsignal = grsignal / np.max(grsignal)
-    plt.plot(time[:grsignal.size], grsignal)
-
-    pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
+    # pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
+    pic_max = signal.max() - signal.min()
     pic_ampl = 1.0e-2 * pic_ampl_proc * pic_max
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
     pic_width_n = int(pic_width / dt)
     pic_dist_n = int(pic_dist / dt)
-    pic_array_raw_up = \
-        find_peaks(grsignal, width=[0.1 * pic_width_n, 2.0 * pic_width_n])[0][1:-1]
+    pic_array_raw = \
+        find_peaks(-signal, prominence=[0.1 * pic_max, pic_max])[0]
 
-    pic_array_raw_time = time[pic_array_raw_up]
-    pic_array_raw_value = grsignal[pic_array_raw_up]
-    plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
-    time_plasma_start = 0
-    for k, v in enumerate(pic_array_raw_value):
-        try:
-            if v > np.mean(pic_array_raw_value[:k]) * 3:
-                time_plasma_start = 0.5 * (pic_array_raw_time[k] + pic_array_raw_time[k - 1])
-                break
-        except:
-            continue
-    time_plasma_stop = time_plasma_start
-    for k, v in enumerate(pic_array_raw_value):
-        try:
-            if v > np.mean(pic_array_raw_value[k:]) * 2:
-                time_plasma_stop = 0.5 * (pic_array_raw_time[k] + pic_array_raw_time[k + 1])
-                # if time_plasma_stop > time_plasma_start:
-                #   break
-        except:
-            continue
-    print(f'Время старта плазмы {time_plasma_start}')
-    print(f'Время конца плазмы {time_plasma_stop}')
-    no_plasma_data = data.loc[((data['T'] > time_plasma_start) & (data['T'] < time_plasma_stop))]
-    no_plasma_signal = no_plasma_data['V'].values
-    no_plasma_time = no_plasma_data['T'].values
+    pic_array_visinity = []
+    visinity = 1
+    for k in pic_array_raw:
+        if signal[k] < visinity:
+            pic_array_visinity.append(k)
 
-    no_plasma_interp = np.interp(time, no_plasma_time, no_plasma_signal)
-    clear_plasma_signal = signal - no_plasma_interp
-    plt.plot(time, clear_plasma_signal)
-    plt.show()
+    pic_array_raw_time = time[pic_array_visinity]
+    pic_array_raw_value = signal[pic_array_visinity]
+    return pic_array_raw_time
+    # plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
+    # if (len(pic_array_visinity)==2):
+    #    new_signal = -np.where((time>pic_array_raw_time[0])&(time<pic_array_raw_time[1]),2*pic_array_raw_value.min()-signal,signal)
+    #    signal = new_signal
+    #    #plt.plot(time, new_signal)
+    # dataret = RawData('', data.diagnostic, time, signal)
+
+    # plt.show()
 
 
 def post_interferometer_2(data):

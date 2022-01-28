@@ -157,3 +157,12 @@ def ininterval(data, left, right):
     ret = data.loc[(((data['T'] >= left) & (data['T'] <= right)))]
     dataret = RawData(data.label, data.diagnostic, ret['T'].values, ret['V'].values)
     return dataret
+
+def norm_data(data):
+    signal = data['V'].values
+    time = data['T'].values
+
+    maxsignal = signal.max()
+    signal = 100*signal/maxsignal
+    dataret = RawData(f"%", data.diagnostic, time, signal)
+    return dataret
