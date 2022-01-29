@@ -10,7 +10,7 @@ from constants import *
 class OscilloscopeEditor(QMainWindow):
     def __init__(self, master=None):
         self.master = master
-        super(OscilloscopeEditor, self).__init__()
+        super().__init__(parent=master)
         uic.loadUi('./ui/oscilloscopeeditor.ui', self)
         self.initActions()
         self.initTabs()

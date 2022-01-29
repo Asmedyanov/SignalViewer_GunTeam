@@ -8,7 +8,7 @@ from constants import *
 class DiagnosticEditor(QMainWindow):
     def __init__(self, master=None):
         self.master = master
-        super(DiagnosticEditor, self).__init__()
+        super().__init__(parent=master)
         uic.loadUi('./ui/diagnosticeditor.ui', self)
         self.initActions()
         self.initTabs()
