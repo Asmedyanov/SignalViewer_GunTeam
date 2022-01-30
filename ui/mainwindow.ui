@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -33,29 +33,6 @@
           <string>Сырые сигналы</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_3"/>
-        </widget>
-        <widget class="QWidget" name="tab_3">
-         <attribute name="title">
-          <string>Итоговые спектры</string>
-         </attribute>
-        </widget>
-        <widget class="QWidget" name="tab_4">
-         <attribute name="title">
-          <string>Сырые спектры</string>
-         </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_5"/>
-        </widget>
-        <widget class="QWidget" name="tab_6">
-         <attribute name="title">
-          <string>Кросскорреляции</string>
-         </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_6"/>
-        </widget>
-        <widget class="QWidget" name="tab_5">
-         <attribute name="title">
-          <string>Резульаты пакетной обработки</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_8"/>
         </widget>
        </widget>
       </item>
@@ -85,10 +62,11 @@
     <property name="title">
      <string>Шаблон эксперимента</string>
     </property>
+    <addaction name="action_27"/>
     <addaction name="action_6"/>
+    <addaction name="action_25"/>
     <addaction name="action_7"/>
     <addaction name="action_8"/>
-    <addaction name="action_25"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -296,6 +274,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_27">
+   <property name="text">
+    <string>Создать шаблон эксперимента</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
    </property>
   </action>
  </widget>
