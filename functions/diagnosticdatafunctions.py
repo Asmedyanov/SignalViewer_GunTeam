@@ -76,10 +76,12 @@ def Diagnostic_Interferometer(rawdata, master):
     rev_x_pi = find_revers_pi(data)
     ret = preinterferometer(rawdata,fstart)
     ret = ininterval(ret, tstart, tfinish)
-    if len(rev_x_0) == 2:
-        rev_y = [ret['V'].loc[ret['T'] > rev_x[0]].min(),
-                 ret['V'].loc[ret['T'] < rev_x[1]].max()]
-        ret = scale_up_interferometr(ret, rev_x, rev_y)
+    if len(rev_x_0)%2 == 0:
+        while len(rev_x_0)>0:
+            rev_y = [ret['V'].loc[ret['T'] > rev_x_0[0]].min(),
+                    ret['V'].loc[ret['T'] < rev_x_0[-1]].max()]
+            ret = scale_up_interferometr(ret, rev_x_0, rev_y)
+            rev_x_0 = rev_x_0[1:-1]
 
     # if rawdata.label=='ne2':
     #    ret = post_interferometer_2(ret)

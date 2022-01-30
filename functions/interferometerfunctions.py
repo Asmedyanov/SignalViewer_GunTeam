@@ -88,8 +88,8 @@ def preinterferometer(data,f_start):
 def scale_up_interferometr(data, rev_x, rev_y):
     signal = data['V'].values
     time = data['T'].values
-    new_signal = -np.where((time > rev_x[0]) & (time < rev_x[1]),
-                           2 * min(rev_y) - signal, signal)
+    new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
+                          (-1)*signal, signal)
     dataret = RawData('', data.diagnostic, time, new_signal)
     return dataret
 
