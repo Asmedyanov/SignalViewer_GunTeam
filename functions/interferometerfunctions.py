@@ -77,19 +77,9 @@ def preinterferometer(data,f_start):
     # Пересчитаем в фазу
     d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
     # вычислим неплазменную часть
-
-    #d = my_fft_filter_com(d, 1.0 / 95.0e-6, 1.0 / 0.1e-6)
     d = my_fft_filter_com(d, f_start, 1.0 / 0.1e-6)
-    print(f_start)
-
-    # nnul = d['V'].loc[d['T'] > d['T'].mean()].mean()
     nnul = d['V'].loc[((d['T'] < 10.0e-6) & (d['T'] > 5.0e-6))].mean()
     d['V'] = d['V'] - nnul
-    # no_plasma_data = d.loc[d['T'] < 20.0e-6]
-    # no_plasma_time = no_plasma_data['T'].values
-    # no_plasma_values = no_plasma_data['V'].values
-    # line_coef = np.polyfit(no_plasma_time, no_plasma_values, deg=1)
-    # line_approx = 0  # np.poly1d(line_coef)(d['T'].values)
 
     dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
     return dataret
@@ -104,27 +94,16 @@ def scale_up_interferometr(data, rev_x, rev_y):
     return dataret
 
 
-def find_revers(data):
-    # data = my_fft_filter_com(data0, 200.0, 1.0 / 2.0e-6)
+def find_revers_0(data):
     # plt.cla()
     pic_width = 10.0e-6
     pic_dist = (49.5 - 26.4) * 1.0e-6
-    pic_ampl_proc = 60.0
     signal = data['V'].values
     time = data['T'].values
 
-    # data1 = my_fft_filter_com(data, 10.0, 1.0 / 1.0e-6)
-    # signal1 = data1['V'].values
-    # signal = signal1
-    # time = data1['T'].values
     plt.plot(time, signal)
-    # grsignal = np.abs(np.gradient(signal1))
-    # grsignal = grsignal / np.max(grsignal)
-    # plt.plot(time[:grsignal.size], grsignal)
 
-    # pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
     pic_max = signal.max() - signal.min()
-    pic_ampl = 1.0e-2 * pic_ampl_proc * pic_max
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
     pic_width_n = int(pic_width / dt)
@@ -136,6 +115,38 @@ def find_revers(data):
     visinity = 1
     for k in pic_array_raw:
         if signal[k] < visinity:
+            pic_array_visinity.append(k)
+
+    pic_array_raw_time = time[pic_array_visinity]
+    pic_array_raw_value = signal[pic_array_visinity]
+    return pic_array_raw_time
+    # plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
+    # if (len(pic_array_visinity)==2):
+    #    new_signal = -np.where((time>pic_array_raw_time[0])&(time<pic_array_raw_time[1]),2*pic_array_raw_value.min()-signal,signal)
+    #    signal = new_signal
+    #    #plt.plot(time, new_signal)
+    # dataret = RawData('', data.diagnostic, time, signal)
+
+    # plt.show()
+def find_revers_pi(data):
+    # plt.cla()
+
+    signal = data['V'].values
+    time = data['T'].values
+
+    plt.plot(time, signal)
+
+    pic_max = signal.max() - signal.min()
+    tgrad = np.gradient(time)
+    dt = np.mean(tgrad)
+
+    pic_array_raw = \
+        find_peaks(signal, prominence=[0.1 * pic_max, pic_max])[0]
+
+    pic_array_visinity = []
+    visinity = 2.0
+    for k in pic_array_raw:
+        if signal[k] > visinity:
             pic_array_visinity.append(k)
 
     pic_array_raw_time = time[pic_array_visinity]

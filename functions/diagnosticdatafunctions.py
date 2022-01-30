@@ -72,10 +72,11 @@ def Diagnostic_Interferometer(rawdata, master):
     data = my_fft_filter_com(rawdata, 1.0, ffinish)
     data = fase_interferometr(data)
     data = ininterval(data, tstart, tfinish)
-    rev_x = find_revers(data)
+    rev_x_0 = find_revers_0(data)
+    rev_x_pi = find_revers_pi(data)
     ret = preinterferometer(rawdata,fstart)
     ret = ininterval(ret, tstart, tfinish)
-    if len(rev_x) == 2:
+    if len(rev_x_0) == 2:
         rev_y = [ret['V'].loc[ret['T'] > rev_x[0]].min(),
                  ret['V'].loc[ret['T'] < rev_x[1]].max()]
         ret = scale_up_interferometr(ret, rev_x, rev_y)
