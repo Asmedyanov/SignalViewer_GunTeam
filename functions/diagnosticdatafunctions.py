@@ -37,7 +37,8 @@ def Diagnostic_belt(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    #ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    ret = rolling_avg(rawdata, 1.0/ffinish)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
@@ -74,12 +75,12 @@ def Diagnostic_Interferometer(rawdata, master):
     data = ininterval(data, tstart, tfinish)
     rev_x_0 = find_revers_0(data)
     rev_x_pi = find_revers_pi(data)
-    ret = preinterferometer(rawdata,fstart)
+    ret = preinterferometer(rawdata, fstart)
     ret = ininterval(ret, tstart, tfinish)
-    if len(rev_x_0)%2 == 0:
-        while len(rev_x_0)>0:
+    if len(rev_x_0) % 2 == 0:
+        while len(rev_x_0) > 0:
             rev_y = [ret['V'].loc[ret['T'] > rev_x_0[0]].min(),
-                    ret['V'].loc[ret['T'] < rev_x_0[-1]].max()]
+                     ret['V'].loc[ret['T'] < rev_x_0[-1]].max()]
             ret = scale_up_interferometr(ret, rev_x_0, rev_y)
             rev_x_0 = rev_x_0[1:-1]
 
@@ -88,8 +89,11 @@ def Diagnostic_Interferometer(rawdata, master):
     if mult == 'На себя':
         ret = norm_data(ret)
     else:
+        if abs(ret['V'].max()) < abs(ret['V'].min()):
+            mult *= (-1)
         ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
+    print('Интерферометр')
     return ret
 
 

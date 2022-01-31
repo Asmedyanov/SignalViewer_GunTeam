@@ -49,6 +49,20 @@ def get_up_envelope(data):
     dataret = RawData('', data.diagnostic, data['T'].values, data['V'].values - env_com)
     return dataret
 
+
+def rolling_avg(data, t_window):
+    signal = data['V'].values
+    time = data['T'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+    n_window = int(t_window / meanStep)
+    signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
+    time = np.convolve(time, np.ones(n_window), 'valid') / n_window
+    dataret = RawData(data.label, data.diagnostic, time, signal)
+
+    return dataret
+
+
 def my_fft_filter_fin(data, fstart, ffinish):
     # data = data.dropna()
     # data.index = pd.RangeIndex(len(data.index))
@@ -94,15 +108,16 @@ def my_fft_filter_com(data, fstart, ffinish):
     cut_f_signal = f_signal.copy()
     fstart = fstart
     fend = ffinish
-    fw = 1428.5714285714287*4
+    fw = 1428.5714285714287 * 4
     fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
-    fwindow = fwindow/np.max(fwindow)
+    fwindow = fwindow / np.max(fwindow)
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, fwindow)
 
     cut_signal = irfft(cut_f_signal * fwindow)
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
     return dataret
+
 
 def my_fft_filter_sharp(data, fstart, ffinish):
     # data = data.dropna()
@@ -126,6 +141,7 @@ def my_fft_filter_sharp(data, fstart, ffinish):
     dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
 
     return dataret
+
 
 def my_fft_filter_back(data, fstart, ffinish):
     # data = data.dropna()
@@ -158,11 +174,14 @@ def ininterval(data, left, right):
     dataret = RawData(data.label, data.diagnostic, ret['T'].values, ret['V'].values)
     return dataret
 
+
 def norm_data(data):
     signal = data['V'].values
     time = data['T'].values
+    if abs(signal.max()) < abs(signal.min()):
+        signal = signal * (-1)
 
     maxsignal = signal.max()
-    signal = 100*signal/maxsignal
+    signal = 100 * signal / maxsignal
     dataret = RawData(f"%", data.diagnostic, time, signal)
     return dataret
