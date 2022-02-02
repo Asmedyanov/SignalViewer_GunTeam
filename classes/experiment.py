@@ -16,33 +16,48 @@ class Experiment:
 
     def addRawdataList(self, rawdatalist):
         self.rawdatalist = self.rawdatalist + rawdatalist
-        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, self.master.foldername)
-        #self.upDateRowSpectra()
-        self.upDataDiacnosticData()
-        #self.upDateDiaSpectra()
+        header = self.master.foldername
 
+        try:
+            fileName = self.master.fileList[0].split('/')[-1]
+            header = f'{header}/{fileName}'
+        except:
+            pass
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist,header )
+        # self.upDateRowSpectra()
+        #self.upDataDiacnosticData()
+        # self.upDateDiaSpectra()
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []
         for rawdata in self.rawdatalist:
             self.rawSpectraList.append(SpectrData(rawdata))
         self.master.mainPlotDict['Сырые спектры'].plot(self.rawSpectraList, self.master.foldername)
+
     def upDateDiaSpectra(self):
         self.diaSpectraList = []
         for rawdata in self.diagnosticDataList:
             self.diaSpectraList.append(SpectrData(rawdata))
-        self.master.mainPlotDict['Итоговые спектры'].plot(self.diaSpectraList, self.master.foldername)
+        header = self.master.foldername
+
+        self.master.mainPlotDict['Итоговые спектры'].plot(self.diaSpectraList, header)
 
     def upDataDiacnosticData(self):
         self.diagnosticDataList = []
         for rawdata in self.rawdatalist:
             self.diagnosticDataList.append(DiagnosticData(rawdata, self))
-        self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList, self.master.foldername)
+        header = self.master.foldername
+        try:
+            fileName = self.master.fileList[-1].split('/')[-1]
+            header = f'{header}/{fileName}'
+        except:
+            pass
+        self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList, header)
 
     def clear(self):
         self.rawdatalist = []
 
-    def loadSettings(self, filename = default_file):
+    def loadSettings(self, filename=default_file):
         self.oscDict = dict()
         rootXML = xml.ElementTree(file=filename).getroot()
         oscsXML = rootXML.find('Осциллографы')
@@ -107,8 +122,6 @@ class Experiment:
         for dianame, dia in self.diaDict.items():
             if dianame == dia0:
                 return dia
-
-
 
     def __str__(self):
         return f'Experiment {len(self.rawdatalist)}'

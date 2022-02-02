@@ -113,38 +113,23 @@ def scale_up_interferometr_pi(data, rev_x):
 
 def find_revers_0(data):
     # plt.cla()
-    pic_width = 10.0e-6
-    pic_dist = (49.5 - 26.4) * 1.0e-6
     signal = data['V'].values
     time = data['T'].values
-
     plt.plot(time, signal)
-
     pic_max = signal.max() - signal.min()
-    tgrad = np.gradient(time)
-    dt = np.mean(tgrad)
-    pic_width_n = int(pic_width / dt)
-    pic_dist_n = int(pic_dist / dt)
     pic_array_raw = \
         find_peaks(-signal, prominence=[0.175 * pic_max, pic_max])[0]
 
     pic_array_visinity = []
-    visinity = 0.9
+    visinity = 1.0
     for k in pic_array_raw:
         if signal[k] < visinity:
             pic_array_visinity.append(k)
 
     pic_array_raw_time = time[pic_array_visinity]
-    pic_array_raw_value = signal[pic_array_visinity]
-    return pic_array_raw_time
-    # plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
-    # if (len(pic_array_visinity)==2):
-    #    new_signal = -np.where((time>pic_array_raw_time[0])&(time<pic_array_raw_time[1]),2*pic_array_raw_value.min()-signal,signal)
-    #    signal = new_signal
-    #    #plt.plot(time, new_signal)
-    # dataret = RawData('', data.diagnostic, time, signal)
 
-    # plt.show()
+    return pic_array_raw_time
+
 
 
 def find_revers_pi(data):
@@ -163,7 +148,7 @@ def find_revers_pi(data):
         find_peaks(signal, prominence=[0.175 * pic_max, pic_max])[0]
 
     pic_array_visinity = []
-    visinity = 0.9
+    visinity = 1.0
     for k in pic_array_raw:
         if signal[k] > np.pi - visinity:
             pic_array_visinity.append(k)

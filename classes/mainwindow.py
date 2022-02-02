@@ -66,6 +66,8 @@ class MainWindow(QMainWindow):
         currentmenu = self.mainActionsDict['Настройки']
         currentmenu['Осциллографы'].triggered.connect(self.oscSettings)
         currentmenu['Диагностики'].triggered.connect(self.diaSettings)
+        currentmenu = self.mainActionsDict['Пакетная обработка папки']
+        currentmenu['Пакетная обработка по сырым данным'].triggered.connect(self.packetRowData)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -154,20 +156,24 @@ class MainWindow(QMainWindow):
         if len(numlist) == 0:
             numlist = re.findall(r'0*\d+\.PRN', name)
             if len(numlist) == 0:
+                self.openResent()
                 return
-            new_name = name.replace(numlist[-1], f'{10000+int(numlist[-1][:-4]) + 1}.PRN'[1:])
+            new_name = name.replace(numlist[-1], f'{10000 + int(numlist[-1][:-4]) + 1}.PRN'[1:])
         else:
             new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) + 1}.bin')
         self.clearAll()
         try:
             addeddatalist = filefunctions.addFile(new_name, self.experiment)
-            self.experiment.addRawdataList(addeddatalist)
             self.fileList.append(new_name)
+            self.experiment.addRawdataList(addeddatalist)
+
             folderName = '/'.join(new_name.split('/')[:-1])
             self.foldername = '/'.join(folderName.split('/')[-2:])
-            print(numlist[0])
+
         except:
+            self.openResent()
             return
+
     def openPrevFile(self):
         if len(self.fileList) == 0:
             return
@@ -176,20 +182,22 @@ class MainWindow(QMainWindow):
         if len(numlist) == 0:
             numlist = re.findall(r'\d+\.PRN', name)
             if len(numlist) == 0:
+                self.openResent()
                 return
-            new_name = name.replace(numlist[-1], f'{10000+int(numlist[-1][:-4]) - 1}.PRN'[1:])
+            new_name = name.replace(numlist[-1], f'{10000 + int(numlist[-1][:-4]) - 1}.PRN'[1:])
         else:
             new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) - 1}.bin')
         self.clearAll()
 
         try:
             addeddatalist = filefunctions.addFile(new_name, self.experiment)
-            self.experiment.addRawdataList(addeddatalist)
             self.fileList.append(new_name)
             folderName = '/'.join(new_name.split('/')[:-1])
             self.foldername = '/'.join(folderName.split('/')[-2:])
-            print(numlist[0])
+            self.experiment.addRawdataList(addeddatalist)
+
         except:
+            self.openResent()
             return
 
     def clearAll(self):
@@ -242,3 +250,27 @@ class MainWindow(QMainWindow):
         self.tabWidget.currentWidget().findChild(MplWidget).canvas.fig.savefig(buf)
         QApplication.clipboard().setImage(QImage.fromData(buf.getvalue()))
         buf.close()
+
+    def packetRowData(self):
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить")[0]
+        folderName = '/'.join(self.lastFileName.split('/')[:-2])
+        self.foldername = '/'.join(folderName.split('/')[-3:])
+        curentDir = os.getcwd()
+        os.chdir(folderName)
+        os.makedirs('Сырые сигналы', exist_ok=True)
+        for tfolderName in os.listdir():
+            os.chdir(tfolderName)
+            for fileName in os.listdir():
+                try:
+                    addeddatalist = filefunctions.addFile(fileName, self.experiment)
+                    self.fileList.append(fileName)
+                    self.foldername = tfolderName
+                    self.experiment.addRawdataList(addeddatalist)
+                except:
+                    pass
+            os.chdir(folderName)
+            self.mainPlotDict['Сырые сигналы'].canvas.fig.savefig(f'Сырые сигналы/{tfolderName}.png')
+            self.clearAll()
+        os.chdir(curentDir)
