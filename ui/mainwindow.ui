@@ -58,6 +58,7 @@
     <addaction name="action_4"/>
     <addaction name="action_24"/>
     <addaction name="action_28"/>
+    <addaction name="action_29"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -291,6 +292,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+Right</string>
+   </property>
+  </action>
+  <action name="action_29">
+   <property name="text">
+    <string>Открыть предыдущий файл</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Left</string>
    </property>
   </action>
  </widget>

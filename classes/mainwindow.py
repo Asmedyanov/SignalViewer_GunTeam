@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
         currentmenu['Группировать папку по выстрелам'].triggered.connect(self.groupFolder)
         currentmenu['Открыть прошлую сессию'].triggered.connect(self.openResent)
         currentmenu['Открыть следующий файл'].triggered.connect(self.openNextFile)
+        currentmenu['Открыть предыдущий файл'].triggered.connect(self.openPrevFile)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu['Копировать в буфер обмена'].triggered.connect(self.copyToBuffer)
@@ -151,9 +152,36 @@ class MainWindow(QMainWindow):
         name = self.fileList[0]
         numlist = re.findall(r'v\d+\.bin', name)
         if len(numlist) == 0:
-            return
+            numlist = re.findall(r'0*\d+\.PRN', name)
+            if len(numlist) == 0:
+                return
+            new_name = name.replace(numlist[-1], f'{10000+int(numlist[-1][:-4]) + 1}.PRN'[1:])
+        else:
+            new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) + 1}.bin')
         self.clearAll()
-        new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) + 1}.bin')
+        try:
+            addeddatalist = filefunctions.addFile(new_name, self.experiment)
+            self.experiment.addRawdataList(addeddatalist)
+            self.fileList.append(new_name)
+            folderName = '/'.join(new_name.split('/')[:-1])
+            self.foldername = '/'.join(folderName.split('/')[-2:])
+            print(numlist[0])
+        except:
+            return
+    def openPrevFile(self):
+        if len(self.fileList) == 0:
+            return
+        name = self.fileList[0]
+        numlist = re.findall(r'v\d+\.bin', name)
+        if len(numlist) == 0:
+            numlist = re.findall(r'\d+\.PRN', name)
+            if len(numlist) == 0:
+                return
+            new_name = name.replace(numlist[-1], f'{10000+int(numlist[-1][:-4]) - 1}.PRN'[1:])
+        else:
+            new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) - 1}.bin')
+        self.clearAll()
+
         try:
             addeddatalist = filefunctions.addFile(new_name, self.experiment)
             self.experiment.addRawdataList(addeddatalist)

@@ -117,7 +117,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
-    ret = my_fft_filter_sharp(ret, fstart, ffinish)
+    ret = rolling_avg(ret, 1.0/ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult
