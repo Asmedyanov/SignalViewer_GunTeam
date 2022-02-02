@@ -25,8 +25,20 @@ class Experiment:
             pass
         self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist,header )
         # self.upDateRowSpectra()
-        #self.upDataDiacnosticData()
+        self.upDataDiacnosticData()
         # self.upDateDiaSpectra()
+
+    def addRawdataList_NoUpdate(self, rawdatalist):
+        self.rawdatalist = self.rawdatalist + rawdatalist
+        header = self.master.foldername
+
+        try:
+            fileName = self.master.fileList[0].split('/')[-1]
+            header = f'{header}/{fileName}'
+        except:
+            pass
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist,header )
+
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []

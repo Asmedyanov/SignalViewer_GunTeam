@@ -68,6 +68,8 @@ class MainWindow(QMainWindow):
         currentmenu['Диагностики'].triggered.connect(self.diaSettings)
         currentmenu = self.mainActionsDict['Пакетная обработка папки']
         currentmenu['Пакетная обработка по сырым данным'].triggered.connect(self.packetRowData)
+        currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetResultData)
+        #currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -83,6 +85,7 @@ class MainWindow(QMainWindow):
         self.foldername = '/'.join(folderName.split('/')[-2:])
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
+        #self.experiment.upDataDiacnosticData()
         file = open('lastfilename.txt', 'w')
         for name in self.fileList:
             file.write(f'{name}\n')
@@ -105,6 +108,7 @@ class MainWindow(QMainWindow):
             self.fileList.append(f'{folderName}/{fileName}')
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+        #self.experiment.upDataDiacnosticData()
         os.chdir(curentDir)
         file = open('lastfilename.txt', 'w')
         for name in self.fileList:
@@ -267,10 +271,34 @@ class MainWindow(QMainWindow):
                     addeddatalist = filefunctions.addFile(fileName, self.experiment)
                     self.fileList.append(fileName)
                     self.foldername = tfolderName
-                    self.experiment.addRawdataList(addeddatalist)
+                    self.experiment.addRawdataList_NoUpdate(addeddatalist)
                 except:
                     pass
             os.chdir(folderName)
             self.mainPlotDict['Сырые сигналы'].canvas.fig.savefig(f'Сырые сигналы/{tfolderName}.png')
+            self.clearAll()
+        os.chdir(curentDir)
+    def packetResultData(self):
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить")[0]
+        folderName = '/'.join(self.lastFileName.split('/')[:-2])
+        self.foldername = '/'.join(folderName.split('/')[-3:])
+        curentDir = os.getcwd()
+        os.chdir(folderName)
+        os.makedirs('Итоговые сигналы', exist_ok=True)
+        for tfolderName in os.listdir():
+            os.chdir(tfolderName)
+            for fileName in os.listdir():
+                try:
+                    addeddatalist = filefunctions.addFile(fileName, self.experiment)
+                    self.fileList.append(fileName)
+                    self.foldername = tfolderName
+                    self.experiment.addRawdataList(addeddatalist)
+                except:
+                    pass
+            print(tfolderName)
+            os.chdir(folderName)
+            self.mainPlotDict['Итоговые сигналы'].canvas.fig.savefig(f'Итоговые сигналы/{tfolderName}.png')
             self.clearAll()
         os.chdir(curentDir)

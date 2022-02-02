@@ -2,7 +2,9 @@ from scipy.signal import argrelextrema, find_peaks, butter, filtfilt, peak_promi
 from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
-
+visinity = 1.0
+visinity_find = 0.1
+prominence=0.05
 
 def interferometer(d):
     dt = 0.1  # np.nan_to_num(np.gradient(d['T'])).mean()
@@ -118,10 +120,10 @@ def find_revers_0(data):
     plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
     pic_array_raw = \
-        find_peaks(-signal, prominence=[0.175 * pic_max, pic_max])[0]
+        find_peaks(-signal, prominence=[prominence * pic_max, pic_max])[0]
 
     pic_array_visinity = []
-    visinity = 1.0
+
     for k in pic_array_raw:
         if signal[k] < visinity:
             pic_array_visinity.append(k)
@@ -145,10 +147,9 @@ def find_revers_pi(data):
     dt = np.mean(tgrad)
 
     pic_array_raw = \
-        find_peaks(signal, prominence=[0.175 * pic_max, pic_max])[0]
+        find_peaks(signal, prominence=[prominence * pic_max, pic_max])[0]
 
     pic_array_visinity = []
-    visinity = 1.0
     for k in pic_array_raw:
         if signal[k] > np.pi - visinity:
             pic_array_visinity.append(k)

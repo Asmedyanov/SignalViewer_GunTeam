@@ -194,7 +194,7 @@ def regect_filter(data, f_gen=300.0):
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
 
-    nfur = 10 * len(signal)
+    nfur = 3 * len(signal)
     f_signal = rfft(signal, n=nfur)
     W = fftfreq(f_signal.size, d=dt)[:int(f_signal.size)]
     cut_f_signal = f_signal.copy()

@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -211,7 +211,10 @@
   </action>
   <action name="action_16">
    <property name="text">
-    <string>Запустить пакетную обработку папки</string>
+    <string>Пакетная обработка по итоговым данным</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+R</string>
    </property>
   </action>
   <action name="action_17">
