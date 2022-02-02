@@ -2,9 +2,10 @@ from scipy.signal import argrelextrema, find_peaks, butter, filtfilt, peak_promi
 from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
-visinity = 1.0
-visinity_find = 0.1
-prominence=0.05
+
+visinity = 1.5
+prominence = 0.13
+
 
 def interferometer(d):
     dt = 0.1  # np.nan_to_num(np.gradient(d['T'])).mean()
@@ -113,6 +114,28 @@ def scale_up_interferometr_pi(data, rev_x):
     return dataret
 
 
+def clear_reverses(revers_pi, revers_0):
+    copy_revers_pi = revers_pi
+    copy_revers_0 = revers_0
+
+    def first(revers_pi, revers_0):
+        return min([revers_pi[0], revers_0[0]])
+
+    def last(revers_pi, revers_0):
+        return max([revers_pi[-1], revers_0[-1]])
+
+    def is_good(revers_pi, revers_0):
+        ret1 = (first(revers_pi, revers_0) in revers_0) & (last(revers_pi, revers_0) in revers_0)
+        ret2 = (first(revers_pi, revers_0) in revers_pi) & (last(revers_pi, revers_0) in revers_pi)
+        return ret1 | ret2
+
+    t_revers_pi = revers_pi
+    t_revers_0 = revers_0
+    while (len(t_revers_pi) > 0) & (len(t_revers_0) > 0):
+        if not is_good(t_revers_pi, t_revers_0):
+            ...
+
+
 def find_revers_0(data):
     # plt.cla()
     signal = data['V'].values
@@ -127,11 +150,12 @@ def find_revers_0(data):
     for k in pic_array_raw:
         if signal[k] < visinity:
             pic_array_visinity.append(k)
-
+    if len(pic_array_visinity) % 2 == 1:
+        remove_pic = np.argmax(signal[pic_array_visinity])
+        pic_array_visinity.remove(pic_array_visinity[remove_pic])
     pic_array_raw_time = time[pic_array_visinity]
 
     return pic_array_raw_time
-
 
 
 def find_revers_pi(data):
@@ -154,17 +178,12 @@ def find_revers_pi(data):
         if signal[k] > np.pi - visinity:
             pic_array_visinity.append(k)
 
-    pic_array_raw_time = time[pic_array_visinity]
-    pic_array_raw_value = signal[pic_array_visinity]
-    return pic_array_raw_time
-    # plt.plot(pic_array_raw_time, pic_array_raw_value, 'ro')
-    # if (len(pic_array_visinity)==2):
-    #    new_signal = -np.where((time>pic_array_raw_time[0])&(time<pic_array_raw_time[1]),2*pic_array_raw_value.min()-signal,signal)
-    #    signal = new_signal
-    #    #plt.plot(time, new_signal)
-    # dataret = RawData('', data.diagnostic, time, signal)
+    if len(pic_array_visinity) % 2 == 1:
+        remove_pic = np.argmin(signal[pic_array_visinity])
+        pic_array_visinity.remove(pic_array_visinity[remove_pic])
 
-    # plt.show()
+    pic_array_raw_time = time[pic_array_visinity]
+    return pic_array_raw_time
 
 
 def post_interferometer_2(data):

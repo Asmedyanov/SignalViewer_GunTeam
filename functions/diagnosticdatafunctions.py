@@ -37,8 +37,8 @@ def Diagnostic_belt(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    #ret = my_fft_filter_com(rawdata, fstart, ffinish)
-    ret = rolling_avg(rawdata, 1.0/ffinish)
+    # ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    ret = rolling_avg(rawdata, 1.0 / ffinish)
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
@@ -73,9 +73,11 @@ def Diagnostic_Interferometer(rawdata, master):
     data = my_fft_filter_com(rawdata, fstart, ffinish)
     data = fase_interferometr(data)
     data = ininterval(data, tstart, tfinish)
+    data = rolling_avg(data, 1.0 / ffinish)
     rev_x_0 = find_revers_0(data)
     rev_x_pi = find_revers_pi(data)
     ret = preinterferometer(rawdata, fstart)
+    #ret = rolling_avg(ret, 1.0 / ffinish)
     ret = ininterval(ret, tstart, tfinish)
     if len(rev_x_0) % 2 == 0:
         while len(rev_x_0) > 0:
@@ -117,7 +119,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
-    ret = rolling_avg(ret, 1.0/ffinish)
+    ret = rolling_avg(ret, 1.0 / ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = np.abs(ret['V'] - retmin) * mult

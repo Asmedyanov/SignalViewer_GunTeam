@@ -1,1 +1,1 @@
-D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-02-01-2инт-1кол-1пояс.xml
+D:/1.Clouds/Google/NIKITA/PD_NSU_AND_BINP/ASP/PHD/SOFTWARE/PERMONENT_SOFT/SignalViewer_GunTeam/experiment_templates/2022-02-01-ВПД-интерферометр.xml
