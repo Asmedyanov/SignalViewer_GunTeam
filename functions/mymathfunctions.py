@@ -64,14 +64,10 @@ def rolling_avg(data, t_window):
 
 
 def my_fft_filter_fin(data, fstart, ffinish):
-    # data = data.dropna()
-    # data.index = pd.RangeIndex(len(data.index))
     signal = data['V'].values
     time = data['T'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
-    '''wn1 = 2 * fstart * meanStep
-    wn2 = 2 * ffinish * meanStep'''
     fmax = 0.5 / meanStep
     df = 1.0
     nf = int(fmax / df)
@@ -184,4 +180,34 @@ def norm_data(data):
     maxsignal = signal.max()
     signal = 100 * signal / maxsignal
     dataret = RawData(f"%", data.diagnostic, time, signal)
+    return dataret
+
+
+def find_nearest(a, value):
+    a_val = np.abs(a - value)
+    return a_val.argmin()
+
+
+def regect_filter(data, f_gen=300.0):
+    signal = data['V'].values
+    time = data['T'].values
+    tgrad = np.gradient(time)
+    dt = np.mean(tgrad)
+
+    nfur = 10 * len(signal)
+    f_signal = rfft(signal, n=nfur)
+    W = fftfreq(f_signal.size, d=dt)[:int(f_signal.size)]
+    cut_f_signal = f_signal.copy()
+    f_reg = 2.0 * np.pi * f_gen  # W[np.argmax(f_signal[200:])]
+    fw = f_reg * 4
+    fwindow = np.exp(-np.power((W) / fw, 2))
+    for n in range(1, 4):
+        fwindow += np.exp(-np.power((W - f_reg * n) / fw, 2))
+    fwindow += np.exp(-np.power((W - f_reg * 0.5) / fw, 2))
+    fwindow = 1.0 - (fwindow / fwindow.max())
+    cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
+    cut_time = time[:cut_signal.size]
+
+    dataret = RawData(data.label, data.diagnostic, cut_time, cut_signal)
+
     return dataret

@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
         currentmenu['Группировать папку по выстрелам'].triggered.connect(self.groupFolder)
         currentmenu['Открыть прошлую сессию'].triggered.connect(self.openResent)
+        currentmenu['Открыть следующий файл'].triggered.connect(self.openNextFile)
         currentmenu = self.mainActionsDict['График']
         currentmenu['Очистить'].triggered.connect(self.clearAll)
         currentmenu['Копировать в буфер обмена'].triggered.connect(self.copyToBuffer)
@@ -66,11 +67,14 @@ class MainWindow(QMainWindow):
         currentmenu['Диагностики'].triggered.connect(self.diaSettings)
 
     def addFile(self):
-        self.lastFileName = \
+        '''self.lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Добавьте файл",
                                         constants.experiments_dir,
-                                        ';;'.join(constants.filter_list))[0]
+                                        ';;'.join(constants.filter_list))[0]'''
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Добавьте файл")[0]
         self.fileList.append(self.lastFileName)
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
         self.foldername = '/'.join(folderName.split('/')[-2:])
@@ -82,11 +86,14 @@ class MainWindow(QMainWindow):
         file.close()
 
     def addFolder(self):
-        self.lastFileName = \
+        '''self.lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите добавить",
                                         constants.experiments_dir,
-                                        ';;'.join(constants.filter_list))[0]
+                                        ';;'.join(constants.filter_list))[0]'''
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить")[0]
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
         self.foldername = '/'.join(folderName.split('/')[-2:])
         curentDir = os.getcwd()
@@ -102,11 +109,14 @@ class MainWindow(QMainWindow):
         file.close()
 
     def groupFolder(self):
-        lastFileName = \
+        '''lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите группировать по выстрелам",
                                         constants.experiments_dir,
-                                        ';;'.join(constants.filter_list))[0]
+                                        ';;'.join(constants.filter_list))[0]'''
+        lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите группировать по выстрелам")[0]
         folderName = '/'.join(lastFileName.split('/')[:-1])
         currentDir = os.getcwd()
         os.chdir(folderName)
@@ -134,6 +144,25 @@ class MainWindow(QMainWindow):
             self.foldername = '/'.join(folderName.split('/')[-2:])
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+
+    def openNextFile(self):
+        if len(self.fileList) == 0:
+            return
+        name = self.fileList[0]
+        numlist = re.findall(r'v\d+\.bin', name)
+        if len(numlist) == 0:
+            return
+        self.clearAll()
+        new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) + 1}.bin')
+        try:
+            addeddatalist = filefunctions.addFile(new_name, self.experiment)
+            self.experiment.addRawdataList(addeddatalist)
+            self.fileList.append(new_name)
+            folderName = '/'.join(new_name.split('/')[:-1])
+            self.foldername = '/'.join(folderName.split('/')[-2:])
+            print(numlist[0])
+        except:
+            return
 
     def clearAll(self):
         self.experiment.clear()

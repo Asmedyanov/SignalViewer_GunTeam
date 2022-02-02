@@ -46,7 +46,7 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -57,6 +57,7 @@
     <addaction name="action_2"/>
     <addaction name="action_4"/>
     <addaction name="action_24"/>
+    <addaction name="action_28"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -282,6 +283,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+N</string>
+   </property>
+  </action>
+  <action name="action_28">
+   <property name="text">
+    <string>Открыть следующий файл</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Right</string>
    </property>
   </action>
  </widget>

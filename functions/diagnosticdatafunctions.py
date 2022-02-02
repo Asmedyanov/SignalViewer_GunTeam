@@ -70,7 +70,7 @@ def Diagnostic_Interferometer(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    data = my_fft_filter_com(rawdata, 1.0, ffinish)
+    data = my_fft_filter_com(rawdata, fstart, ffinish)
     data = fase_interferometr(data)
     data = ininterval(data, tstart, tfinish)
     rev_x_0 = find_revers_0(data)
@@ -79,10 +79,13 @@ def Diagnostic_Interferometer(rawdata, master):
     ret = ininterval(ret, tstart, tfinish)
     if len(rev_x_0) % 2 == 0:
         while len(rev_x_0) > 0:
-            rev_y = [ret['V'].loc[ret['T'] > rev_x_0[0]].min(),
-                     ret['V'].loc[ret['T'] < rev_x_0[-1]].max()]
-            ret = scale_up_interferometr(ret, rev_x_0, rev_y)
+            ret = scale_up_interferometr_0(ret, rev_x_0)
             rev_x_0 = rev_x_0[1:-1]
+
+    if len(rev_x_pi) % 2 == 0:
+        while len(rev_x_pi) > 0:
+            ret = scale_up_interferometr_pi(ret, rev_x_pi)
+            rev_x_pi = rev_x_pi[1:-1]
 
     # if rawdata.label=='ne2':
     #    ret = post_interferometer_2(ret)
@@ -93,7 +96,7 @@ def Diagnostic_Interferometer(rawdata, master):
             mult *= (-1)
         ret['V'] = ret['V'] * mult
     set_parameters(dia, ret)
-    print('Интерферометр')
+
     return ret
 
 
