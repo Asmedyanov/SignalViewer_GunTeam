@@ -7,6 +7,7 @@ from classes.diagnosticdata import DiagnosticData
 from classes.correlationdata import CorrelationData
 import numpy as np
 import pandas as pd
+from classes.rawdata import RawData
 
 
 class Experiment:
@@ -136,7 +137,9 @@ class Experiment:
         for i, data in enumerate(self.correlationDataList):
             if f'correlation {i}_speed' not in self.statDict.keys():
                 self.statDict[f'correlation {i}_speed'] = []
-            self.statDict[f'correlation {i}_speed'].append(0.2/data.get_shift())
+            self.statDict[f'correlation {i}_speed'].append(0.2 / data.get_shift())
+
+
 
     def saveStatistic(self, fileName='default.txt'):
         if len(self.statDict) == 0:
@@ -144,7 +147,14 @@ class Experiment:
         output = pd.DataFrame()
         for mykey, myvalue in self.statDict.items():
             output[mykey] = myvalue
-        output.to_csv(fileName, sep='\t',float_format='%.1e')
+        output.to_csv(fileName, sep='\t', float_format='%.1e')
+        time = np.array(self.statDict['I, кА_max'])
+        values = np.array(self.statDict['Q, Дж_max'])
+        Energy_vs_I = RawData(time=time, values=values)
+
+        plotStatList = [Energy_vs_I]
+
+        self.master.mainPlotDict['Сырая стастика'].plot(plotStatList, style='o')
 
     def loadSettings(self, filename=default_file):
         self.oscDict = dict()

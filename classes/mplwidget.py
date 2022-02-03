@@ -32,7 +32,7 @@ class MplWidget(QWidget):
         self.vbl.addWidget(NavigationToolbar2QT(self.canvas, self))
         self.setLayout(self.vbl)
 
-    def plot(self, datalist, header=''):
+    def plot(self, datalist, header='', style='-'):
         self.canvas.fig.clear()
         overlaylist = []
         seriallist = []
@@ -59,8 +59,8 @@ class MplWidget(QWidget):
                     timescale = data.timeDim
                 except:
                     timescale = 'сек'
-                axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'],label = data.label)
-                #axes.set_ylabel(data.label)  # Подписать вертикальные оси
+                axes.plot(data['T'] * constants.timeScaleDict[timescale], data['V'], style, label=data.label)
+                # axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
             axes.set_xlabel(f't, {timescale}')
             axes.legend()
@@ -73,7 +73,7 @@ class MplWidget(QWidget):
                         timescale = data.timeDim
                     except:
                         timescale = 'сек'
-                    axes[i].plot(data['T'] * constants.timeScaleDict[timescale], data['V'])
+                    axes[i].plot(data['T'] * constants.timeScaleDict[timescale], data['V'], style)
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
                 except:

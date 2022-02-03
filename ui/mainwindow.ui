@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
@@ -37,6 +37,11 @@
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
           <string>Кросс-корреляции</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>Сырая стастика</string>
          </attribute>
         </widget>
        </widget>
@@ -157,7 +162,7 @@
   <action name="action_6">
    <property name="icon">
     <iconset theme="Шаблон">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>C:/Users/asmedian/.designer/backup</normaloff>C:/Users/asmedian/.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Открыть шаблон эксперимента</string>
