@@ -85,7 +85,7 @@ class MplWidget(QWidget):
                     except:
                         timescale = 'сек'
                     axes[n - 1].plot(data['T'] * constants.timeScaleDict[timescale], data['V'],
-                                     label=f'{data.label} #{i}')
+                                     label=f'{data.label}')
                     axes[n - 1].set_ylabel(data.label)
                     axes[n - 1].legend()  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[n - 1])

@@ -1,1 +1,3 @@
-D:/1. Clouds/GUN_TEAM/Experiments/01-02-2022/v0.bin
+D:/1. Clouds/GUN_TEAM/Experiments/01-02-2022/COLO0036.PRN
+D:/1. Clouds/GUN_TEAM/Experiments/01-02-2022 — копия/V0/v0.bin
+C:/Users/asmedian/Desktop/Дебаг/V2/v2.bin

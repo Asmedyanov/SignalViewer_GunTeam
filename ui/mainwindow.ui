@@ -20,19 +20,24 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Сырые сигналы</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+        </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
           <string>Итоговые сигналы</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout"/>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="tab_3">
          <attribute name="title">
-          <string>Сырые сигналы</string>
+          <string>Кросс-корреляции</string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_3"/>
         </widget>
        </widget>
       </item>

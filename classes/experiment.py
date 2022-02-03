@@ -1,7 +1,12 @@
+import re
+
 from constants import *
 import xml.etree.ElementTree as xml
 from classes.spectrdata import SpectrData
 from classes.diagnosticdata import DiagnosticData
+from classes.correlationdata import CorrelationData
+import numpy as np
+import pandas as pd
 
 
 class Experiment:
@@ -10,8 +15,10 @@ class Experiment:
         self.rawdatalist = []
         self.rawSpectraList = []
         self.diagnosticDataList = []
+        self.correlationDataList = []
         self.oscDict = dict()
         self.diaDict = dict()
+        self.statDict = dict()
         self.loadSettings()
 
     def addRawdataList(self, rawdatalist):
@@ -23,9 +30,11 @@ class Experiment:
             header = f'{header}/{fileName}'
         except:
             pass
-        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist,header )
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, header)
         # self.upDateRowSpectra()
         self.upDataDiacnosticData()
+        self.upDataCorrelationData()
+        self.upDataStatistic()
         # self.upDateDiaSpectra()
 
     def addRawdataList_NoUpdate(self, rawdatalist):
@@ -37,8 +46,13 @@ class Experiment:
             header = f'{header}/{fileName}'
         except:
             pass
-        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist,header )
+        self.master.mainPlotDict['Сырые сигналы'].plot(self.rawdatalist, header)
 
+    def exist_labels(self):
+        ret = []
+        for data in self.rawdatalist + self.diagnosticDataList + self.correlationDataList:
+            ret.append(data.label.split('#')[0])
+        return ret
 
     def upDateRowSpectra(self):
         self.rawSpectraList = []
@@ -56,8 +70,17 @@ class Experiment:
 
     def upDataDiacnosticData(self):
         self.diagnosticDataList = []
+        diagnosticNames = dict()
         for rawdata in self.rawdatalist:
-            self.diagnosticDataList.append(DiagnosticData(rawdata, self))
+            dia_data = DiagnosticData(rawdata, self)
+            label = dia_data.label
+            try:
+                diagnosticNames[label] += 1
+                label = f'{label} #{diagnosticNames[label]}'
+            except:
+                diagnosticNames[label] = 1
+            dia_data.label = label
+            self.diagnosticDataList.append(dia_data)
         header = self.master.foldername
         try:
             fileName = self.master.fileList[-1].split('/')[-1]
@@ -66,8 +89,62 @@ class Experiment:
             pass
         self.master.mainPlotDict['Итоговые сигналы'].plot(self.diagnosticDataList, header)
 
+    def upDataCorrelationData(self):
+        self.correlationDataList = []
+        listForCorrelation = []
+        for data in self.diagnosticDataList:
+            try:
+                if data.Overlay == '1':
+                    listForCorrelation.append(data)
+            except:
+                pass
+        n_cor = len(listForCorrelation)
+        if n_cor == 0:
+            return
+        for i in range(n_cor):
+            for j in range(i + 1, n_cor):
+                self.correlationDataList.append(CorrelationData(listForCorrelation[i], listForCorrelation[j], self))
+        header = self.master.foldername
+        try:
+            fileName = self.master.fileList[-1].split('/')[-1]
+            header = f'{header}/{fileName}'
+        except:
+            pass
+        self.master.mainPlotDict['Кросс-корреляции'].plot(self.correlationDataList, header)
+        # l = 2.3e-1
+        # t = self.correlationDataList[0].get_shift()
+        # print(f'скорость {1.0e-3 * l / t} км/с')
+
     def clear(self):
         self.rawdatalist = []
+
+    def clear_statistic(self):
+        self.statDict = dict()
+
+    def upDataStatistic(self):
+        try:
+            if self.master.foldername[1:] not in self.statDict['Выстрел']:
+                self.statDict['Выстрел'].append(self.master.foldername[1:])
+        except:
+            self.statDict['Выстрел'] = []
+            self.statDict['Выстрел'].append(self.master.foldername[1:])
+        for data in self.diagnosticDataList:
+            data_name = data.label
+            if f'{data_name}_max' not in self.statDict.keys():
+                self.statDict[f'{data_name}_max'] = []
+            self.statDict[f'{data_name}_max'].append(np.max(data['V']))
+        for i, data in enumerate(self.correlationDataList):
+            if f'correlation {i}_speed' not in self.statDict.keys():
+                self.statDict[f'correlation {i}_speed'] = []
+            self.statDict[f'correlation {i}_speed'].append(0.2/data.get_shift())
+
+    def saveStatistic(self, fileName='default.txt'):
+        if len(self.statDict) == 0:
+            return
+        output = pd.DataFrame()
+        for mykey, myvalue in self.statDict.items():
+            output[mykey] = myvalue
+        output.to_csv(fileName, sep='\t',float_format='%.1e')
 
     def loadSettings(self, filename=default_file):
         self.oscDict = dict()

@@ -107,7 +107,7 @@ def calorimetr(data):
     t = data['T'].values
     U0 = 1.5
     R0 = 910.0
-    r = R0 * u / (U0 - u)
+    r = np.abs(R0 * u / (U0 - u))
     dataret = RawData('', data.diagnostic, t, r)
     return dataret
 
@@ -122,7 +122,8 @@ def Diagnostic_Calorimetr(rawdata, master):
     ret = rolling_avg(ret, 1.0 / ffinish)
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = np.abs(ret['V'] - retmin) * mult
+    ret['V'] = (ret['V'] - retmin) * mult
+    #ret['V'] = (ret['V']-85) * mult
     set_parameters(dia, ret)
     return ret
 

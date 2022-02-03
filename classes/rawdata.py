@@ -4,7 +4,7 @@ import numpy as np
 
 class RawData(DataFrame):
     def __init__(self, label='rawdata', diagnostic='Делитель', time=np.array([]), values=np.array([])):
-        super(RawData, self).__init__()
+        super().__init__()
         self.label = label
         self.diagnostic = diagnostic
         self.timeDim = 'сек'
@@ -16,7 +16,6 @@ class RawData(DataFrame):
         timeSteps = np.gradient(self['T'])
         meanStep = np.mean(timeSteps)
         return meanStep
-
     def __str__(self):
         try:
             mintime = np.min(self['T'])

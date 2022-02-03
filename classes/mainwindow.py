@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         currentmenu = self.mainActionsDict['Пакетная обработка папки']
         currentmenu['Пакетная обработка по сырым данным'].triggered.connect(self.packetRowData)
         currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetResultData)
-        #currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
+        # currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         self.foldername = '/'.join(folderName.split('/')[-2:])
         addeddatalist = filefunctions.addFile(self.lastFileName, self.experiment)
         self.experiment.addRawdataList(addeddatalist)
-        #self.experiment.upDataDiacnosticData()
+        # self.experiment.upDataDiacnosticData()
         file = open('lastfilename.txt', 'w')
         for name in self.fileList:
             file.write(f'{name}\n')
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow):
             self.fileList.append(f'{folderName}/{fileName}')
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
-        #self.experiment.upDataDiacnosticData()
+        # self.experiment.upDataDiacnosticData()
         os.chdir(curentDir)
         file = open('lastfilename.txt', 'w')
         for name in self.fileList:
@@ -278,27 +278,39 @@ class MainWindow(QMainWindow):
             self.mainPlotDict['Сырые сигналы'].canvas.fig.savefig(f'Сырые сигналы/{tfolderName}.png')
             self.clearAll()
         os.chdir(curentDir)
+
     def packetResultData(self):
         self.lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите добавить")[0]
+        if self.lastFileName in ['', None]:
+            return
         folderName = '/'.join(self.lastFileName.split('/')[:-2])
+
         self.foldername = '/'.join(folderName.split('/')[-3:])
+        self.experiment.clear_statistic()
         curentDir = os.getcwd()
         os.chdir(folderName)
         os.makedirs('Итоговые сигналы', exist_ok=True)
+        os.makedirs('Статистика', exist_ok=True)
         for tfolderName in os.listdir():
+            if not tfolderName[0] == 'V':
+                continue
             os.chdir(tfolderName)
+            addeddatalist = []
             for fileName in os.listdir():
+
                 try:
-                    addeddatalist = filefunctions.addFile(fileName, self.experiment)
+                    addeddatalist = addeddatalist + filefunctions.addFile(fileName, self.experiment)
                     self.fileList.append(fileName)
                     self.foldername = tfolderName
-                    self.experiment.addRawdataList(addeddatalist)
+
                 except:
                     pass
+            self.experiment.addRawdataList(addeddatalist)
             print(tfolderName)
             os.chdir(folderName)
             self.mainPlotDict['Итоговые сигналы'].canvas.fig.savefig(f'Итоговые сигналы/{tfolderName}.png')
             self.clearAll()
+        self.experiment.saveStatistic(f'Статистика/Статистика.txt')
         os.chdir(curentDir)
