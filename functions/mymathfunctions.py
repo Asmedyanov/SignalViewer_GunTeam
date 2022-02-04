@@ -57,8 +57,17 @@ def rolling_avg(data, t_window):
     meanStep = np.mean(timeSteps)
     n_window = int(t_window / meanStep)
     signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
-    time = np.convolve(time, np.ones(n_window), 'valid') / n_window
+    time = (time + 0.5 * t_window)[:signal.size]
     dataret = RawData(data.label, data.diagnostic, time, signal)
+
+    return dataret
+
+
+def cut_negative(data):
+    signal = data['V'].values
+    time = data['T'].values
+    new_signal = np.where(signal > 0, signal, 0)
+    dataret = RawData(data.label, data.diagnostic, time, new_signal)
 
     return dataret
 
@@ -202,13 +211,13 @@ def regect_filter(data, f_gen=300.0):
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
 
-    nfur = 3 * len(signal)
+    nfur = 8 * len(signal)
     f_signal = rfft(signal, n=nfur)
     W = fftfreq(f_signal.size, d=dt)[:int(f_signal.size)]
     cut_f_signal = f_signal.copy()
     f_reg = 2.0 * np.pi * f_gen  # W[np.argmax(f_signal[200:])]
     fw = f_reg * 4
-    fwindow = np.exp(-np.power((W) / fw, 2))
+    fwindow = np.exp(-np.power(W / fw, 2))
     for n in range(1, 4):
         fwindow += np.exp(-np.power((W - f_reg * n) / fw, 2))
     fwindow += np.exp(-np.power((W - f_reg * 0.5) / fw, 2))

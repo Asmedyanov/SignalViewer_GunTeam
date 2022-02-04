@@ -77,7 +77,7 @@ def Diagnostic_Interferometer(rawdata, master):
     rev_x_0 = find_revers_0(data)
     rev_x_pi = find_revers_pi(data)
     ret = preinterferometer(rawdata, fstart)
-    #ret = rolling_avg(ret, 1.0 / ffinish)
+    # ret = rolling_avg(ret, 1.0 / ffinish)
     ret = ininterval(ret, tstart, tfinish)
     if len(rev_x_0) % 2 == 0:
         while len(rev_x_0) > 0:
@@ -89,16 +89,15 @@ def Diagnostic_Interferometer(rawdata, master):
             ret = scale_up_interferometr_pi(ret, rev_x_pi)
             rev_x_pi = rev_x_pi[1:-1]
 
-    # if rawdata.label=='ne2':
-    #    ret = post_interferometer_2(ret)
+
     if mult == 'На себя':
         ret = norm_data(ret)
     else:
         if abs(ret['V'].max()) < abs(ret['V'].min()):
             mult *= (-1)
         ret['V'] = ret['V'] * mult
+    ret = cut_negative(ret)
     set_parameters(dia, ret)
-
     return ret
 
 
@@ -123,7 +122,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = (ret['V'] - retmin) * mult
-    #ret['V'] = (ret['V']-85) * mult
+    # ret['V'] = (ret['V']-85) * mult
     set_parameters(dia, ret)
     return ret
 

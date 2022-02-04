@@ -3,7 +3,7 @@ from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
 
-visinity = 1.2
+visinity = 1.1
 prominence = 0.15
 
 
