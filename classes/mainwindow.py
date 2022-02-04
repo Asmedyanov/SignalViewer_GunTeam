@@ -313,4 +313,5 @@ class MainWindow(QMainWindow):
             self.mainPlotDict['Итоговые сигналы'].canvas.fig.savefig(f'Итоговые сигналы/{tfolderName}.png')
             self.clearAll()
         self.experiment.saveStatistic(f'Статистика/Статистика.txt')
+        self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
         os.chdir(curentDir)

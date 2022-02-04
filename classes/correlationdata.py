@@ -32,26 +32,22 @@ class CorrelationData(DataFrame):
             rightdata['V'] = new_value
             rightdata['T'] = new_time
         dt = max(dt1, dt2)
+        a = leftdata['V'].values
+        b = rightdata['V'].values
 
-        def crosscorr(a, b, tau):
-            ret = 0
-            ret1 = 0
-            ret2 = 0
-            n = len(a) - tau
-            # ret = np.sum(a[:n] * b[tau:tau + n])
-            # ret1 = np.sum(a[tau:tau + n] * a[tau:tau + n])
-            # ret2 = np.sum(b[tau:tau + n] * b[tau:tau + n])
-            for k in range(n):
-                ret += a[k] * b[k + tau]
-                ret1 += a[k + tau] * a[k + tau]
-                ret2 += b[k + tau] * b[k + tau]
+        def crosscorr(tau):
+            n0 = int(len(a))
+            n = int(len(a) - tau)
+            v1 = a[:n]
+            v2 = b[int(tau):n0]
+            ret = np.dot(v1, v2)
+            ret1 = np.dot(v1, v1)
+            ret2 = np.dot(v2, v2)
             return (ret * ret) / (ret1 * ret2)
 
-        acrosscorr = []
-        for tau in range(int(len(leftdata) * 0.125) - 1):
-            acrosscorr.append(crosscorr(leftdata['V'], rightdata['V'], tau))
-        # correlation_value = np.convolve(leftdata['V'], rightdata['V'], mode='same')
-        correlation_value = np.array(acrosscorr)
+        vcrosscorr = np.vectorize(crosscorr)
+        tau = np.arange(len(leftdata) * 1 / 7)
+        correlation_value = vcrosscorr(tau)
 
         self['T'] = dt * np.arange(len(correlation_value))
         self['V'] = correlation_value

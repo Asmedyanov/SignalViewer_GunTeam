@@ -8,6 +8,7 @@ from classes.correlationdata import CorrelationData
 import numpy as np
 import pandas as pd
 from classes.rawdata import RawData
+from functions.mymathfunctions import integral
 
 
 class Experiment:
@@ -131,30 +132,58 @@ class Experiment:
             self.statDict['Выстрел'].append(self.master.foldername[1:])
         for data in self.diagnosticDataList:
             data_name = data.label
-            if f'{data_name}_max' not in self.statDict.keys():
-                self.statDict[f'{data_name}_max'] = []
-            self.statDict[f'{data_name}_max'].append(np.max(data['V']))
+            if data_name[0] in ['Q', 'I']:
+                if f'{data_name}_max' not in self.statDict.keys():
+                    self.statDict[f'{data_name}_max'] = []
+                self.statDict[f'{data_name}_max'].append(np.max(data['V']))
+            if data_name.split(',')[0] in ['$n_{e}$']:
+                if f'{data_name}_int' not in self.statDict.keys():
+                    self.statDict[f'{data_name}_int'] = []
+                self.statDict[f'{data_name}_int'].append(integral(data))
         for i, data in enumerate(self.correlationDataList):
             if f'correlation {i}_speed' not in self.statDict.keys():
                 self.statDict[f'correlation {i}_speed'] = []
             self.statDict[f'correlation {i}_speed'].append(0.2 / data.get_shift())
 
-
-
     def saveStatistic(self, fileName='default.txt'):
         if len(self.statDict) == 0:
             return
         output = pd.DataFrame()
+        # Создадим колонку энергии по интерферометру
+        ne_list = []
+        speed_list = []
+        for my_key, my_value in self.statDict.items():
+            if my_key.split(',')[0] in ['$n_{e}$']:
+                ne_list.append(np.array(my_value))
+            if my_key.split('_')[-1] in ['speed']:
+                speed_list.append(np.array(my_value))
+        ne = ne_list[0]
+        for i in range(1, len(ne_list)):
+            ne =ne + ne_list[i]
+        ne = ne * 1.0 / len(ne_list)
+        speed = speed_list[0]
+        for i in range(1, len(speed_list)):
+            speed += speed_list[i]
+        speed = speed * 1.0 / len(speed_list)
+        Energy = 1.67e-27 * np.pi * (2.0e-2 ** 2) * ne * 1.0e21 * (speed ** 3) * 0.5
+        self.statDict['Energy_interf, Дж'] = Energy
+
+        x_key = 'I, кА_max'
+        plotStatList = []
         for mykey, myvalue in self.statDict.items():
             output[mykey] = myvalue
+            if mykey == x_key:
+                continue
+            if mykey[0] not in ['Q', 'E']:
+                continue
+            time = np.array(self.statDict[x_key])
+            values = np.array(self.statDict[mykey])
+            Data_vs_x = RawData(label=mykey, time=time, values=values)
+            Data_vs_x.timeDim = x_key
+            plotStatList.append(Data_vs_x)
         output.to_csv(fileName, sep='\t', float_format='%.1e')
-        time = np.array(self.statDict['I, кА_max'])
-        values = np.array(self.statDict['Q, Дж_max'])
-        Energy_vs_I = RawData(time=time, values=values)
 
-        plotStatList = [Energy_vs_I]
-
-        self.master.mainPlotDict['Сырая стастика'].plot(plotStatList, style='o')
+        self.master.mainPlotDict['Сырая статистика'].plot(plotStatList, header='Сырая статистика', style='o')
 
     def loadSettings(self, filename=default_file):
         self.oscDict = dict()

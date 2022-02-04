@@ -41,7 +41,7 @@
         </widget>
         <widget class="QWidget" name="tab_4">
          <attribute name="title">
-          <string>Сырая стастика</string>
+          <string>Сырая статистика</string>
          </attribute>
         </widget>
        </widget>

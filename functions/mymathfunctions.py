@@ -63,6 +63,14 @@ def rolling_avg(data, t_window):
     return dataret
 
 
+def integral(data):
+    signal = data['V'].values
+    time = data['T'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+    return meanStep * np.sum(signal)
+
+
 def my_fft_filter_fin(data, fstart, ffinish):
     signal = data['V'].values
     time = data['T'].values
