@@ -159,7 +159,7 @@ class Experiment:
                 speed_list.append(np.array(my_value))
         ne = ne_list[0]
         for i in range(1, len(ne_list)):
-            ne =ne + ne_list[i]
+            ne = ne + ne_list[i]
         ne = ne * 1.0 / len(ne_list)
         speed = speed_list[0]
         for i in range(1, len(speed_list)):
@@ -167,6 +167,8 @@ class Experiment:
         speed = speed * 1.0 / len(speed_list)
         Energy = 1.67e-27 * np.pi * (2.0e-2 ** 2) * ne * 1.0e21 * (speed ** 3) * 0.5
         self.statDict['Energy_interf, Дж'] = Energy
+        Energy_Ratio = 100.0 * Energy / self.statDict['Q, Дж_max'].values
+        self.statDict['Energy_ratio, %'] = Energy_Ratio
 
         x_key = 'I, кА_max'
         plotStatList = []

@@ -89,7 +89,6 @@ def Diagnostic_Interferometer(rawdata, master):
             ret = scale_up_interferometr_pi(ret, rev_x_pi)
             rev_x_pi = rev_x_pi[1:-1]
 
-
     if mult == 'На себя':
         ret = norm_data(ret)
     else:
@@ -168,6 +167,21 @@ def Diagnostic_Start(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    # retmin = ret['V'].loc[ret['T'] < 0].mean()
+    ret = ininterval(ret, tstart, tfinish)
+    ret['V'] = ret['V'] * mult
+    set_parameters(dia, ret)
+    return ret
+
+
+def Diagnostic_Devider(rawdata, master):
+    diagnostic = 'Делитель напряжения'
+    if rawdata.diagnostic != diagnostic:
+        return None
+    dia = master.getDia(diagnostic)
+    tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
+    # ret = my_fft_filter_com(rawdata, fstart, ffinish)
+    ret = rolling_avg(rawdata, 1.0 / ffinish)
     # retmin = ret['V'].loc[ret['T'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
     ret['V'] = ret['V'] * mult
