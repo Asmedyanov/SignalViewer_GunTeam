@@ -1,1 +1,1 @@
-D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-03-02-2Инт-1Дел.xml
+D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-02-07-2инт-1кол-1пояс-1делитель.xml
