@@ -56,7 +56,8 @@ def rolling_avg(data, t_window):
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     n_window = int(t_window / meanStep)
-    signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
+    if n_window != 0:
+        signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
     time = (time + 0.5 * t_window)[:signal.size]
     dataret = RawData(data.label, data.diagnostic, time, signal)
 
