@@ -3,65 +3,21 @@ from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
 
-visinity = 1.1
-prominence = 0.15
+visinity = 1.4
+prominence = 0.05
 
-
-def interferometer(d):
-    dt = 0.1  # np.nan_to_num(np.gradient(d['Time'])).mean()
-    # Выделем участок с плазмой
-    dataplasma = d.loc[(d['Time'] < 100) & (d['Time'] > 10)]
-    dataplasma.index = pd.RangeIndex(len(dataplasma.index))
-    # Находим максимумы и минимумы
-    maxarray = argrelextrema(dataplasma['Values'].values, np.greater, order=int(20.0 / dt))[0]
-    minarray = argrelextrema(dataplasma['Values'].values, np.less, order=int(20.0 / dt))[0]
-    # print(np.max(d['Values'][maxarray]))
-    # Находим максимальный максимум и минимальный минимум
-    maxmax = np.max(dataplasma['Values'][maxarray])
-    minmin = np.min(dataplasma['Values'][minarray])
-    # Решаем что брать в качестве границ плазмы
-    if minarray.size == 0:
-        minarray = np.array([dataplasma['Time'].min(), dataplasma['Time'].max()])
-    if maxarray.size == 0:
-        maxarray = np.array([dataplasma['Time'].min(), dataplasma['Time'].max()])
-    borders = [minarray[0], minarray[-1]]
-
-    if (abs(maxmax) < abs(minmin)):
-        borders = [maxarray[0], maxarray[-1]]
-        dataplasma['Values'] = -dataplasma['Values']
-    shift = max([dataplasma['Values'][borders[0]], dataplasma['Values'][borders[1]]])
-
-    dataplasma['Values'] = dataplasma['Values'] - shift
-    # Занулим все слева и справа
-    # dataplasma['Values']=np.where(dataplasma['Values']>0,dataplasma['Values'],0)
-    dataplasmaprobe = np.where(((dataplasma.index > borders[0]) & (dataplasma.index < borders[1])),
-                               dataplasma['Values'], 0)
-    if dataplasmaprobe.sum() != 0:
-        dataplasma['Values'] = dataplasmaprobe
-    # Smooth_data(master, dataplasma)
-    # Выправим зашкалы
-    for rn in range(2):
-        maxarray = argrelextrema(dataplasma['Values'].values, np.greater, order=int(5.0 / dt))[0]
-        # print(dataplasma['Time'][maxarray])
-        if (maxarray.size > 1) & (dataplasma['Values'].max() > 0.7):
-            # Выполним разворот
-            maxrev = max([dataplasma['Values'][maxarray[0]], dataplasma['Values'][maxarray[-1]]])
-            dataplasma['Values'] = np.where(((dataplasma['Time'] > dataplasma['Time'][maxarray[0]])
-                                             & (dataplasma['Time'] < dataplasma['Time'][maxarray[-1]])),
-                                            2 * maxrev - dataplasma['Values'], dataplasma['Values'])
-    dataplasma['Values'] = np.where(dataplasma['Values'] > 0, dataplasma['Values'], 0)
-
-    return dataplasma
 
 
 def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
-    mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    #mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    mininterf = d['Values'].min()
     d['Values'] = d['Values'] - mininterf
-    maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
-    d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+    #maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    maxinterf = d['Values'].max()
+    #d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    #d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -73,11 +29,13 @@ def fase_interferometr(data):
 def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
-    mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    mininterf = d['Values'].min()
+    #mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
     d['Values'] = d['Values'] - mininterf
-    maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
-    d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+    #maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    maxinterf = d['Values'].max()
+    #d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    #d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть

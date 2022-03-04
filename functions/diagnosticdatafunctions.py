@@ -95,7 +95,7 @@ def Diagnostic_Interferometer(rawdata, master):
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
         ret['Values'] = ret['Values'] * mult
-    ret = cut_negative(ret)
+    #ret = cut_negative(ret)
     set_parameters(dia, ret)
     return ret
 
@@ -103,7 +103,7 @@ def Diagnostic_Interferometer(rawdata, master):
 def calorimetr(data):
     u = data['Values'].values
     t = data['Time'].values
-    U0 = 1.5
+    U0 = 1.52
     R0 = 910.0
     r = np.abs(R0 * u / (U0 - u))
     dataret = RawData(label='', diagnostic=data.diagnostic, time=t, values=r)
@@ -118,8 +118,8 @@ def Diagnostic_Calorimetr(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
     ret = rolling_avg(ret, 1.0 / ffinish)
-    retmin = ret['Values'].loc[ret['Time'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
+    retmin = ret['Values'].loc[ret['Time'] < 0].min()
     ret['Values'] = (ret['Values'] - retmin) * mult
     # ret['Values'] = (ret['Values']-85) * mult
     set_parameters(dia, ret)
