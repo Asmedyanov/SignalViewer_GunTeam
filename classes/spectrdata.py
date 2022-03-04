@@ -7,8 +7,8 @@ from functions import mymathfunctions
 class SpectrData(DataFrame):
     def __init__(self, data):
         super(SpectrData, self).__init__()
-        time = data['T'].values
-        value = data['V'].values
+        time = data['Time'].values
+        value = data['Values'].values
         #value = value-value.mean()
         self.label = data.label
 
@@ -21,6 +21,6 @@ class SpectrData(DataFrame):
         yvalue = np.abs(fft(value, n=nf))
         #yvalue = np.abs(fft(value))
         xvalue = fftfreq(len(yvalue), meanStep)
-        self['T'] = xvalue[:int(xvalue.size / (2))]
-        #self['V'] = np.nan_to_num(np.log10(yvalue[:int(yvalue.size / (2))]))
-        self['V'] = np.nan_to_num(yvalue[:int(yvalue.size / (2))])
+        self['Time'] = xvalue[:int(xvalue.size / (2))]
+        #self['Values'] = np.nan_to_num(np.log10(yvalue[:int(yvalue.size / (2))]))
+        self['Values'] = np.nan_to_num(yvalue[:int(yvalue.size / (2))])

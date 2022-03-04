@@ -15,8 +15,8 @@ class DiagnosticData(DataFrame):
                 break
         if returndata is None:
             return
-        self['T'] = returndata['T']
-        self['V'] = returndata['V']
+        self['Time'] = returndata['Time']
+        self['Values'] = returndata['Values']
         self.label = returndata.label
         self.timeDim = returndata.timeDim
         self.Overlay = returndata.Overlay

@@ -24,9 +24,9 @@ def get_up_envelope(data):
     pic_width = 0.125 / 200.0
     pic_dist = 1.0 / 200.0
     pic_ampl_proc = 60.0
-    signal = data['V'].values
-    time = data['T'].values
-    pic_max = data['V'].loc[data['T'] > data['T'].mean()].max()
+    signal = data['Values'].values
+    time = data['Time'].values
+    pic_max = data['Values'].loc[data['Time'] > data['Time'].mean()].max()
     pic_ampl = 1.0e-2 * pic_ampl_proc * pic_max
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
@@ -46,44 +46,44 @@ def get_up_envelope(data):
     f = interp1d(pic_array_raw_time, pic_array_raw_value, kind='cubic', bounds_error=False, fill_value=0.0)
     env_down = -f(time)
     env_com = 0.5 * (env_down + env_up)
-    dataret = RawData('', data.diagnostic, data['T'].values, data['V'].values - env_com)
+    dataret = RawData(label='', diagnostic= data.diagnostic,time= data['Time'].values,values= data['Values'].values - env_com)
     return dataret
 
 
 def rolling_avg(data, t_window):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     n_window = int(t_window / meanStep)
     if n_window != 0:
         signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
     time = (time + 0.5 * t_window)[:signal.size]
-    dataret = RawData(data.label, data.diagnostic, time, signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time, values=signal)
 
     return dataret
 
 
 def cut_negative(data):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     new_signal = np.where(signal > 0, signal, 0)
-    dataret = RawData(data.label, data.diagnostic, time, new_signal)
+    dataret = RawData(label= data.label,diagnostic= data.diagnostic,time= time,values= new_signal)
 
     return dataret
 
 
 def integral(data):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     return meanStep * np.sum(signal)
 
 
 def my_fft_filter_fin(data, fstart, ffinish):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     fmax = 0.5 / meanStep
@@ -101,7 +101,7 @@ def my_fft_filter_fin(data, fstart, ffinish):
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
     cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
     new_time = np.arange(0, cut_signal.size) * meanStep
-    dataret = RawData(data.label, data.diagnostic, new_time, cut_signal)
+    dataret = RawData(label= data.label,diagnostic= data.diagnostic,time= new_time,values= cut_signal)
 
     return dataret
 
@@ -109,8 +109,8 @@ def my_fft_filter_fin(data, fstart, ffinish):
 def my_fft_filter_com(data, fstart, ffinish):
     # data = data.dropna()
     # data.index = pd.RangeIndex(len(data.index))
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     '''wn1 = 2 * fstart * meanStep
@@ -128,7 +128,7 @@ def my_fft_filter_com(data, fstart, ffinish):
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, fwindow)
 
     cut_signal = irfft(cut_f_signal * fwindow)
-    dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time[:cut_signal.size], values=cut_signal)
 
     return dataret
 
@@ -136,8 +136,8 @@ def my_fft_filter_com(data, fstart, ffinish):
 def my_fft_filter_sharp(data, fstart, ffinish):
     # data = data.dropna()
     # data.index = pd.RangeIndex(len(data.index))
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
     '''wn1 = 2 * fstart * meanStep
@@ -152,7 +152,7 @@ def my_fft_filter_sharp(data, fstart, ffinish):
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
 
     cut_signal = irfft(cut_f_signal * fwindow)
-    dataret = RawData(data.label, data.diagnostic, time[:cut_signal.size], cut_signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time[:cut_signal.size], values=cut_signal)
 
     return dataret
 
@@ -160,8 +160,8 @@ def my_fft_filter_sharp(data, fstart, ffinish):
 def my_fft_filter_back(data, fstart, ffinish):
     # data = data.dropna()
     # data.index = pd.RangeIndex(len(data.index))
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     timeSteps = np.gradient(time)
     meanStep = np.mean(timeSteps)
 
@@ -184,20 +184,21 @@ def my_fft_filter_back(data, fstart, ffinish):
 
 
 def ininterval(data, left, right):
-    ret = data.loc[(((data['T'] >= left) & (data['T'] <= right)))]
-    dataret = RawData(data.label, data.diagnostic, ret['T'].values, ret['V'].values)
+    ret = data.loc[(((data['Time'] >= left) & (data['Time'] <= right)))]
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=ret['Time'].values,
+                      values=ret['Values'].values)
     return dataret
 
 
 def norm_data(data):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     if abs(signal.max()) < abs(signal.min()):
         signal = signal * (-1)
 
     maxsignal = signal.max()
     signal = 100 * signal / maxsignal
-    dataret = RawData(f"%", data.diagnostic, time, signal)
+    dataret = RawData(label="%", diagnostic=data.diagnostic, time=time, values=signal)
     return dataret
 
 
@@ -207,8 +208,8 @@ def find_nearest(a, value):
 
 
 def regect_filter(data, f_gen=300.0):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
 
@@ -226,6 +227,6 @@ def regect_filter(data, f_gen=300.0):
     cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
     cut_time = time[:cut_signal.size]
 
-    dataret = RawData(data.label, data.diagnostic, cut_time, cut_signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=cut_time, values=cut_signal)
 
     return dataret

@@ -40,7 +40,7 @@ def Diagnostic_belt(rawdata, master):
     # ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = rolling_avg(rawdata, 1.0 / ffinish)
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = ret['V'] * mult
+    ret['Values'] = ret['Values'] * mult
     set_parameters(dia, ret)
     return ret
 
@@ -53,13 +53,13 @@ def Diagnostic_piezo(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = ininterval(ret, tstart, tfinish)
-    # ret['V'] = np.where(ret['V'] < 0, 0, ret['V'])
+    # ret['Values'] = np.where(ret['Values'] < 0, 0, ret['Values'])
     if mult == 'На себя':
-        ret['V'] = ret['V'] * (-1)
+        ret['Values'] = ret['Values'] * (-1)
         ret = norm_data(ret)
 
     else:
-        ret['V'] = ret['V'] * mult
+        ret['Values'] = ret['Values'] * mult
     set_parameters(dia, ret)
     return ret
 
@@ -92,21 +92,21 @@ def Diagnostic_Interferometer(rawdata, master):
     if mult == 'На себя':
         ret = norm_data(ret)
     else:
-        if abs(ret['V'].max()) < abs(ret['V'].min()):
+        if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
-        ret['V'] = ret['V'] * mult
+        ret['Values'] = ret['Values'] * mult
     ret = cut_negative(ret)
     set_parameters(dia, ret)
     return ret
 
 
 def calorimetr(data):
-    u = data['V'].values
-    t = data['T'].values
+    u = data['Values'].values
+    t = data['Time'].values
     U0 = 1.5
     R0 = 910.0
     r = np.abs(R0 * u / (U0 - u))
-    dataret = RawData('', data.diagnostic, t, r)
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=t, values=r)
     return dataret
 
 
@@ -118,27 +118,27 @@ def Diagnostic_Calorimetr(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
     ret = rolling_avg(ret, 1.0 / ffinish)
-    retmin = ret['V'].loc[ret['T'] < 0].mean()
+    retmin = ret['Values'].loc[ret['Time'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = (ret['V'] - retmin) * mult
-    # ret['V'] = (ret['V']-85) * mult
+    ret['Values'] = (ret['Values'] - retmin) * mult
+    # ret['Values'] = (ret['Values']-85) * mult
     set_parameters(dia, ret)
     return ret
 
 
 def get_init_value(data):
-    u0 = data['V'].loc[data['T'] < 5.0e-6].mean()
+    u0 = data['Values'].loc[data['Time'] < 5.0e-6].mean()
     return u0
 
 
 def reflectomert(data, u0):
-    u = np.where(data['V'].values < 0, 0, data['V'].values)
-    t = data['T'].values
+    u = np.where(data['Values'].values < 0, 0, data['Values'].values)
+    t = data['Time'].values
     u = np.abs(u - u0)
     u = u - np.min(u)
     umax = np.max(u)
     T = u / umax
-    dataret = RawData('', data.diagnostic, t, T)
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=t, values=T)
     return dataret
 
 
@@ -152,7 +152,7 @@ def Diagnostic_Reflectometr(rawdata, master):
     u0 = get_init_value(ret)
     ret = ininterval(ret, tstart, tfinish)
     ret = reflectomert(ret, u0)
-    # ret['V'] = ret['V'] * mult
+    # ret['Values'] = ret['Values'] * mult
 
     set_parameters(dia, ret)
     if (ret.Overlay != '1'):
@@ -167,9 +167,9 @@ def Diagnostic_Start(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = my_fft_filter_com(rawdata, fstart, ffinish)
-    # retmin = ret['V'].loc[ret['T'] < 0].mean()
+    # retmin = ret['Values'].loc[ret['Time'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = ret['V'] * mult
+    ret['Values'] = ret['Values'] * mult
     set_parameters(dia, ret)
     return ret
 
@@ -182,8 +182,8 @@ def Diagnostic_Devider(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     # ret = my_fft_filter_com(rawdata, fstart, ffinish)
     ret = rolling_avg(rawdata, 1.0 / ffinish)
-    # retmin = ret['V'].loc[ret['T'] < 0].mean()
+    # retmin = ret['Values'].loc[ret['Time'] < 0].mean()
     ret = ininterval(ret, tstart, tfinish)
-    ret['V'] = ret['V'] * mult
+    ret['Values'] = ret['Values'] * mult
     set_parameters(dia, ret)
     return ret

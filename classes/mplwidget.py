@@ -63,7 +63,7 @@ class MplWidget(QWidget):
                     timemult=constants.timeScaleDict[timescale]
                 except:
                     timemult=1
-                axes.plot(data['T'] * timemult, data['V'], style, label=data.label)
+                axes.plot(data['Time'] * timemult, data['Values'], style, label=data.label)
                 # axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
             axes.set_xlabel(f't, {timescale}')
@@ -81,7 +81,7 @@ class MplWidget(QWidget):
                         timemult = constants.timeScaleDict[timescale]
                     except:
                         timemult = 1
-                    axes[i].plot(data['T'] * timemult, data['V'], style)
+                    axes[i].plot(data['Time'] * timemult, data['Values'], style)
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
                 except:
@@ -92,7 +92,7 @@ class MplWidget(QWidget):
                         timescale = data.timeDim
                     except:
                         timescale = 'сек'
-                    axes[n - 1].plot(data['T'] * constants.timeScaleDict[timescale], data['V'],
+                    axes[n - 1].plot(data['Time'] * constants.timeScaleDict[timescale], data['Values'],
                                      label=f'{data.label}')
                     axes[n - 1].set_ylabel(data.label)
                     axes[n - 1].legend()  # Подписать вертикальные оси

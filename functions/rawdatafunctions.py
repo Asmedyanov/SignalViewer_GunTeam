@@ -29,7 +29,7 @@ def Open_A_CSV_short(a, master):
     try:
         osc = master.getOSC(mask)
         nameslist = [
-            'T'
+            'Time'
         ]
         chlist = list(osc['Каналы'].keys())
         chlist.sort()
@@ -50,9 +50,9 @@ def Open_A_CSV_short(a, master):
                 stmin = startdata.min()
                 stmax = startdata.max()
                 st = 0.5 * (stmax + stmin)
-                t0 = data['T'].loc[startdata < st].min()
+                t0 = data['Time'].loc[startdata < st].min()
                 break
-        time = data['T'] - t0
+        time = data['Time'] - t0
         returnlist = []
         for i in osc['Каналы'].keys():
             try:
@@ -78,7 +78,7 @@ def Open_A_CSV_full(a, master):
     try:
         osc = master.getOSC(mask)
         nameslist = [
-            'P', 'P1', 'P2', 'T'
+            'P', 'P1', 'P2', 'Time'
         ]
         chlist = list(osc['Каналы'].keys())
         chlist.sort()
@@ -92,8 +92,8 @@ def Open_A_CSV_full(a, master):
                 stmin = startdata.min()
                 stmax = startdata.max()
                 st = 0.5 * (stmax + stmin)
-                t0 = data['T'].loc[startdata < st].values.min()
-        time = data['T'] - t0
+                t0 = data['Time'].loc[startdata < st].values.min()
+        time = data['Time'] - t0
 
         returnlist = [
             RawData(osc['Каналы'][i]['Подпись'], osc['Каналы'][i]['Диагностика'], time, data[f'CH{i}']) for i in
@@ -119,8 +119,10 @@ def Open_F_1CSV(a, master):
     osc = master.getOSC(mask)
 
     data = pd.read_csv(a, skiprows=19, error_bad_lines=False, names=[
-        'T', 'V', 'e'], skipinitialspace=True)
-    returnlist = [RawData(osc['Каналы']['0']['Подпись'], osc['Каналы']['0']['Диагностика'], data['T'], data['V'])]
+        'Time', 'Values', 'e'], skipinitialspace=True)
+    returnlist = [
+        RawData(label=osc['Каналы']['0']['Подпись'], diagnostic=osc['Каналы']['0']['Диагностика'], time=data['Time'],
+                values=data['Values'])]
     return returnlist
 
 
@@ -149,7 +151,8 @@ def Open_PRN(a, master):
     for k, ch in osc['Каналы'].items():
         if ch['Отображение'] == '0':
             continue
-        returnlist.append(RawData(ch['Подпись'], ch['Диагностика'], time, data[f'CH{k}']))
+        new_data = RawData(label=ch['Подпись'], diagnostic=ch['Диагностика'], time=time, values=data[f'CH{k}'])
+        returnlist.append(new_data)
     return returnlist
 
 
@@ -176,7 +179,9 @@ def Open_bin(a, master):
         values = (value0[4 + k::16] - (1 << 11)) * (1.6 / (1 << 11))
         if osc['Каналы'][str(k)]['Отображение'] == '0':
             continue
-        returnlist.append(RawData(osc['Каналы'][str(k)]['Подпись'], osc['Каналы'][str(k)]['Диагностика'], time, values))
+        returnlist.append(
+            RawData(label=osc['Каналы'][str(k)]['Подпись'], diagnostic=osc['Каналы'][str(k)]['Диагностика'], time=time,
+                          values=values))
     return returnlist
 
 

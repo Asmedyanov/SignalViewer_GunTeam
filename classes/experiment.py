@@ -135,7 +135,7 @@ class Experiment:
             if data_name[0] in ['Q', 'I']:
                 if f'{data_name}_max' not in self.statDict.keys():
                     self.statDict[f'{data_name}_max'] = []
-                self.statDict[f'{data_name}_max'].append(np.max(data['V']))
+                self.statDict[f'{data_name}_max'].append(np.max(data['Values']))
             if data_name.split(',')[0] in ['$n_{e}$']:
                 if f'{data_name}_int' not in self.statDict.keys():
                     self.statDict[f'{data_name}_int'] = []

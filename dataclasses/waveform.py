@@ -9,31 +9,31 @@ class WaveForm(DataFrame):
             self.default()
             return
         try:
-            self['T'] = kwargs['time']
+            self['Time'] = kwargs['time']
         except:
-            self['T'] = args[0]
+            self['Time'] = args[0]
         try:
-            self['V'] = kwargs['value']
+            self['Values'] = kwargs['value']
         except:
-            self['V'] = args[1]
+            self['Values'] = args[1]
 
     def default(self):
-        self['T'] = np.array([])
-        self['V'] = np.array([])
+        self['Time'] = np.array([])
+        self['Values'] = np.array([])
 
     def samlePeriod(self):
         try:
-            timeSteps = np.gradient(self['T'])
+            timeSteps = np.gradient(self['Time'])
             meanStep = np.mean(timeSteps)
             return meanStep
         except:
             return 0
     def __str__(self):
         try:
-            mintime = np.min(self['T'])
-            maxtime = np.max(self['T'])
-            minvalues = np.min(self['V'])
-            maxvalues = np.max(self['V'])
+            mintime = np.min(self['Time'])
+            maxtime = np.max(self['Time'])
+            minvalues = np.min(self['Values'])
+            maxvalues = np.max(self['Values'])
         except:
             mintime = 0
             maxtime = 0

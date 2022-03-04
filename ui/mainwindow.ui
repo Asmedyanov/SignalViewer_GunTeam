@@ -273,7 +273,7 @@
     <string>Открыть прошлую сессию</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+O</string>
+    <string>Ctrl+Shift+R</string>
    </property>
   </action>
   <action name="action_25">

@@ -262,9 +262,13 @@ class MainWindow(QMainWindow):
         folderName = '/'.join(self.lastFileName.split('/')[:-2])
         self.foldername = '/'.join(folderName.split('/')[-3:])
         curentDir = os.getcwd()
-        os.chdir(folderName)
+        try:
+            os.chdir(folderName)
+        except:
+            return
         os.makedirs('Сырые сигналы', exist_ok=True)
-        for tfolderName in os.listdir():
+        folderNameList= [name for name in os.listdir() if os.path.isdir(name)]
+        for tfolderName in folderNameList:
             os.chdir(tfolderName)
             for fileName in os.listdir():
                 try:
@@ -293,7 +297,8 @@ class MainWindow(QMainWindow):
         os.chdir(folderName)
         os.makedirs('Итоговые сигналы', exist_ok=True)
         os.makedirs('Статистика', exist_ok=True)
-        for tfolderName in os.listdir():
+        folderNameList = [name for name in os.listdir() if os.path.isdir(name)]
+        for tfolderName in folderNameList:
             if not tfolderName[0] == 'V':
                 continue
             os.chdir(tfolderName)

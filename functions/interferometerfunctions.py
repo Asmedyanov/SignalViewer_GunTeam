@@ -8,47 +8,48 @@ prominence = 0.15
 
 
 def interferometer(d):
-    dt = 0.1  # np.nan_to_num(np.gradient(d['T'])).mean()
+    dt = 0.1  # np.nan_to_num(np.gradient(d['Time'])).mean()
     # Выделем участок с плазмой
-    dataplasma = d.loc[(d['T'] < 100) & (d['T'] > 10)]
+    dataplasma = d.loc[(d['Time'] < 100) & (d['Time'] > 10)]
     dataplasma.index = pd.RangeIndex(len(dataplasma.index))
     # Находим максимумы и минимумы
-    maxarray = argrelextrema(dataplasma['V'].values, np.greater, order=int(20.0 / dt))[0]
-    minarray = argrelextrema(dataplasma['V'].values, np.less, order=int(20.0 / dt))[0]
-    # print(np.max(d['V'][maxarray]))
+    maxarray = argrelextrema(dataplasma['Values'].values, np.greater, order=int(20.0 / dt))[0]
+    minarray = argrelextrema(dataplasma['Values'].values, np.less, order=int(20.0 / dt))[0]
+    # print(np.max(d['Values'][maxarray]))
     # Находим максимальный максимум и минимальный минимум
-    maxmax = np.max(dataplasma['V'][maxarray])
-    minmin = np.min(dataplasma['V'][minarray])
+    maxmax = np.max(dataplasma['Values'][maxarray])
+    minmin = np.min(dataplasma['Values'][minarray])
     # Решаем что брать в качестве границ плазмы
     if minarray.size == 0:
-        minarray = np.array([dataplasma['T'].min(), dataplasma['T'].max()])
+        minarray = np.array([dataplasma['Time'].min(), dataplasma['Time'].max()])
     if maxarray.size == 0:
-        maxarray = np.array([dataplasma['T'].min(), dataplasma['T'].max()])
+        maxarray = np.array([dataplasma['Time'].min(), dataplasma['Time'].max()])
     borders = [minarray[0], minarray[-1]]
 
     if (abs(maxmax) < abs(minmin)):
         borders = [maxarray[0], maxarray[-1]]
-        dataplasma['V'] = -dataplasma['V']
-    shift = max([dataplasma['V'][borders[0]], dataplasma['V'][borders[1]]])
+        dataplasma['Values'] = -dataplasma['Values']
+    shift = max([dataplasma['Values'][borders[0]], dataplasma['Values'][borders[1]]])
 
-    dataplasma['V'] = dataplasma['V'] - shift
+    dataplasma['Values'] = dataplasma['Values'] - shift
     # Занулим все слева и справа
-    # dataplasma['V']=np.where(dataplasma['V']>0,dataplasma['V'],0)
-    dataplasmaprobe = np.where(((dataplasma.index > borders[0]) & (dataplasma.index < borders[1])), dataplasma['V'], 0)
+    # dataplasma['Values']=np.where(dataplasma['Values']>0,dataplasma['Values'],0)
+    dataplasmaprobe = np.where(((dataplasma.index > borders[0]) & (dataplasma.index < borders[1])),
+                               dataplasma['Values'], 0)
     if dataplasmaprobe.sum() != 0:
-        dataplasma['V'] = dataplasmaprobe
+        dataplasma['Values'] = dataplasmaprobe
     # Smooth_data(master, dataplasma)
     # Выправим зашкалы
     for rn in range(2):
-        maxarray = argrelextrema(dataplasma['V'].values, np.greater, order=int(5.0 / dt))[0]
-        # print(dataplasma['T'][maxarray])
-        if (maxarray.size > 1) & (dataplasma['V'].max() > 0.7):
+        maxarray = argrelextrema(dataplasma['Values'].values, np.greater, order=int(5.0 / dt))[0]
+        # print(dataplasma['Time'][maxarray])
+        if (maxarray.size > 1) & (dataplasma['Values'].max() > 0.7):
             # Выполним разворот
-            maxrev = max([dataplasma['V'][maxarray[0]], dataplasma['V'][maxarray[-1]]])
-            dataplasma['V'] = np.where(((dataplasma['T'] > dataplasma['T'][maxarray[0]])
-                                        & (dataplasma['T'] < dataplasma['T'][maxarray[-1]])),
-                                       2 * maxrev - dataplasma['V'], dataplasma['V'])
-    dataplasma['V'] = np.where(dataplasma['V'] > 0, dataplasma['V'], 0)
+            maxrev = max([dataplasma['Values'][maxarray[0]], dataplasma['Values'][maxarray[-1]]])
+            dataplasma['Values'] = np.where(((dataplasma['Time'] > dataplasma['Time'][maxarray[0]])
+                                             & (dataplasma['Time'] < dataplasma['Time'][maxarray[-1]])),
+                                            2 * maxrev - dataplasma['Values'], dataplasma['Values'])
+    dataplasma['Values'] = np.where(dataplasma['Values'] > 0, dataplasma['Values'], 0)
 
     return dataplasma
 
@@ -56,53 +57,53 @@ def interferometer(d):
 def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
-    mininterf = d['V'].loc[d['T'] > d['T'].mean()].min()
-    d['V'] = d['V'] - mininterf
-    maxinterf = d['V'].loc[d['T'] > d['T'].mean()].max()
-    d['V'] = np.where(d['V'] > maxinterf, maxinterf, d['V'])
-    d['V'] = np.where(d['V'] < 0, 0, d['V'])
+    mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    d['Values'] = d['Values'] - mininterf
+    maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
-    d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
+    d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
 
-    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
+    dataret = RawData(label='', diagnostic=d.diagnostic, time=d['Time'].values, values=d['Values'].values)
     return dataret
 
 
 def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
-    mininterf = d['V'].loc[d['T'] > d['T'].mean()].min()
-    d['V'] = d['V'] - mininterf
-    maxinterf = d['V'].loc[d['T'] > d['T'].mean()].max()
-    d['V'] = np.where(d['V'] > maxinterf, maxinterf, d['V'])
-    d['V'] = np.where(d['V'] < 0, 0, d['V'])
+    mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    d['Values'] = d['Values'] - mininterf
+    maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
-    d['V'] = np.arccos(1.0 - (2.0 * d['V'] / maxinterf))
+    d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
     d = regect_filter(d)
-    nnul = d['V'].loc[((d['T'] < 10.0e-6) & (d['T'] > 5.0e-6))].mean()
-    d['V'] = d['V'] - nnul
+    nnul = d['Values'].loc[((d['Time'] < 10.0e-6) & (d['Time'] > 5.0e-6))].mean()
+    d['Values'] = d['Values'] - nnul
 
-    dataret = RawData('', d.diagnostic, d['T'].values, d['V'].values)
+    dataret = RawData(label='', diagnostic=d.diagnostic, time=d['Time'].values, values=d['Values'].values)
     return dataret
 
 
 def scale_up_interferometr_0(data, rev_x):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     n_left = find_nearest(time, rev_x[0])
     n_right = find_nearest(time, rev_x[-1])
     rev_value = min([signal[n_left], signal[n_right]])
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
-    dataret = RawData('', data.diagnostic, time, new_signal)
+    dataret = RawData(label='',diagnostic= data.diagnostic,time= time,values= new_signal)
     return dataret
 
 
 def scale_up_interferometr_pi(data, rev_x):
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     n_left = find_nearest(time, rev_x[0])
     n_right = find_nearest(time, rev_x[-1])
     rev_value = signal[n_left]
@@ -110,14 +111,14 @@ def scale_up_interferometr_pi(data, rev_x):
         rev_value = signal[n_right]
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
-    dataret = RawData('', data.diagnostic, time, new_signal)
+    dataret = RawData(label='',diagnostic= data.diagnostic,time= time,values= new_signal)
     return dataret
 
 
 def find_revers_0(data):
     # plt.cla()
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
     pic_array_raw = \
@@ -141,8 +142,8 @@ def find_revers_0(data):
 def find_revers_pi(data):
     # plt.cla()
 
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
 
     plt.plot(time, signal)
 
@@ -166,9 +167,9 @@ def find_revers_pi(data):
 
 def post_interferometer_2(data):
     # выделим участок с плазмой:
-    data_plasma = data.loc[((data['T'] > 22.0e-6) & (data['T'] < 57.0e-6))]
-    plasma_signal = data_plasma['V'].values
-    plasma_time = data_plasma['T'].values
+    data_plasma = data.loc[((data['Time'] > 22.0e-6) & (data['Time'] < 57.0e-6))]
+    plasma_signal = data_plasma['Values'].values
+    plasma_time = data_plasma['Time'].values
 
     #   plt.plot(plasma_time, plasma_signal)
     pic_w_min = 1.0e-6
@@ -190,8 +191,8 @@ def post_interferometer_2(data):
     reversed_signal = 2 * liner_base_signal - over_signal
     reversed_time = plasma_time[left_pic:right_pic]
     #    plt.plot(reversed_time, reversed_signal)
-    signal = data['V'].values
-    time = data['T'].values
+    signal = data['Values'].values
+    time = data['Time'].values
     real_start_index = np.where(time == reversed_time[0])[0][0]
     real_stop_index = np.where(time == reversed_time[-1])[0][0]
     signal.flat[real_start_index:real_stop_index] = reversed_signal
