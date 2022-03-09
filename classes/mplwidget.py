@@ -1,8 +1,10 @@
 # Matplotlib widget
 from classes.mplcanvas import MplCanvas
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenu
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenu, QCheckBox
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
+from matplotlib.widgets import CheckButtons
 import constants
+from scipy.signal import find_peaks
 
 
 def gun_team_axes_stile(axis):
@@ -60,9 +62,9 @@ class MplWidget(QWidget):
                 except:
                     timescale = 'сек'
                 try:
-                    timemult=constants.timeScaleDict[timescale]
+                    timemult = constants.timeScaleDict[timescale]
                 except:
-                    timemult=1
+                    timemult = 1
                 axes.plot(data['Time'] * timemult, data['Values'], style, label=data.label)
                 # axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
@@ -99,6 +101,59 @@ class MplWidget(QWidget):
                     gun_team_axes_stile(axes[n - 1])
                 except:
                     continue
+
+            # Подписать горизонтальную ось
+            axes[n - 1].set_xlabel(f't, {timescale}')
+            # Подписать заголовок
+            axes[0].set_title(f'Данные {header}')
+        self.canvas.draw()
+
+    def plot_pick_pi(self, datalist, header='', style='-'):
+        self.canvas.fig.clear()
+        n = len(datalist)
+        if (n == 0):
+            return
+        gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
+        axes = gs.subplots(sharex=True)  # массив графиков
+        timescale = 'сек'
+        if n == 1:
+            data = datalist[0]
+            timescale = data.timeDim
+            timemult = constants.timeScaleDict[timescale]
+            axes.plot(data['Time'] * timemult, data['Values'], style)
+            pics_indexes = find_peaks(data['Values'])[0]
+            pics_time = data['Time'].values[pics_indexes] * timemult
+            pics_values = data['Values'].values[pics_indexes]
+            checklist = []
+
+            pos = axes.get_position()
+            xlim = axes.get_xlim()
+            ylim = axes.get_xlim()
+            multx = (xlim[1]-xlim[0])/pos.width
+            shiftx = pos.x0+xlim[0]*multx
+            multy = (ylim[1]-ylim[0])/pos.height
+            shifty = pos.y0+ylim[0]*multy
+            print(f'multx = {multx};shiftx = {shiftx};multy = {multy};shifty = {shifty};')
+            for i, j in enumerate(pics_indexes):
+                checkbox = QCheckBox(parent=self.canvas)
+                checkbox.setGeometry(pics_time[i] * multx + shiftx, pics_values[i] * multy + shifty, 100, 100)
+                checklist.append(checkbox)
+            axes.plot(pics_time, pics_values, 'o')
+            axes.set_ylabel(data.label)  # Подписать вертикальные оси
+            gun_team_axes_stile(axes)
+
+            # Подписать горизонтальную ось
+            axes.set_xlabel(f't, {timescale}')
+            # Подписать заголовок
+            axes.set_title(f'{header}')
+            self.canvas.draw()
+            return
+        for i, data in enumerate(datalist):
+            timescale = data.timeDim
+            timemult = constants.timeScaleDict[timescale]
+            axes[i].plot(data['Time'] * timemult, data['Values'], style)
+            axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
+            gun_team_axes_stile(axes[i])
 
             # Подписать горизонтальную ось
             axes[n - 1].set_xlabel(f't, {timescale}')

@@ -1,1 +1,1 @@
-C:/Users/n.asmedyanov/Desktop/Debug/2022-03-03-Статистика-2инт-1кол-1пояс-1дел.xml
+D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/Отладка интреферометра.xml

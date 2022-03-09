@@ -10,17 +10,19 @@ from classes.diagnosticeditor import DiagnosticEditor
 import os
 import constants
 import re
+from classes.teacher import Teacher
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
         uic.loadUi('./ui/mainwindow.ui', self)
         self.fileList = []
         self.experiment = Experiment(self)
         self.foldername = ''
         self.initActions()
         self.initTabs()
+        self.isStadied = False
         self.show()
 
     def initTabs(self):
@@ -70,6 +72,9 @@ class MainWindow(QMainWindow):
         currentmenu['Пакетная обработка по сырым данным'].triggered.connect(self.packetRowData)
         currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetResultData)
         # currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
+
+        currentmenu = self.mainActionsDict['Нейросеть']
+        currentmenu['Начать обучение'].triggered.connect(self.startLearning)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -267,7 +272,7 @@ class MainWindow(QMainWindow):
         except:
             return
         os.makedirs('Сырые сигналы', exist_ok=True)
-        folderNameList= [name for name in os.listdir() if os.path.isdir(name)]
+        folderNameList = [name for name in os.listdir() if os.path.isdir(name)]
         for tfolderName in folderNameList:
             os.chdir(tfolderName)
             for fileName in os.listdir():
@@ -320,3 +325,8 @@ class MainWindow(QMainWindow):
         self.experiment.saveStatistic(f'Статистика/Статистика.txt')
         self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
         os.chdir(curentDir)
+
+    def startLearning(self):
+        self.addFile()
+        if self.fileList != 0:
+            self.mTeacher = Teacher(self)

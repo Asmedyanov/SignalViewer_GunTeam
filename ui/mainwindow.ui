@@ -20,7 +20,7 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
@@ -117,12 +117,20 @@
     <addaction name="action_22"/>
     <addaction name="action_23"/>
    </widget>
+   <widget class="QMenu" name="menu_7">
+    <property name="title">
+     <string>Нейросеть</string>
+    </property>
+    <addaction name="action_31"/>
+    <addaction name="action_32"/>
+   </widget>
    <addaction name="menu_2"/>
    <addaction name="menu"/>
    <addaction name="menu_3"/>
    <addaction name="menu_4"/>
    <addaction name="menu_5"/>
    <addaction name="menu_6"/>
+   <addaction name="menu_7"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">
@@ -319,6 +327,16 @@
   <action name="action_30">
    <property name="text">
     <string>Пакетная обработка по сырым данным</string>
+   </property>
+  </action>
+  <action name="action_31">
+   <property name="text">
+    <string>Начать обучение</string>
+   </property>
+  </action>
+  <action name="action_32">
+   <property name="text">
+    <string>Закончить обучение</string>
    </property>
   </action>
  </widget>

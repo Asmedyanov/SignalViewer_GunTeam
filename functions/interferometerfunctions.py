@@ -7,17 +7,16 @@ visinity = 1.4
 prominence = 0.05
 
 
-
 def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
-    #mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    # mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
     mininterf = d['Values'].min()
     d['Values'] = d['Values'] - mininterf
-    #maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    # maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
     maxinterf = d['Values'].max()
-    #d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    #d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+    # d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    # d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -30,12 +29,12 @@ def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
     mininterf = d['Values'].min()
-    #mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    # mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
     d['Values'] = d['Values'] - mininterf
-    #maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
+    # maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
     maxinterf = d['Values'].max()
-    #d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    #d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+    # d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
+    # d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -55,7 +54,7 @@ def scale_up_interferometr_0(data, rev_x):
     rev_value = min([signal[n_left], signal[n_right]])
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
-    dataret = RawData(label='',diagnostic= data.diagnostic,time= time,values= new_signal)
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=new_signal)
     return dataret
 
 
@@ -69,15 +68,15 @@ def scale_up_interferometr_pi(data, rev_x):
         rev_value = signal[n_right]
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
-    dataret = RawData(label='',diagnostic= data.diagnostic,time= time,values= new_signal)
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=new_signal)
     return dataret
 
 
 def find_revers_0(data):
-    # plt.cla()
+    #plt.cla()
     signal = data['Values'].values
     time = data['Time'].values
-    plt.plot(time, signal)
+    #plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
     pic_array_raw = \
         find_peaks(-signal, prominence=[prominence * pic_max, pic_max])[0]
@@ -93,17 +92,18 @@ def find_revers_0(data):
         pic_array_visinity.remove(pic_array_visinity[n_remove])
 
     pic_array_raw_time = time[pic_array_visinity]
+    # plt.show()
 
     return pic_array_raw_time
 
 
 def find_revers_pi(data):
-    # plt.cla()
+    #plt.cla()
 
     signal = data['Values'].values
     time = data['Time'].values
 
-    plt.plot(time, signal)
+    #plt.plot(time, signal)
 
     pic_max = signal.max() - signal.min()
     tgrad = np.gradient(time)
@@ -111,7 +111,9 @@ def find_revers_pi(data):
 
     pic_array_raw = \
         find_peaks(signal, prominence=[prominence * pic_max, pic_max])[0]
-
+    pic_time = time[pic_array_raw]
+    pic_value = signal[pic_array_raw]
+    #plt.plot(pic_time, pic_value, 'o')
     pic_array_visinity = []
     for k in pic_array_raw:
         if signal[k] > np.pi - visinity:
@@ -120,6 +122,7 @@ def find_revers_pi(data):
         n_remove = np.argmin(signal[pic_array_visinity])
         pic_array_visinity.remove(pic_array_visinity[n_remove])
     pic_array_raw_time = time[pic_array_visinity]
+    #plt.show()
     return pic_array_raw_time
 
 
