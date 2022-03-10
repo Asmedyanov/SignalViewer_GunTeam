@@ -105,7 +105,7 @@ def Diagnostic_Interferometer(rawdata, master):
 
 
 def calorimetr(data):
-    u = data['Values'].values
+    u = np.abs(data['Values'].values)
     t = data['Time'].values
     U0 = 1.52
     R0 = 910.0
@@ -124,7 +124,9 @@ def Diagnostic_Calorimetr(rawdata, master):
     ret = rolling_avg(ret, 1.0 / ffinish)
     ret = ininterval(ret, tstart, tfinish)
     retmin = ret['Values'].loc[ret['Time'] < 0].min()
+
     ret['Values'] = (ret['Values'] - retmin) * mult
+
     # ret['Values'] = (ret['Values']-85) * mult
     set_parameters(dia, ret)
     return ret

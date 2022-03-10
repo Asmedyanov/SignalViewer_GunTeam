@@ -1,4 +1,6 @@
 # Matplotlib widget
+import numpy as np
+
 from classes.mplcanvas import MplCanvas
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenu, QCheckBox
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
@@ -108,6 +110,17 @@ class MplWidget(QWidget):
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
 
+    def get_marks(self):
+        mark_array = np.zeros(len(self.pics_time))
+
+        for i, annotation in enumerate(self.checklist):
+            try:
+                mark_array[i] = annotation.clicked
+            except:
+                pass
+
+        return {'pict': self.pics_time, 'marks': mark_array}
+
     def plot_pick_pi(self, datalist, header='', style='-'):
         self.canvas.fig.clear()
         n = len(datalist)
@@ -121,23 +134,28 @@ class MplWidget(QWidget):
             timescale = data.timeDim
             timemult = constants.timeScaleDict[timescale]
             axes.plot(data['Time'] * timemult, data['Values'], style)
-            pics_indexes = find_peaks(data['Values'])[0]
-            pics_time = data['Time'].values[pics_indexes] * timemult
-            pics_values = data['Values'].values[pics_indexes]
-            checklist = []
+            pics = find_peaks(data['Values'])
+            pics_indexes = pics[0]
 
-            pos = axes.get_position()
-            xlim = axes.get_xlim()
-            ylim = axes.get_xlim()
-            multx = (xlim[1]-xlim[0])/pos.width
-            shiftx = pos.x0+xlim[0]*multx
-            multy = (ylim[1]-ylim[0])/pos.height
-            shifty = pos.y0+ylim[0]*multy
-            print(f'multx = {multx};shiftx = {shiftx};multy = {multy};shifty = {shifty};')
+            pics_time = data['Time'].values[pics_indexes] * timemult
+            self.pics_time = pics_time
+            pics_values = data['Values'].values[pics_indexes]
+            self.checklist = []
             for i, j in enumerate(pics_indexes):
-                checkbox = QCheckBox(parent=self.canvas)
-                checkbox.setGeometry(pics_time[i] * multx + shiftx, pics_values[i] * multy + shifty, 100, 100)
-                checklist.append(checkbox)
+                self.outputstring = f'{i}'
+                self.xy = (pics_time[i], pics_values[i])
+                self.xytext = (pics_time[i], pics_values[i] + 0.2)
+                annotation = axes.annotate(self.outputstring,
+                                           xy=self.xy, xycoords='data',
+                                           xytext=self.xytext, textcoords='data',
+                                           arrowprops=dict(arrowstyle="-|>",
+                                                           connectionstyle="arc3"),
+                                           bbox=dict(
+                                               boxstyle="round", fc="w"), picker=True
+                                           )
+
+                self.checklist.append(annotation)
+            self.canvas.ActivateAnnotations()
             axes.plot(pics_time, pics_values, 'o')
             axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)

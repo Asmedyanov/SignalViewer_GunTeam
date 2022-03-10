@@ -17,6 +17,7 @@ def formPlotStr(n, x, y):
 class MplCanvas(FigureCanvas):
     MarkChosed = pyqtSignal()
     MarkLabelChosed = pyqtSignal()
+    AnnotationsActived = pyqtSignal()
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
@@ -24,14 +25,14 @@ class MplCanvas(FigureCanvas):
         t = np.arange(0, 3, .01)
         self.fig.add_subplot(111
                              ).plot(t, 2 * np.sin(2 * np.pi * t))
-        super(MplCanvas, self).__init__(self.fig)
+        super().__init__(self.fig)
         self.draw()
         self.interactive_flag = 0
 
     def contextMenuEvent(self, event):
         self.event = event
         contextMenu = QMenu(self)
-        #newAct = contextMenu.addAction("Метка", self.activateMark)
+        # newAct = contextMenu.addAction("Метка", self.activateMark)
         newMark = contextMenu.addAction("Умная метка", self.activateCleverMark)
         removeAllMarks = contextMenu.addAction("Удалить все метки", self.clear_annotations)
         openAct = contextMenu.addAction("Линейка")
@@ -45,7 +46,6 @@ class MplCanvas(FigureCanvas):
             k.remove()
         self.textlist = []
         self.fig.canvas.draw()
-
 
     def activateMark(self):
         try:
@@ -101,17 +101,38 @@ class MplCanvas(FigureCanvas):
             return
         self.xytext = (xdata, ydata)
         self.textlist.append(self.axis.annotate(self.outputstring,
-                                           xy=self.xy, xycoords='data',
-                                           xytext=self.xytext, textcoords='data',
-                                           arrowprops=dict(arrowstyle="-|>",
-                                                           connectionstyle="arc3"),
-                                           bbox=dict(
-                                               boxstyle="round", fc="w"),
-                                           ))
+                                                xy=self.xy, xycoords='data',
+                                                xytext=self.xytext, textcoords='data',
+                                                arrowprops=dict(arrowstyle="-|>",
+                                                                connectionstyle="arc3"),
+                                                bbox=dict(
+                                                    boxstyle="round", fc="w"),
+                                                ))
         self.MarkLabelChosed.emit()
+
+    def on_click_annotate(self, event):
+        try:
+            clicked = event.artist.clicked
+        except:
+            event.artist.clicked = 0
+            clicked = event.artist.clicked
+        if clicked:
+            color = 'w'
+        else:
+            color = 'g'
+        event.artist.set_bbox(dict(boxstyle="round", fc=color))
+        event.artist.clicked = not clicked
+        self.fig.canvas.draw()
+
+    def ActivateAnnotations(self):
+        self.id_click = self.fig.canvas.mpl_connect(
+            'pick_event',
+            self.on_click_annotate)
+
     def onMarkLabelChosed(self):
         self.fig.canvas.mpl_disconnect(self.id_click)
         self.fig.canvas.draw()
+
     def on_click(self, event):
         if event.dblclick != 1:
             return

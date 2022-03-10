@@ -14,7 +14,12 @@ class Teacher(QMainWindow):
         uic.loadUi('./ui/teacher.ui', self)
         self.initTabs()
         self.initDatas()
+        self.pushButton.clicked.connect(self.onNextFile)
         self.show()
+
+    def onNextFile(self):
+        trening = self.mainPlotDict['Поворот вблизи п'].get_marks()
+        print(trening)
 
     def initTabs(self):
         self.mainTabTextDict = dict()

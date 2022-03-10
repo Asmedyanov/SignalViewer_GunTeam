@@ -1,22 +1,27 @@
 import matplotlib.pyplot as plt
-import numpy as np
+
+fig = plt.figure()
+ax=fig.add_subplot(111)
+plt.plot([0,5],[0,6], alpha=0)
+plt.xlim([-1,6])
+plt.ylim([-1,6])
+
+for i in range(6):
+    for j in range(6):
+        an = plt.annotate("Kill me",xy=(j,i), picker=5)
 
 
-def exppolinom(t, n, a, sigma, tau):
-    sum = 0
-    for m in range(n):
-        sum += a[m]*np.exp(-np.power((t - tau[m]), 2.0) / sigma[m])
-    return sum
+def onclick(event):
+    event.artist.set_text("I'm killed")
+    event.artist.set_color("g")
+    event.artist.set_rotation(20)
+    # really kill the text (but too boring for this example;-) )
+    #event.artist.set_visible(False)
+    # or really REALLY kill it with:
+    #event.artist.remove()
+    fig.canvas.draw()
 
 
-x = np.arange(0.0, 100.0, 0.1)
+cid = fig.canvas.mpl_connect('pick_event', onclick)
 
-n = 2
-a = [4.0, 1.0]
-sigma = [10.0, 10.0]
-tau = [20.0, 60.0]
-y = np.array([np.arccos(np.cos(exppolinom(t, n, a, sigma, tau)))
-              for t in x])
-
-plt.plot(x, y)
 plt.show()
