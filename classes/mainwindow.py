@@ -161,15 +161,19 @@ class MainWindow(QMainWindow):
         if len(self.fileList) == 0:
             return
         name = self.fileList[0]
-        numlist = re.findall(r'v\d+\.bin', name)
-        if len(numlist) == 0:
-            numlist = re.findall(r'0*\d+\.PRN', name)
-            if len(numlist) == 0:
-                self.openResent()
-                return
-            new_name = name.replace(numlist[-1], f'{10000 + int(numlist[-1][:-4]) + 1}.PRN'[1:])
-        else:
-            new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) + 1}.bin')
+        curentDir = os.getcwd()
+        try:
+
+            os.chdir(self.folderName)
+        except:
+            self.folderName = '/'.join(name.split('/')[:-1])
+
+            os.chdir(self.folderName)
+        fileList = os.listdir()
+        next_index = fileList.index(name.split('/')[-1]) + 1
+        if next_index >= len(fileList):
+            next_index = 0
+        new_name = fileList[next_index]
         self.clearAll()
         try:
             addeddatalist = filefunctions.addFile(new_name, self.experiment)
@@ -180,8 +184,8 @@ class MainWindow(QMainWindow):
             self.foldername = '/'.join(folderName.split('/')[-2:])
 
         except:
-            self.openResent()
-            return
+            pass
+        os.chdir(curentDir)
 
     def openPrevFile(self):
         if len(self.fileList) == 0:
