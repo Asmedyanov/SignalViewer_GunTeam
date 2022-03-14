@@ -11,6 +11,17 @@ import os
 import constants
 import re
 from classes.teacher import Teacher
+import pandas as pd
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+
+
 
 
 class MainWindow(QMainWindow):
@@ -22,8 +33,33 @@ class MainWindow(QMainWindow):
         self.foldername = ''
         self.initActions()
         self.initTabs()
-        self.isStadied = False
+        self.isStadied = self.CheckStadied()
         self.show()
+
+    def DefaultStatusMassege(self):
+        self.statusbar.showMessage("Жду Ваших указаний")
+
+    def CheckStadied(self):
+        try:
+            trening_data_0 = pd.read_csv('Pics_0.txt', sep='\t')
+            trening_data_pi = pd.read_csv('Pics_pi.txt', sep='\t')
+            if (len(trening_data_pi) == 0) or (len(trening_data_0) == 0):
+                self.statusbar.showMessage("Нейросеть НЕ обучена")
+                return False
+            X = trening_data_0[constants.pic_parameters].values
+            Y = trening_data_0['marks'].values
+            self.Classificator_0 = GaussianNB()
+            self.Classificator_0.fit(X, Y)
+            X = trening_data_pi[constants.pic_parameters].values
+            Y = trening_data_pi['marks'].values
+            self.Classificator_pi = GaussianNB()
+            self.Classificator_pi.fit(X, Y)
+
+            self.statusbar.showMessage("Нейросеть обучена")
+            return True
+        except:
+            self.statusbar.showMessage("Нейросеть НЕ обучена")
+            return False
 
     def initTabs(self):
         self.mainTabTextDict = dict()
@@ -75,6 +111,10 @@ class MainWindow(QMainWindow):
 
         currentmenu = self.mainActionsDict['Нейросеть']
         currentmenu['Начать обучение'].triggered.connect(self.startLearning)
+        currentmenu['Обучение на первую левую'].triggered.connect(self.startLearning_1_l)
+        currentmenu['Обучение на первую правую'].triggered.connect(self.startLearning_1_r)
+        currentmenu['Обучение на вторую левую'].triggered.connect(self.startLearning_2_l)
+        currentmenu['Обучение на вторую правую'].triggered.connect(self.startLearning_2_r)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -85,6 +125,7 @@ class MainWindow(QMainWindow):
         self.lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Добавьте файл")[0]
+        self.statusbar.showMessage(f"Открываю файл {self.lastFileName}")
         self.fileList.append(self.lastFileName)
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
         self.foldername = '/'.join(folderName.split('/')[-2:])
@@ -96,6 +137,8 @@ class MainWindow(QMainWindow):
             file.write(f'{name}\n')
         file.close()
 
+        self.DefaultStatusMassege()
+
     def addFolder(self):
         '''self.lastFileName = \
             QFileDialog.getOpenFileName(self,
@@ -106,6 +149,7 @@ class MainWindow(QMainWindow):
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите добавить")[0]
         folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        self.statusbar.showMessage(f"Открываю папку {folderName}")
         self.foldername = '/'.join(folderName.split('/')[-2:])
         curentDir = os.getcwd()
         os.chdir(folderName)
@@ -119,6 +163,7 @@ class MainWindow(QMainWindow):
         for name in self.fileList:
             file.write(f'{name}\n')
         file.close()
+        self.DefaultStatusMassege()
 
     def groupFolder(self):
         '''lastFileName = \
@@ -130,6 +175,7 @@ class MainWindow(QMainWindow):
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите группировать по выстрелам")[0]
         folderName = '/'.join(lastFileName.split('/')[:-1])
+        self.statusbar.showMessage(f"Группирую папку {folderName}")
         currentDir = os.getcwd()
         os.chdir(folderName)
         for name in os.listdir(folderName):
@@ -145,23 +191,27 @@ class MainWindow(QMainWindow):
                 except:
                     pass
         os.chdir(currentDir)
+        self.DefaultStatusMassege()
 
     def openResent(self):
         self.clearAll()
         file = open('lastfilename.txt', 'r')
         namelist = file.read().split('\n')[:-1]
+        self.statusbar.showMessage(f"Откываю прошлую сессию")
         for fileName in namelist:
             self.fileList.append(fileName)
             folderName = '/'.join(fileName.split('/')[:-1])
             self.foldername = '/'.join(folderName.split('/')[-2:])
             addeddatalist = filefunctions.addFile(fileName, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+        self.DefaultStatusMassege()
 
     def openNextFile(self):
         if len(self.fileList) == 0:
             return
         name = self.fileList[0]
         curentDir = os.getcwd()
+        self.statusbar.showMessage(f"Откываю следующий файл")
         try:
 
             os.chdir(self.folderName)
@@ -186,32 +236,39 @@ class MainWindow(QMainWindow):
         except:
             pass
         os.chdir(curentDir)
+        self.DefaultStatusMassege()
 
     def openPrevFile(self):
         if len(self.fileList) == 0:
             return
         name = self.fileList[0]
-        numlist = re.findall(r'v\d+\.bin', name)
-        if len(numlist) == 0:
-            numlist = re.findall(r'\d+\.PRN', name)
-            if len(numlist) == 0:
-                self.openResent()
-                return
-            new_name = name.replace(numlist[-1], f'{10000 + int(numlist[-1][:-4]) - 1}.PRN'[1:])
-        else:
-            new_name = name.replace(numlist[-1], f'v{int(numlist[-1][1:-4]) - 1}.bin')
-        self.clearAll()
+        curentDir = os.getcwd()
+        self.statusbar.showMessage(f"Откываю предыдущий файл")
+        try:
 
+            os.chdir(self.folderName)
+        except:
+            self.folderName = '/'.join(name.split('/')[:-1])
+
+            os.chdir(self.folderName)
+        fileList = os.listdir()
+        next_index = fileList.index(name.split('/')[-1]) - 1
+        if next_index < 0:
+            next_index = len(fileList) - 1
+        new_name = fileList[next_index]
+        self.clearAll()
         try:
             addeddatalist = filefunctions.addFile(new_name, self.experiment)
             self.fileList.append(new_name)
-            folderName = '/'.join(new_name.split('/')[:-1])
-            self.foldername = '/'.join(folderName.split('/')[-2:])
             self.experiment.addRawdataList(addeddatalist)
 
+            folderName = '/'.join(new_name.split('/')[:-1])
+            self.foldername = '/'.join(folderName.split('/')[-2:])
+
         except:
-            self.openResent()
-            return
+            pass
+        os.chdir(curentDir)
+        self.DefaultStatusMassege()
 
     def clearAll(self):
         self.experiment.clear()
@@ -235,28 +292,34 @@ class MainWindow(QMainWindow):
                                             ';;'.join(constants.filter_list))[0]
         else:
             self.exptempFileName = name
+        self.statusbar.showMessage(f"Открываю шаблон {self.exptempFileName}")
         if self.exptempFileName != '':
             self.experiment.loadSettings(self.exptempFileName)
         self.setWindowTitle(f'Просмотр сигналов по шаблону {self.exptempFileName.split("/")[-1]}')
         file = open('lastexpname.txt', 'w')
         file.write(self.exptempFileName)
         file.close()
+        self.DefaultStatusMassege()
 
     def openLastExperimentTemplate(self):
         try:
             file = open('lastexpname.txt', 'r')
+            self.statusbar.showMessage(f"Открываю последний шаблон")
             name = file.read()
             file.close()
             self.openExperimentTemplate(name)
         except:
-            return
+            pass
+        self.DefaultStatusMassege()
 
     def upDate(self):
         # self.clearAll()
+        self.statusbar.showMessage(f"Перечитываю файлы")
         self.experiment.rawdatalist = []
         for filename in self.fileList:
             addeddatalist = filefunctions.addFile(filename, self.experiment)
             self.experiment.addRawdataList(addeddatalist)
+        self.DefaultStatusMassege()
 
     def copyToBuffer(self):
         buf = io.BytesIO()
@@ -269,7 +332,10 @@ class MainWindow(QMainWindow):
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите добавить")[0]
         folderName = '/'.join(self.lastFileName.split('/')[:-2])
+
         self.foldername = '/'.join(folderName.split('/')[-3:])
+        defaultstr = f"Обработка папки {self.foldername} по сырым данным"
+        self.statusbar.showMessage(defaultstr)
         curentDir = os.getcwd()
         try:
             os.chdir(folderName)
@@ -281,6 +347,7 @@ class MainWindow(QMainWindow):
             os.chdir(tfolderName)
             for fileName in os.listdir():
                 try:
+                    self.statusbar.showMessage(f'{defaultstr} файл: {fileName}')
                     addeddatalist = filefunctions.addFile(fileName, self.experiment)
                     self.fileList.append(fileName)
                     self.foldername = tfolderName
@@ -291,6 +358,7 @@ class MainWindow(QMainWindow):
             self.mainPlotDict['Сырые сигналы'].canvas.fig.savefig(f'Сырые сигналы/{tfolderName}.png')
             self.clearAll()
         os.chdir(curentDir)
+        self.DefaultStatusMassege()
 
     def packetResultData(self):
         self.lastFileName = \
@@ -301,6 +369,8 @@ class MainWindow(QMainWindow):
         folderName = '/'.join(self.lastFileName.split('/')[:-2])
 
         self.foldername = '/'.join(folderName.split('/')[-3:])
+        defaultstr = f"Обработка папки {self.foldername} по итоговым данным"
+        self.statusbar.showMessage(defaultstr)
         self.experiment.clear_statistic()
         curentDir = os.getcwd()
         os.chdir(folderName)
@@ -315,6 +385,7 @@ class MainWindow(QMainWindow):
             for fileName in os.listdir():
 
                 try:
+                    self.statusbar.showMessage(f'{defaultstr} файл: {fileName}')
                     addeddatalist = addeddatalist + filefunctions.addFile(fileName, self.experiment)
                     self.fileList.append(fileName)
                     self.foldername = tfolderName
@@ -329,8 +400,45 @@ class MainWindow(QMainWindow):
         self.experiment.saveStatistic(f'Статистика/Статистика.txt')
         self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
         os.chdir(curentDir)
+        self.DefaultStatusMassege()
 
     def startLearning(self):
+        self.statusbar.showMessage(f'Начал обучать нейросеть')
+        self.clearAll()
+        self.isStadied = False
+        self.openExperimentTemplate("experiment_templates/Отладка интреферометра.xml")
+        self.addFile()
+        if self.fileList != 0:
+            self.mTeacher = Teacher(self)
+    def startLearning_1_l(self):
+        self.statusbar.showMessage(f'Начал обучать нейросеть на первую левую')
+        self.clearAll()
+        self.isStadied = False
+        self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
+        self.addFile()
+        if self.fileList != 0:
+            self.mTeacher = Teacher(self)
+    def startLearning_1_r(self):
+        self.statusbar.showMessage(f'Начал обучать нейросеть на первую правую')
+        self.clearAll()
+        self.isStadied = False
+        self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
+        self.addFile()
+        if self.fileList != 0:
+            self.mTeacher = Teacher(self)
+    def startLearning_2_l(self):
+        self.statusbar.showMessage(f'Начал обучать нейросеть на вторую левую')
+        self.clearAll()
+        self.isStadied = False
+        self.openExperimentTemplate("experiment_templates/Отладка интреферометра 2.xml")
+        self.addFile()
+        if self.fileList != 0:
+            self.mTeacher = Teacher(self)
+    def startLearning_2_r(self):
+        self.statusbar.showMessage(f'Начал обучать нейросеть на вторую правую')
+        self.clearAll()
+        self.isStadied = False
+        self.openExperimentTemplate("experiment_templates/Отладка интреферометра 2.xml")
         self.addFile()
         if self.fileList != 0:
             self.mTeacher = Teacher(self)

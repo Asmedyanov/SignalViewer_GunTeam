@@ -20,13 +20,16 @@ class Teacher(QMainWindow):
         self.initDatas()
         self.pushButton.clicked.connect(self.onNextFile)
         self.show()
-
+    def DefaultStatusMassege(self):
+        self.statusbar.showMessage("Жду Ваших указаний")
     def closeEvent(self, event):
         try:
             self.resultFrame_pi.to_csv('Pics_pi.txt', sep='\t')
             self.resultFrame_0.to_csv('Pics_0.txt', sep='\t')
+            self.parent().DefaultStatusMassege()
         except:
             pass
+        self.parent().isStadied = self.parent().CheckStadied()
 
     def onNextFile(self):
         trening_pi = self.mainPlotDict['Поворот вблизи п'].get_marks()
@@ -37,6 +40,7 @@ class Teacher(QMainWindow):
         # print(trening_0)
 
         if oddness_0 and oddness_pi:
+            self.statusbar.showMessage(f'Открываю следующий обучающий файл')
             new_dataFrame_pi = pd.DataFrame(trening_pi)
             if len(self.resultFrame_pi.columns) == 0:
                 self.resultFrame_pi = new_dataFrame_pi
@@ -52,6 +56,7 @@ class Teacher(QMainWindow):
 
             self.parent().openNextFile()
             self.initDatas()
+            self.DefaultStatusMassege()
 
     def initTabs(self):
         self.mainTabTextDict = dict()

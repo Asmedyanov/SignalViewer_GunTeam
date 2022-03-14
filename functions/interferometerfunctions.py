@@ -1,10 +1,12 @@
+import numpy as np
 from scipy.signal import argrelextrema, find_peaks, butter, filtfilt, peak_prominences
 from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
+from constants import pic_parameters
 
-visinity = 1.4
-prominence = 0.05
+visinity = 1.0
+prominence = 0.1
 
 
 def fase_interferometr(data):
@@ -72,24 +74,27 @@ def scale_up_interferometr_pi(data, rev_x):
     return dataret
 
 
-def find_revers_0(data):
-    #plt.cla()
+def find_revers_0(data, classificator):
+    # plt.cla()
     signal = data['Values'].values
     time = data['Time'].values
-    #plt.plot(time, signal)
+    # plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
     pic_array_raw = \
-        find_peaks(-signal, prominence=[prominence * pic_max, pic_max])[0]
+        find_peaks(-signal, width=[1.0, 1000.0], prominence=[0.0, np.pi])
+    pic_data = pd.DataFrame(pic_array_raw[1])
+    pic_data['pic_time'] = pic_array_raw[0]
+    X = pic_data[pic_parameters].values
+    Y = classificator.predict(X)
+    if np.sum(Y) != 0:
+        print(Y)
+    pic_indexec = np.nonzero(Y)
 
-    pic_array_visinity = []
-
-    for k in pic_array_raw:
-        if signal[k] < visinity:
-            pic_array_visinity.append(k)
+    pic_array_visinity = pic_data['pic_time'].values[pic_indexec]
 
     if len(pic_array_visinity) % 2 == 1:
         n_remove = np.argmax(signal[pic_array_visinity])
-        pic_array_visinity.remove(pic_array_visinity[n_remove])
+        np.delete(pic_array_visinity, n_remove)
 
     pic_array_raw_time = time[pic_array_visinity]
     # plt.show()
@@ -97,32 +102,32 @@ def find_revers_0(data):
     return pic_array_raw_time
 
 
-def find_revers_pi(data):
-    #plt.cla()
+def find_revers_pi(data, classificator):
+    # plt.cla()
 
     signal = data['Values'].values
     time = data['Time'].values
 
-    #plt.plot(time, signal)
+    # plt.plot(time, signal)
 
     pic_max = signal.max() - signal.min()
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
 
     pic_array_raw = \
-        find_peaks(signal, prominence=[prominence * pic_max, pic_max])[0]
-    pic_time = time[pic_array_raw]
-    pic_value = signal[pic_array_raw]
-    #plt.plot(pic_time, pic_value, 'o')
-    pic_array_visinity = []
-    for k in pic_array_raw:
-        if signal[k] > np.pi - visinity:
-            pic_array_visinity.append(k)
+        find_peaks(signal, width=[1.0, 1000.0], prominence=[0.0, np.pi])
+    pic_data = pd.DataFrame(pic_array_raw[1])
+    pic_data['pic_time'] = pic_array_raw[0]
+    X = pic_data[pic_parameters].values
+    Y = classificator.predict(X)
+    pic_indexec = np.nonzero(Y)
+
+    pic_array_visinity = pic_data['pic_time'].values[pic_indexec]
     if len(pic_array_visinity) % 2 == 1:
         n_remove = np.argmin(signal[pic_array_visinity])
-        pic_array_visinity.remove(pic_array_visinity[n_remove])
+        np.delete(pic_array_visinity, n_remove)
     pic_array_raw_time = time[pic_array_visinity]
-    #plt.show()
+    # plt.show()
     return pic_array_raw_time
 
 

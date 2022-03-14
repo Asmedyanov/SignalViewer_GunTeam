@@ -123,6 +123,9 @@
     </property>
     <addaction name="action_31"/>
     <addaction name="action_32"/>
+    <addaction name="action_33"/>
+    <addaction name="action_34"/>
+    <addaction name="action_35"/>
    </widget>
    <addaction name="menu_2"/>
    <addaction name="menu"/>
@@ -336,7 +339,22 @@
   </action>
   <action name="action_32">
    <property name="text">
-    <string>Закончить обучение</string>
+    <string>Обучение на первую левую</string>
+   </property>
+  </action>
+  <action name="action_33">
+   <property name="text">
+    <string>Обучение на первую правую</string>
+   </property>
+  </action>
+  <action name="action_34">
+   <property name="text">
+    <string>Обучение на вторую левую</string>
+   </property>
+  </action>
+  <action name="action_35">
+   <property name="text">
+    <string>Обучение на вторую правую</string>
    </property>
   </action>
  </widget>

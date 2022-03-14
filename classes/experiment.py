@@ -158,16 +158,16 @@ class Experiment:
             if my_key.split('_')[-1] in ['speed']:
                 speed_list.append(np.array(my_value))
         ne = ne_list[0]
-        for i in range(1, len(ne_list)):
+        '''for i in range(1, len(ne_list)):
             ne = ne + ne_list[i]
-        ne = ne * 1.0 / len(ne_list)
+        ne = ne * 1.0 / len(ne_list)'''
         speed = speed_list[0]
         for i in range(1, len(speed_list)):
             speed += speed_list[i]
         speed = speed * 1.0 / len(speed_list)
         Energy = 1.67e-27 * np.pi * (2.0e-2 ** 2) * ne * 1.0e21 * (speed ** 3) * 0.5
         self.statDict['Energy_interf, Дж'] = Energy
-        Energy_Ratio = 100.0 * Energy / self.statDict['Q, Дж_max'].values
+        Energy_Ratio = 100.0 * Energy / self.statDict['Q, Дж_max']
         self.statDict['Energy_ratio, %'] = Energy_Ratio
 
         x_key = 'I, кА_max'
@@ -180,7 +180,7 @@ class Experiment:
                 continue
             time = np.array(self.statDict[x_key])
             values = np.array(self.statDict[mykey])
-            Data_vs_x = RawData(label=mykey, time=time, values=values)
+            Data_vs_x = RawData(label=mykey, time=time, values=values, diagnostic='Запуск')
             Data_vs_x.timeDim = x_key
             plotStatList.append(Data_vs_x)
         output.to_csv(fileName, sep='\t', float_format='%.1e')

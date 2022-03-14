@@ -136,7 +136,8 @@ def Open_PRN(a, master):
         # print(f'file is not {mask}')
         return None
     osc = master.getOSC(mask)
-    parametr_data = pd.read_csv(a, nrows=29, error_bad_lines=False,
+    parametr_data = pd.read_csv(a, nrows=29,
+                                #error_bad_lines=False,
                                 names=['P', 'V1', 'V5'])
     parametrDict = {parametr_data['P'][i]: parametr_data['V1'][i] for i in range(len(parametr_data))}
     namesch = ['CH' + str(i) for i in range(1, 5)]
@@ -144,7 +145,7 @@ def Open_PRN(a, master):
     t0 = float(parametrDict['Trigger Address'])
     dt = float(parametrDict['Delta(second)'])
     data = pd.read_csv(a, sep=' ', skiprows=30,
-                       error_bad_lines=False,
+                       #error_bad_lines=False,
                        names=namesch)
     time = [(i - t0) * dt for i in range(len(data))]
     returnlist = []

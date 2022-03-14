@@ -14,3 +14,9 @@ timeScaleDict = {
     'мс': 1.0e3,
     'мкс': 1.0e6,
 }
+pic_parameters = [
+    #'pic_time',
+    'prominences',
+    #'widths',
+    #'width_heights'
+]
