@@ -409,7 +409,7 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self)
+            self.mTeacher = Teacher(self,'pic')
     def startLearning_1_l(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на первую левую')
         self.clearAll()
@@ -417,7 +417,7 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self)
+            self.mTeacher = Teacher(self,'pic_1_l')
     def startLearning_1_r(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на первую правую')
         self.clearAll()
@@ -425,7 +425,7 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self)
+            self.mTeacher = Teacher(self,'pic_1_r')
     def startLearning_2_l(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на вторую левую')
         self.clearAll()
@@ -433,7 +433,7 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 2.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self)
+            self.mTeacher = Teacher(self,'pic_2_l')
     def startLearning_2_r(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на вторую правую')
         self.clearAll()
@@ -441,4 +441,4 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 2.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self)
+            self.mTeacher = Teacher(self, 'pic_2_r')
