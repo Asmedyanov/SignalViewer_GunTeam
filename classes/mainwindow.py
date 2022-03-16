@@ -41,8 +41,8 @@ class MainWindow(QMainWindow):
 
     def CheckStadied(self):
         try:
-            trening_data_0 = pd.read_csv('Pics_0.txt', sep='\t')
-            trening_data_pi = pd.read_csv('Pics_pi.txt', sep='\t')
+            trening_data_0 = pd.read_csv('pic_0.txt', sep='\t')
+            trening_data_pi = pd.read_csv('pic_pi.txt', sep='\t')
             if (len(trening_data_pi) == 0) or (len(trening_data_0) == 0):
                 self.statusbar.showMessage("Нейросеть НЕ обучена")
                 return False

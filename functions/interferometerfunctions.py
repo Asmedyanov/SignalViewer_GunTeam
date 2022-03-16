@@ -86,17 +86,24 @@ def find_revers_0(data, classificator):
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
     Y = classificator.predict(X)
-    if np.sum(Y) != 0:
-        print(Y)
-    pic_indexec = np.nonzero(Y)
+    pic_indexec_left = np.nonzero(Y < 0)
+    pic_indexec_right = np.nonzero(Y > 0)
 
-    pic_array_visinity = pic_data['pic_time'].values[pic_indexec]
+    if len(pic_indexec_left) > len(pic_indexec_right):
+        while len(pic_indexec_left) > len(pic_indexec_right):
+            n_remove = np.argmax(signal[pic_indexec_left])
+            np.delete(pic_indexec_left, n_remove)
 
-    if len(pic_array_visinity) % 2 == 1:
-        n_remove = np.argmax(signal[pic_array_visinity])
-        np.delete(pic_array_visinity, n_remove)
+    if len(pic_indexec_left) < len(pic_indexec_right):
+        while len(pic_indexec_left) < len(pic_indexec_right):
+            n_remove = np.argmax(signal[pic_indexec_right])
+            np.delete(pic_indexec_right, n_remove)
 
-    pic_array_raw_time = time[pic_array_visinity]
+    pic_array_raw_time = []
+    for t in time[pic_indexec_left]:
+        pic_array_raw_time.append(t)
+    for t in time[pic_indexec_right]:
+        pic_array_raw_time.append(t)
     # plt.show()
 
     return pic_array_raw_time
@@ -120,13 +127,24 @@ def find_revers_pi(data, classificator):
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
     Y = classificator.predict(X)
-    pic_indexec = np.nonzero(Y)
+    pic_indexec_left = np.nonzero(Y < 0)
+    pic_indexec_right = np.nonzero(Y > 0)
 
-    pic_array_visinity = pic_data['pic_time'].values[pic_indexec]
-    if len(pic_array_visinity) % 2 == 1:
-        n_remove = np.argmin(signal[pic_array_visinity])
-        np.delete(pic_array_visinity, n_remove)
-    pic_array_raw_time = time[pic_array_visinity]
+    if len(pic_indexec_left) > len(pic_indexec_right):
+        while len(pic_indexec_left) > len(pic_indexec_right):
+            n_remove = np.argmin(signal[pic_indexec_left])
+            np.delete(pic_indexec_left, n_remove)
+
+    if len(pic_indexec_left) < len(pic_indexec_right):
+        while len(pic_indexec_left) < len(pic_indexec_right):
+            n_remove = np.argmin(signal[pic_indexec_right])
+            np.delete(pic_indexec_right, n_remove)
+
+    pic_array_raw_time = []
+    for t in time[pic_indexec_left]:
+        pic_array_raw_time.append(t)
+    for t in time[pic_indexec_right]:
+        pic_array_raw_time.append(t)
     # plt.show()
     return pic_array_raw_time
 
