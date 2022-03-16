@@ -1,5 +1,5 @@
 from PyQt5 import uic
-from classes.mplwidget import MplWidget
+from classes.mplwidget_teacher import MplWidget_teacher
 import functions.filefunctions as filefunctions
 import functions.mymathfunctions as mymath
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QMenu, QFileDialog, QApplication
@@ -22,26 +22,28 @@ class Teacher(QMainWindow):
         self.pushButton.clicked.connect(self.onNextFile)
 
         self.show()
+
     def DefaultStatusMassege(self):
         self.statusbar.showMessage("Жду Ваших указаний")
+
     def closeEvent(self, event):
         try:
             self.resultFrame_pi.to_csv(f'{self.fileName}_pi.txt', sep='\t')
-            self.resultFrame_0.to_csv(f'{self.fileName}.txt', sep='\t')
+            self.resultFrame_0.to_csv(f'{self.fileName}_0.txt', sep='\t')
             self.parent().DefaultStatusMassege()
         except:
             pass
         self.parent().isStadied = self.parent().CheckStadied()
 
     def onNextFile(self):
-        trening_pi = self.mainPlotDict['Поворот вблизи п'].get_marks()
-        oddness_pi = not np.sum(trening_pi['marks']) % 2
+        trening_pi = self.mainPlotDict['Поворот вблизи 0'].get_marks_pi()
+
         # print(trening_pi)
-        trening_0 = self.mainPlotDict['Поворот вблизи 0'].get_marks()
-        oddness_0 = not np.sum(trening_0['marks']) % 2
+        trening_0 = self.mainPlotDict['Поворот вблизи 0'].get_marks_0()
+
         # print(trening_0)
 
-        #if oddness_0 and oddness_pi:
+        # if oddness_0 and oddness_pi:
         self.statusbar.showMessage(f'Открываю следующий обучающий файл')
         new_dataFrame_pi = pd.DataFrame(trening_pi)
         if len(self.resultFrame_pi.columns) == 0:
@@ -53,8 +55,6 @@ class Teacher(QMainWindow):
             self.resultFrame_0 = new_dataFrame_0
         else:
             self.resultFrame_0 = pd.concat([self.resultFrame_0, new_dataFrame_0])
-
-
 
         self.parent().openNextFile()
         self.initDatas()
@@ -70,7 +70,7 @@ class Teacher(QMainWindow):
             self.mainTabPageDict[text] = self.tabWidget.widget(i)
         self.mainPlotDict = dict()
         for text, page in self.mainTabPageDict.items():
-            plotter = MplWidget()
+            plotter = MplWidget_teacher()
             self.mainPlotDict[text] = plotter
             try:
                 page.layout().addWidget(plotter)
@@ -78,10 +78,9 @@ class Teacher(QMainWindow):
                 layout = QVBoxLayout()
                 layout.addWidget(plotter)
                 page.setLayout(layout)
+
     def initDatas(self):
         self.setWindowTitle(self.parent().fileList[0])
         dataList = self.parent().experiment.diagnosticDataList
-        self.mainPlotDict['Поворот вблизи п'].plot_pick_pi(dataList,
-                                                           f'Выберите {self.fileName} вблизи п')
-        self.mainPlotDict['Поворот вблизи 0'].plot_pick_0(dataList,
-                                                          f'Выберите {self.fileName} вблизи 0')
+        self.mainPlotDict['Поворот вблизи 0'].plot_picks(dataList,
+                                                           f'Выберите {self.fileName} вблизи 0 и п')

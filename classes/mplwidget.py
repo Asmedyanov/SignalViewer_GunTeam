@@ -7,6 +7,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 from matplotlib.widgets import CheckButtons
 import constants
 from scipy.signal import find_peaks
+from classes.mplcanvas_teacher import MplCanvas_teacher
 
 
 def gun_team_axes_stile(axis):
@@ -28,9 +29,12 @@ def gun_team_axes_stile(axis):
 
 
 class MplWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,teacher=False):
         QWidget.__init__(self, parent)  # Inherit from QWidget
-        self.canvas = MplCanvas()  # Create canvas object
+        if teacher:
+            self.canvas = MplCanvas_teacher()  # Create canvas object
+        else:
+            self.canvas = MplCanvas()
         self.vbl = QVBoxLayout()  # Set box for plotting
         self.vbl.addWidget(self.canvas)
         self.vbl.addWidget(NavigationToolbar2QT(self.canvas, self))
@@ -110,137 +114,3 @@ class MplWidget(QWidget):
             axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
 
-    def get_marks(self):
-        mark_array = np.zeros(len(self.pics_time))
-        for i, annotation in enumerate(self.checklist):
-            try:
-                mark_array[i] = annotation.clicked
-            except:
-                pass
-        return {
-            'pic_time': self.pics_time,
-            'prominences':self.pics_prominences,
-            'widths':self.pics_widths,
-            'width_heights':self.pics_width_heights,
-            'marks': mark_array,
-        }
-
-    def plot_pick_pi(self, datalist, header='', style='-'):
-        self.canvas.fig.clear()
-        n = len(datalist)
-        if (n == 0):
-            return
-        gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
-        axes = gs.subplots(sharex=True)  # массив графиков
-        if n == 1:
-            data = datalist[0]
-            timescale = data.timeDim
-            timemult = constants.timeScaleDict[timescale]
-            axes.plot(data['Time'] * timemult, data['Values'], style)
-            pics = find_peaks(data['Values'], width=[1.0, 1000.0], prominence=[0.0, np.pi])
-            pics_indexes = pics[0]
-
-            pics_time = data['Time'].values[pics_indexes] * timemult
-            self.pics_time = pics_time
-            self.pics_prominences = pics[1]['prominences']
-            self.pics_widths = pics[1]['widths']
-            self.pics_width_heights = pics[1]['width_heights']
-            pics_values = data['Values'].values[pics_indexes]
-            self.checklist = []
-            for i, j in enumerate(pics_indexes):
-                self.outputstring = f'{i}'
-                self.xy = (pics_time[i], pics_values[i])
-                self.xytext = (pics_time[i], pics_values[i] + 0.2)
-                annotation = axes.annotate(self.outputstring,
-                                           xy=self.xy, xycoords='data',
-                                           xytext=self.xytext, textcoords='data',
-                                           arrowprops=dict(arrowstyle="-|>",
-                                                           connectionstyle="arc3"),
-                                           bbox=dict(
-                                               boxstyle="round", fc="w"), picker=True
-                                           )
-
-                self.checklist.append(annotation)
-            self.canvas.ActivateAnnotations()
-            axes.plot(pics_time, pics_values, 'o')
-            axes.set_ylabel(data.label)  # Подписать вертикальные оси
-            gun_team_axes_stile(axes)
-
-            # Подписать горизонтальную ось
-            axes.set_xlabel(f't, {timescale}')
-            # Подписать заголовок
-            axes.set_title(f'{header}')
-            self.canvas.draw()
-            return
-        for i, data in enumerate(datalist):
-            timescale = data.timeDim
-            timemult = constants.timeScaleDict[timescale]
-            axes[i].plot(data['Time'] * timemult, data['Values'], style)
-            axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
-            gun_team_axes_stile(axes[i])
-
-            # Подписать горизонтальную ось
-            axes[n - 1].set_xlabel(f't, {timescale}')
-            # Подписать заголовок
-            axes[0].set_title(f'Данные {header}')
-        self.canvas.draw()
-
-    def plot_pick_0(self, datalist, header='', style='-'):
-        self.canvas.fig.clear()
-        n = len(datalist)
-        if (n == 0):
-            return
-        gs = self.canvas.fig.add_gridspec(n, hspace=0.05)
-        axes = gs.subplots(sharex=True)  # массив графиков
-        if n == 1:
-            data = datalist[0]
-            timescale = data.timeDim
-            timemult = constants.timeScaleDict[timescale]
-            axes.plot(data['Time'] * timemult, data['Values'], style)
-            pics = find_peaks(-data['Values'], width=[1.0, 1000.0], prominence=[0.0, np.pi])
-            pics_indexes = pics[0]
-
-            pics_time = data['Time'].values[pics_indexes] * timemult
-            self.pics_time = pics_time
-            self.pics_prominences = pics[1]['prominences']
-            self.pics_widths = pics[1]['widths']
-            self.pics_width_heights = pics[1]['width_heights']
-            pics_values = data['Values'].values[pics_indexes]
-            self.checklist = []
-            for i, j in enumerate(pics_indexes):
-                self.outputstring = f'{i}'
-                self.xy = (pics_time[i], pics_values[i])
-                self.xytext = (pics_time[i], pics_values[i] + 0.2)
-                annotation = axes.annotate(self.outputstring,
-                                           xy=self.xy, xycoords='data',
-                                           xytext=self.xytext, textcoords='data',
-                                           arrowprops=dict(arrowstyle="-|>",
-                                                           connectionstyle="arc3"),
-                                           bbox=dict(
-                                               boxstyle="round", fc="w"), picker=True
-                                           )
-
-                self.checklist.append(annotation)
-            self.canvas.ActivateAnnotations()
-            axes.plot(pics_time, pics_values, 'o')
-            axes.set_ylabel(data.label)  # Подписать вертикальные оси
-            gun_team_axes_stile(axes)
-
-            # Подписать горизонтальную ось
-            axes.set_xlabel(f't, {timescale}')
-            # Подписать заголовок
-            axes.set_title(f'{header}')
-            self.canvas.draw()
-            return
-        for i, data in enumerate(datalist):
-            timescale = data.timeDim
-            timemult = constants.timeScaleDict[timescale]
-            axes[i].plot(data['Time'] * timemult, data['Values'], style)
-            axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
-            gun_team_axes_stile(axes[i])
-
-            # Подписать горизонтальную ось
-            axes[n - 1].set_xlabel(f't, {timescale}')
-            # Подписать заголовок
-            axes[0].set_title(f'Данные {header}')
-        self.canvas.draw()

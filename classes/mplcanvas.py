@@ -110,25 +110,6 @@ class MplCanvas(FigureCanvas):
                                                 ))
         self.MarkLabelChosed.emit()
 
-    def on_click_annotate(self, event):
-        try:
-            clicked = event.artist.clicked
-        except:
-            event.artist.clicked = 0
-            clicked = event.artist.clicked
-        if clicked:
-            color = 'w'
-        else:
-            color = 'g'
-        event.artist.set_bbox(dict(boxstyle="round", fc=color))
-        event.artist.clicked = not clicked
-        self.fig.canvas.draw()
-
-    def ActivateAnnotations(self):
-        self.id_click = self.fig.canvas.mpl_connect(
-            'pick_event',
-            self.on_click_annotate)
-
     def onMarkLabelChosed(self):
         self.fig.canvas.mpl_disconnect(self.id_click)
         self.fig.canvas.draw()

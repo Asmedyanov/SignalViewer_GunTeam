@@ -1,1 +1,1 @@
-experiment_templates/Отладка интреферометра 1.xml
+experiment_templates/Отладка интреферометра.xml
