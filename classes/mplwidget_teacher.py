@@ -19,29 +19,16 @@ class MplWidget_teacher(MplWidget):
         self.right_pics_0 = []
 
     def get_marks_pi(self):
-
-        return {
-            'pic_time': self.pics_time_pi,
-            'prominences': self.pics_prominences_pi,
-            'widths': self.pics_widths_pi,
-            'width_heights': self.pics_width_heights_pi,
-            'marks': self.marks_pi,
-        }
+        ret = self.pic_pi_prop
+        ret['pic_time'] = self.pics_time_pi
+        ret['marks'] = self.marks_pi
+        return ret
 
     def get_marks_0(self):
-        mark_array_0 = np.zeros(len(self.pics_time_0))
-        for i, annotation in enumerate(self.checklist_0):
-            try:
-                mark_array_0[i] = annotation.mark
-            except:
-                pass
-        return {
-            'pic_time': self.pics_time_0,
-            'prominences': self.pics_prominences_0,
-            'widths': self.pics_widths_0,
-            'width_heights': self.pics_width_heights_0,
-            'marks': self.marks_0,
-        }
+        ret = self.pic_0_prop
+        ret['pic_time'] = self.pics_time_0
+        ret['marks'] = self.marks_0
+        return ret
 
     def plot_picks(self, datalist, header='', style='-'):
 
@@ -59,7 +46,8 @@ class MplWidget_teacher(MplWidget):
 
             self.time = data['Time'] * timemult
             self.axes.plot(self.time, self.signal, style)
-            pics = find_peaks(-data['Values'], width=[1.0, 1000.0], prominence=[0.0, np.pi])
+            pics = my_find_pics(-data['Values'])
+            self.pic_0_prop = pics[1]
             pics_indexes = pics[0]
             self.pics_indexes_0 = pics_indexes
 
@@ -85,8 +73,9 @@ class MplWidget_teacher(MplWidget):
                                                 )
                 annotation.litera = '0'
                 self.checklist_0.append(annotation)
-            self.marks_0=np.zeros(len(self.checklist_0))
-            pics = find_peaks(data['Values'], width=[1.0, 1000.0], prominence=[0.0, np.pi])
+            self.marks_0 = np.zeros(len(self.checklist_0))
+            pics = my_find_pics(data['Values'])
+            self.pic_pi_prop = pics[1]
             pics_indexes = pics[0]
             self.pics_indexes_pi = pics_indexes
 

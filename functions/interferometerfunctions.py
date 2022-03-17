@@ -80,8 +80,7 @@ def find_revers_0(data, classificator):
     time = data['Time'].values
     # plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
-    pic_array_raw = \
-        find_peaks(-signal, width=[1, 1000], prominence=[0.0, np.pi])
+    pic_array_raw = my_find_pics(-signal)
     pic_data = pd.DataFrame(pic_array_raw[1])
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
@@ -121,14 +120,15 @@ def find_revers_pi(data, classificator):
     tgrad = np.gradient(time)
     dt = np.mean(tgrad)
 
-    pic_array_raw = \
-        find_peaks(signal, width=[1, 1000], prominence=[0.0, np.pi])
+    pic_array_raw = my_find_pics(signal)
     pic_data = pd.DataFrame(pic_array_raw[1])
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
     Y = classificator.predict(X)
     pic_indexec_left = pic_data['pic_time'].values[np.nonzero(Y < 0)]
+    pic_indexec_left = np.sort(pic_indexec_left)
     pic_indexec_right = pic_data['pic_time'].values[np.nonzero(Y > 0)]
+    pic_indexec_right = np.sort(pic_indexec_right)
 
     if len(pic_indexec_left) > len(pic_indexec_right):
         while len(pic_indexec_left) > len(pic_indexec_right):
@@ -139,6 +139,12 @@ def find_revers_pi(data, classificator):
         while len(pic_indexec_left) < len(pic_indexec_right):
             n_remove = np.argmin(signal[pic_indexec_right])
             pic_indexec_right = np.delete(pic_indexec_right, n_remove)
+
+    for i, pic in enumerate(pic_indexec_left):
+        if pic_indexec_right[i] < pic:
+            buffer = pic_indexec_right[i]
+            pic_indexec_right[i] = pic
+            pic_indexec_left[i] = buffer
 
     pic_array_raw_time = []
     for t in time[pic_indexec_left]:

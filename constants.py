@@ -15,8 +15,29 @@ timeScaleDict = {
     'мкс': 1.0e6,
 }
 pic_parameters = [
-    #'pic_time',
+    #'peak_heights',
+    'left_thresholds',
+    #'right_thresholds',
     'prominences',
+    #'left_bases',
+    #'right_bases',
     #'widths',
-    #'width_heights'
+    #'width_heights',
+    #'left_ips',
+    #'right_ips',
+    #'pic_time'
+]
+
+pic_parameters_all = [
+
+    'left_thresholds',
+    'right_thresholds',
+    'prominences',
+    'left_bases',
+    'right_bases',
+    'widths',
+    'width_heights',
+    'left_ips',
+    'right_ips',
+    'pic_time'
 ]

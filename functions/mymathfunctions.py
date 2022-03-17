@@ -5,6 +5,15 @@ from classes.rawdata import RawData
 from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 
 
+def my_find_pics(signal):
+    return find_peaks(signal,
+                      #height=[0, np.pi],
+                        threshold=[0, np.pi],
+                       distance=7.0,
+                      width=[7.0, 1000.0],
+                      prominence=[0.0, np.pi])
+
+
 def my_fft(value, df, dt):
     fmax = 0.5 / dt
     n = value.size
@@ -46,7 +55,8 @@ def get_up_envelope(data):
     f = interp1d(pic_array_raw_time, pic_array_raw_value, kind='cubic', bounds_error=False, fill_value=0.0)
     env_down = -f(time)
     env_com = 0.5 * (env_down + env_up)
-    dataret = RawData(label='', diagnostic= data.diagnostic,time= data['Time'].values,values= data['Values'].values - env_com)
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=data['Time'].values,
+                      values=data['Values'].values - env_com)
     return dataret
 
 
@@ -68,7 +78,7 @@ def cut_negative(data):
     signal = data['Values'].values
     time = data['Time'].values
     new_signal = np.where(signal > 0, signal, 0)
-    dataret = RawData(label= data.label,diagnostic= data.diagnostic,time= time,values= new_signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time, values=new_signal)
 
     return dataret
 
@@ -101,7 +111,7 @@ def my_fft_filter_fin(data, fstart, ffinish):
     fwindow = np.where(((np.abs(W) >= fstart) & (np.abs(W) <= fend)), 1, 0)
     cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
     new_time = np.arange(0, cut_signal.size) * meanStep
-    dataret = RawData(label= data.label,diagnostic= data.diagnostic,time= new_time,values= cut_signal)
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=new_time, values=cut_signal)
 
     return dataret
 

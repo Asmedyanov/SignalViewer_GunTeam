@@ -20,6 +20,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
+import itertools
 
 
 class MainWindow(QMainWindow):
@@ -48,14 +49,34 @@ class MainWindow(QMainWindow):
             X = trening_data[constants.pic_parameters].values
             Y = trening_data['marks'].values
             self.Classificator_0 = GaussianNB()
-            #self.Classificator_0 = KNeighborsClassifier(n_neighbors=7)
-            #self.Classificator_0 = GaussianNB()
-            #self.Classificator_0 = GaussianNB()
+            self.Classificator_test = GaussianNB()
+
+            '''comblist = []
+            iter_len = len(constants.pic_parameters_all) + 1
+            for i in range(1, iter_len):
+                for combo in itertools.combinations(constants.pic_parameters_all, i):
+                    comblist.append(list(combo))
+            optimal_heads=comblist[0]
+            max_accurecy=0
+            for heads in comblist:
+                X_test = trening_data[heads].values
+                self.Classificator_test.fit(X_test, Y)
+                prediction = self.Classificator_test.predict(X_test)
+                accuracy = accuracy_score(Y,prediction)
+                if accuracy>max_accurecy:
+                    max_accurecy=accuracy
+                    optimal_heads=heads
+                print( f'При сочетании заголовков {heads} получена точность {accuracy}')
+            print(f'Оптимальное сочетание заголовков {optimal_heads} с точностью {max_accurecy}')'''
+
+            # self.Classificator_0 = KNeighborsClassifier(n_neighbors=10)
+            # self.Classificator_0 = LinearDiscriminantAnalysis()
+            # self.Classificator_0 = GaussianNB()
             self.Classificator_0.fit(X, Y)
-            #X = trening_data_pi[constants.pic_parameters].values
-            #Y = trening_data_pi['marks'].values
-            #self.Classificator_pi = GaussianNB()
-            #self.Classificator_pi.fit(X, Y)
+            # X = trening_data_pi[constants.pic_parameters].values
+            # Y = trening_data_pi['marks'].values
+            # self.Classificator_pi = GaussianNB()
+            # self.Classificator_pi.fit(X, Y)
 
             self.statusbar.showMessage("Нейросеть обучена")
             return True
