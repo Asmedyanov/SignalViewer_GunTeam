@@ -1,1 +1,1 @@
-experiment_templates/Отладка интреферометра.xml
+D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-03-02-2Инт-1Дел.xml

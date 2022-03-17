@@ -81,23 +81,23 @@ def find_revers_0(data, classificator):
     # plt.plot(time, signal)
     pic_max = signal.max() - signal.min()
     pic_array_raw = \
-        find_peaks(-signal, width=[1.0, 1000.0], prominence=[0.0, np.pi])
+        find_peaks(-signal, width=[1, 1000], prominence=[0.0, np.pi])
     pic_data = pd.DataFrame(pic_array_raw[1])
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
     Y = classificator.predict(X)
-    pic_indexec_left = np.nonzero(Y < 0)
-    pic_indexec_right = np.nonzero(Y > 0)
+    pic_indexec_left = pic_data['pic_time'].values[np.nonzero(Y < 0)]
+    pic_indexec_right = pic_data['pic_time'].values[np.nonzero(Y > 0)]
 
     if len(pic_indexec_left) > len(pic_indexec_right):
         while len(pic_indexec_left) > len(pic_indexec_right):
             n_remove = np.argmax(signal[pic_indexec_left])
-            np.delete(pic_indexec_left, n_remove)
+            pic_indexec_left = np.delete(pic_indexec_left, n_remove)
 
     if len(pic_indexec_left) < len(pic_indexec_right):
         while len(pic_indexec_left) < len(pic_indexec_right):
             n_remove = np.argmax(signal[pic_indexec_right])
-            np.delete(pic_indexec_right, n_remove)
+            pic_indexec_right = np.delete(pic_indexec_right, n_remove)
 
     pic_array_raw_time = []
     for t in time[pic_indexec_left]:
@@ -122,23 +122,23 @@ def find_revers_pi(data, classificator):
     dt = np.mean(tgrad)
 
     pic_array_raw = \
-        find_peaks(signal, width=[1.0, 1000.0], prominence=[0.0, np.pi])
+        find_peaks(signal, width=[1, 1000], prominence=[0.0, np.pi])
     pic_data = pd.DataFrame(pic_array_raw[1])
     pic_data['pic_time'] = pic_array_raw[0]
     X = pic_data[pic_parameters].values
     Y = classificator.predict(X)
-    pic_indexec_left = np.nonzero(Y < 0)
-    pic_indexec_right = np.nonzero(Y > 0)
+    pic_indexec_left = pic_data['pic_time'].values[np.nonzero(Y < 0)]
+    pic_indexec_right = pic_data['pic_time'].values[np.nonzero(Y > 0)]
 
     if len(pic_indexec_left) > len(pic_indexec_right):
         while len(pic_indexec_left) > len(pic_indexec_right):
             n_remove = np.argmin(signal[pic_indexec_left])
-            np.delete(pic_indexec_left, n_remove)
+            pic_indexec_left = np.delete(pic_indexec_left, n_remove)
 
     if len(pic_indexec_left) < len(pic_indexec_right):
         while len(pic_indexec_left) < len(pic_indexec_right):
             n_remove = np.argmin(signal[pic_indexec_right])
-            np.delete(pic_indexec_right, n_remove)
+            pic_indexec_right = np.delete(pic_indexec_right, n_remove)
 
     pic_array_raw_time = []
     for t in time[pic_indexec_left]:

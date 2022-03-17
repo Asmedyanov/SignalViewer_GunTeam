@@ -22,8 +22,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 
 
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -43,17 +41,21 @@ class MainWindow(QMainWindow):
         try:
             trening_data_0 = pd.read_csv('pic_0.txt', sep='\t')
             trening_data_pi = pd.read_csv('pic_pi.txt', sep='\t')
+            trening_data = pd.concat([trening_data_0, trening_data_pi])
             if (len(trening_data_pi) == 0) or (len(trening_data_0) == 0):
                 self.statusbar.showMessage("Нейросеть НЕ обучена")
                 return False
-            X = trening_data_0[constants.pic_parameters].values
-            Y = trening_data_0['marks'].values
+            X = trening_data[constants.pic_parameters].values
+            Y = trening_data['marks'].values
             self.Classificator_0 = GaussianNB()
+            #self.Classificator_0 = KNeighborsClassifier(n_neighbors=7)
+            #self.Classificator_0 = GaussianNB()
+            #self.Classificator_0 = GaussianNB()
             self.Classificator_0.fit(X, Y)
-            X = trening_data_pi[constants.pic_parameters].values
-            Y = trening_data_pi['marks'].values
-            self.Classificator_pi = GaussianNB()
-            self.Classificator_pi.fit(X, Y)
+            #X = trening_data_pi[constants.pic_parameters].values
+            #Y = trening_data_pi['marks'].values
+            #self.Classificator_pi = GaussianNB()
+            #self.Classificator_pi.fit(X, Y)
 
             self.statusbar.showMessage("Нейросеть обучена")
             return True
@@ -409,7 +411,8 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self,'pic')
+            self.mTeacher = Teacher(self, 'pic')
+
     def startLearning_1_l(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на первую левую')
         self.clearAll()
@@ -417,7 +420,8 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self,'pic_1_l')
+            self.mTeacher = Teacher(self, 'pic_1_l')
+
     def startLearning_1_r(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на первую правую')
         self.clearAll()
@@ -425,7 +429,8 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 1.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self,'pic_1_r')
+            self.mTeacher = Teacher(self, 'pic_1_r')
+
     def startLearning_2_l(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на вторую левую')
         self.clearAll()
@@ -433,7 +438,8 @@ class MainWindow(QMainWindow):
         self.openExperimentTemplate("experiment_templates/Отладка интреферометра 2.xml")
         self.addFile()
         if self.fileList != 0:
-            self.mTeacher = Teacher(self,'pic_2_l')
+            self.mTeacher = Teacher(self, 'pic_2_l')
+
     def startLearning_2_r(self):
         self.statusbar.showMessage(f'Начал обучать нейросеть на вторую правую')
         self.clearAll()

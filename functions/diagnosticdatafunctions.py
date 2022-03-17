@@ -79,7 +79,7 @@ def Diagnostic_Interferometer(rawdata, master):
         ret = preinterferometer(rawdata, fstart)
         ret = ininterval(ret, tstart, tfinish)
         rev_x_0 = find_revers_0(data, master.master.Classificator_0)
-        rev_x_pi = find_revers_pi(data, master.master.Classificator_pi)
+        rev_x_pi = find_revers_pi(data, master.master.Classificator_0)
 
 
         # ret = rolling_avg(ret, 1.0 / ffinish)
