@@ -7,18 +7,18 @@ import matplotlib.pyplot as plt
 class PlasmaGenerator(pd.DataFrame):
     def __init__(self):
         super().__init__()
-        self.Npoints = 125e3
+        self.Npoints = 125e3*1.0e1
         self.fdisc = 1.0e2  # MHz
         self.tdisc = 1 / self.fdisc  # mks
-        self.sigma_left_min = 0.1  # mks
+        self.sigma_left_min = 0.05  # mks
         self.sigma_left_max = 10.0  # mks
         self.sigma_right_min = 10.0  # mks
-        self.sigma_right_max = 50.0  # mks
+        self.sigma_right_max = 20.0  # mks
         self.tau_min = 20.0  # mks
         self.tau_max = 60.0  # mks
         self.a_min = 0.5 * np.pi  # rad
         self.a_max = 4 * np.pi  # rad
-        self['Time'] = np.arange(self.Npoints) / self.fdisc
+        self['Time'] = np.arange(self.Npoints) / self.fdisc - 610
 
     def generate(self):
         sigma_left = np.random.random_sample() * (self.sigma_left_max - self.sigma_left_min)+self.sigma_left_min
@@ -37,8 +37,8 @@ class PlasmaGenerator(pd.DataFrame):
         return a * np.exp(-np.power((t - tau) / s, 2))
 
 
-generator = PlasmaGenerator()
+'''generator = PlasmaGenerator()
 for i in range(5):
     generator.generate()
     generator.show_plot()
-plt.show()
+plt.show()'''
