@@ -21,7 +21,7 @@ pic_parameters = [
     'prominences',
     #'left_bases',
     #'right_bases',
-    #'widths',
+    'widths',
     #'width_heights',
     #'left_ips',
     #'right_ips',
@@ -39,5 +39,5 @@ pic_parameters_all = [
     'width_heights',
     'left_ips',
     'right_ips',
-    'pic_time'
+    #'pic_time'
 ]

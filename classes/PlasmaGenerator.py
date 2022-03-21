@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class PlasmaGenerator(pd.DataFrame):
     def __init__(self):
         super().__init__()
-        self.Npoints = 125e3*1.0e1
+        self.Npoints = 125e3*2.0
         self.fdisc = 1.0e2  # MHz
         self.tdisc = 1 / self.fdisc  # mks
         self.sigma_left_min = 0.05  # mks

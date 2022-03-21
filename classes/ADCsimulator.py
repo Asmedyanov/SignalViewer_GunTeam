@@ -21,8 +21,10 @@ class ADCsimulator(pd.DataFrame):
         plasmagenerator.generate()
         interferometer.transformation(plasmagenerator)
         photodetector.transformation(interferometer)
-        self.Pic_data_pi = interferometer.PicData_pi
-        self.Pic_data_2pi = interferometer.PicData_2pi
+        self.Pic_data_pi_left = interferometer.PicData_pi_left
+        self.Pic_data_2pi_left = interferometer.PicData_2pi_left
+        self.Pic_data_pi_right = interferometer.PicData_pi_right
+        self.Pic_data_2pi_right = interferometer.PicData_2pi_right
         signal = photodetector['Values'].values
         time = photodetector['Time'].values
         ndisc = int(self.tdisc / photodetector.dt)

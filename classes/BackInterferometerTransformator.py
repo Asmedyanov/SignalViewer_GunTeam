@@ -67,26 +67,35 @@ class BackInterferometerTransformator(pd.DataFrame):
         self.real_pic_data_2pi = pd.DataFrame()
         self.real_pic_data_2pi['Time'] = new_time[self.Real_Pick_2pi[0]]
         self.real_pic_data_2pi['Values'] = new_signal[self.Real_Pick_2pi[0]]
-        self.realpic_pi_data_output = pd.DataFrame(self.Real_Pick_pi[1])
-        self.realpic_2pi_data_output = pd.DataFrame(self.Real_Pick_2pi[1])
-        self.realpic_2pi_data_output['mark'] = np.zeros(self.real_pic_data_2pi['Time'].size)
-        self.realpic_pi_data_output['mark'] = np.zeros(self.real_pic_data_pi['Time'].size)
+        self.real_pic_pi_data_output = pd.DataFrame(self.Real_Pick_pi[1])
+        self.real_pic_2pi_data_output = pd.DataFrame(self.Real_Pick_2pi[1])
+        self.real_pic_2pi_data_output['mark'] = np.zeros(self.real_pic_data_2pi['Time'].size)
+        self.real_pic_pi_data_output['mark'] = np.zeros(self.real_pic_data_pi['Time'].size)
 
-        revers_time_pi = []
-        for t in adc.Pic_data_pi['Time']:
-            revers_time_pi.append(find_nearest(self.real_pic_data_pi['Time'], t))
-        revers_time_2pi = []
-        for t in adc.Pic_data_2pi['Time']:
-            revers_time_2pi.append(find_nearest(self.real_pic_data_2pi['Time'], t))
+        revers_time_pi_left = []
+        for t in adc.Pic_data_pi_left['Time']:
+            revers_time_pi_left.append(find_nearest(self.real_pic_data_pi['Time'], t))
+        revers_time_2pi_left = []
+        for t in adc.Pic_data_2pi_left['Time']:
+            revers_time_2pi_left.append(find_nearest(self.real_pic_data_2pi['Time'], t))
+        revers_time_pi_right = []
+        for t in adc.Pic_data_pi_right['Time']:
+            revers_time_pi_right.append(find_nearest(self.real_pic_data_pi['Time'], t))
+        revers_time_2pi_right = []
+        for t in adc.Pic_data_2pi_right['Time']:
+            revers_time_2pi_right.append(find_nearest(self.real_pic_data_2pi['Time'], t))
 
-        self.realpic_2pi_data_output['mark'][revers_time_2pi] = 1
-        self.realpic_pi_data_output['mark'][revers_time_pi] = 1
-        self.compared_data_pi = pd.DataFrame()
+        self.real_pic_2pi_data_output['mark'][revers_time_2pi_right] = 1
+        self.real_pic_pi_data_output['mark'][revers_time_pi_right] = 1
+        self.real_pic_2pi_data_output['mark'][revers_time_2pi_left] = -1
+        self.real_pic_pi_data_output['mark'][revers_time_pi_left] = -1
+
+        '''self.compared_data_pi = pd.DataFrame()
         self.compared_data_pi['Time'] = self.real_pic_data_pi['Time'].values[revers_time_pi]
         self.compared_data_pi['Values'] = self.real_pic_data_pi['Values'].values[revers_time_pi]
         self.compared_data_2pi = pd.DataFrame()
         self.compared_data_2pi['Time'] = self.real_pic_data_2pi['Time'].values[revers_time_2pi]
-        self.compared_data_2pi['Values'] = self.real_pic_data_2pi['Values'].values[revers_time_2pi]
+        self.compared_data_2pi['Values'] = self.real_pic_data_2pi['Values'].values[revers_time_2pi]'''
 
     def show_plot(self):
         plt.plot(self['Time'], self['Values'])
@@ -98,13 +107,13 @@ class BackInterferometerTransformator(pd.DataFrame):
 
 BIT = BackInterferometerTransformator()
 BIT.get_signal()
-common_output_data_pi = BIT.realpic_pi_data_output
-common_output_data_2pi = BIT.realpic_2pi_data_output
+common_output_data_pi = BIT.real_pic_pi_data_output
+common_output_data_2pi = BIT.real_pic_2pi_data_output
 
-for i in range(2):
+for i in range(1000):
     BIT.get_signal()
-    common_output_data_pi = pd.concat([common_output_data_pi, BIT.realpic_pi_data_output])
-    common_output_data_2pi = pd.concat([common_output_data_2pi, BIT.realpic_2pi_data_output])
+    common_output_data_pi = pd.concat([common_output_data_pi, BIT.real_pic_pi_data_output])
+    common_output_data_2pi = pd.concat([common_output_data_2pi, BIT.real_pic_2pi_data_output])
 
 common_output_data_pi.to_csv('artif_pic_pi.txt', sep='\t')
 common_output_data_2pi.to_csv('artif_pic_2pi.txt', sep='\t')

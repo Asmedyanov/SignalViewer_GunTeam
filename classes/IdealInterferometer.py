@@ -35,10 +35,41 @@ class IdealInterferometer(pd.DataFrame):
         self.PicData_2pi['Time'] = self['Time'].values[pics_2pi]
         self.PicData_2pi['Values'] = self['Values'].values[pics_2pi]
 
+        pics_pi_grad = np.gradient(fase_sum)[pics_pi]
+        pics_2pi_grad = np.gradient(-fase_sum)[pics_2pi]
+        pics_pi_left = []
+        pics_2pi_left = []
+        pics_pi_right = []
+        pics_2pi_right = []
+        for i, grad in enumerate(pics_pi_grad):
+            if grad > 0:
+                pics_pi_left.append(pics_pi[i])
+            elif grad < 0:
+                pics_pi_right.append(pics_pi[i])
+        for i, grad in enumerate(pics_2pi_grad):
+            if grad > 0:
+                pics_2pi_left.append(pics_2pi[i])
+            elif grad < 0:
+                pics_2pi_right.append(pics_2pi[i])
+        self.PicData_pi_left = pd.DataFrame()
+        self.PicData_pi_left['Time'] = self['Time'].values[pics_pi_left]
+        self.PicData_pi_left['Values'] = self['Values'].values[pics_pi_left]
+        self.PicData_2pi_left = pd.DataFrame()
+        self.PicData_2pi_left['Time'] = self['Time'].values[pics_2pi_left]
+        self.PicData_2pi_left['Values'] = self['Values'].values[pics_2pi_left]
+        self.PicData_pi_right = pd.DataFrame()
+        self.PicData_pi_right['Time'] = self['Time'].values[pics_pi_right]
+        self.PicData_pi_right['Values'] = self['Values'].values[pics_pi_right]
+        self.PicData_2pi_right = pd.DataFrame()
+        self.PicData_2pi_right['Time'] = self['Time'].values[pics_2pi_right]
+        self.PicData_2pi_right['Values'] = self['Values'].values[pics_2pi_right]
+
     def show_plot(self):
         plt.plot(self['Time'], self['Values'])
-        plt.plot(self.PicData_pi['Time'], self.PicData_pi['Values'], 'o')
-        plt.plot(self.PicData_2pi['Time'], self.PicData_2pi['Values'], 'o')
+        plt.plot(self.PicData_pi_left['Time'], self.PicData_pi_left['Values'], 'o')
+        plt.plot(self.PicData_2pi_left['Time'], self.PicData_2pi_left['Values'], 'o')
+        plt.plot(self.PicData_pi_right['Time'], self.PicData_pi_right['Values'], 'o')
+        plt.plot(self.PicData_2pi_right['Time'], self.PicData_2pi_right['Values'], 'o')
 
 
 '''plasma_data = PlasmaGenerator()
