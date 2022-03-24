@@ -21,6 +21,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 import itertools
+from sklearn.model_selection import train_test_split
 
 
 class MainWindow(QMainWindow):
@@ -46,32 +47,45 @@ class MainWindow(QMainWindow):
             if (len(trening_data_pi) == 0) or (len(trening_data_0) == 0):
                 self.statusbar.showMessage("Нейросеть НЕ обучена")
                 return False
-            X = trening_data[constants.pic_parameters].values
-            Y = trening_data['mark'].values
-            #self.Classificator_0 = GaussianNB()
-            #self.Classificator_test = GaussianNB()
 
-            '''comblist = []
+            self.Classificator_0 = DecisionTreeClassifier()
+            self.Classificator_test = DecisionTreeClassifier()
+
+            comblist = []
             iter_len = len(constants.pic_parameters_all) + 1
-            for i in range(3, iter_len):
+            for i in range(2, 3):
                 for combo in itertools.combinations(constants.pic_parameters_all, i):
                     comblist.append(list(combo))
             optimal_heads = comblist[0]
+            optimal_heads_matrix = comblist[0]
             max_accurecy = 0
+            matrix_coef_max = 0
+
             for heads in comblist:
-                X_test = trening_data[heads].values
-                self.Classificator_test.fit(X_test, Y)
+                X_train, X_test, Y_train, Y_test = train_test_split(trening_data[heads].values,
+                                                                    trening_data['mark'].values, test_size=0.60,
+                                                                    random_state=27)
+
+                self.Classificator_test.fit(X_train, Y_train)
                 prediction = self.Classificator_test.predict(X_test)
-                accuracy = accuracy_score(Y, prediction)
+                accuracy = accuracy_score(prediction, Y_test)
+                matrix = confusion_matrix(prediction, Y_test)
+                matrix_coef = matrix[0][0] + matrix[2][2]
                 if accuracy > max_accurecy:
                     max_accurecy = accuracy
                     optimal_heads = heads
-                print(f'При сочетании заголовков {heads} получена точность {accuracy}')
-            print(f'Оптимальное сочетание заголовков {optimal_heads} с точностью {max_accurecy}')'''
-
-            self.Classificator_0 = KNeighborsClassifier(n_neighbors=10)
+                if matrix_coef > matrix_coef_max:
+                    matrix_coef_max = matrix_coef
+                    optimal_heads_matrix = heads
+                # print(f'При сочетании заголовков {heads} получена точность {accuracy} матрица {matrix_coef}')
+            print(f'Оптимальное сочетание заголовков {optimal_heads} с точностью {max_accurecy}')
+            # print(f'Оптимальное сочетание заголовков по матрице {optimal_heads_matrix} с {matrix_coef_max} совпадений')
+            constants.optimal_heads = optimal_heads
+            # self.Classificator_0 = KNeighborsClassifier(n_neighbors=10)
             # self.Classificator_0 = LinearDiscriminantAnalysis()
             # self.Classificator_0 = GaussianNB()
+            X = trening_data[constants.pic_parameters].values
+            Y = trening_data['mark'].values
             self.Classificator_0.fit(X, Y)
             # X = trening_data_pi[constants.pic_parameters].values
             # Y = trening_data_pi['marks'].values

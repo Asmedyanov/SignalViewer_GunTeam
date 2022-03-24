@@ -14,9 +14,10 @@ timeScaleDict = {
     'мс': 1.0e3,
     'мкс': 1.0e6,
 }
+optimal_heads = []
 pic_parameters = [
     #'peak_heights',
-    'left_thresholds',
+    #'left_thresholds',
     #'right_thresholds',
     'prominences',
     #'left_bases',

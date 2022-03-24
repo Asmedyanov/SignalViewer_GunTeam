@@ -8,9 +8,8 @@ from classes.PlasmaGenerator import PlasmaGenerator
 from classes.Photodetector import Photodetector
 
 
-class ADCsimulator(pd.DataFrame):
+class ADCsimulator:
     def __init__(self):
-        super().__init__()
         self.fdisc = 1.0e1  # MHz
         self.tdisc = 1.0 / self.fdisc
 
@@ -21,18 +20,22 @@ class ADCsimulator(pd.DataFrame):
         plasmagenerator.generate()
         interferometer.transformation(plasmagenerator)
         photodetector.transformation(interferometer)
-        self.Pic_data_pi_left = interferometer.PicData_pi_left
-        self.Pic_data_2pi_left = interferometer.PicData_2pi_left
-        self.Pic_data_pi_right = interferometer.PicData_pi_right
-        self.Pic_data_2pi_right = interferometer.PicData_2pi_right
+        self.Pic_data_pi_left_Time = interferometer.PicData_pi_left_Time
+        self.Pic_data_pi_left_Values = interferometer.PicData_pi_left_Values
+        self.Pic_data_2pi_left_Time = interferometer.PicData_2pi_left_Time
+        self.Pic_data_2pi_left_Values = interferometer.PicData_2pi_left_Values
+        self.Pic_data_pi_right_Time = interferometer.PicData_pi_right_Time
+        self.Pic_data_pi_right_Values = interferometer.PicData_pi_right_Values
+        self.Pic_data_2pi_right_Time = interferometer.PicData_2pi_right_Time
+        self.Pic_data_2pi_right_Values = interferometer.PicData_2pi_right_Values
         signal = photodetector['Values'].values
         time = photodetector['Time'].values
         ndisc = int(self.tdisc / photodetector.dt)
-        self['Time'] = time[::ndisc]
-        self['Values'] = signal[::ndisc]
+        self.Time = time[::ndisc]
+        self.Values = signal[::ndisc]
 
     def show_plot(self):
-        plt.plot(self['Time'], self['Values'])
+        plt.plot(self.Time, self.Values)
 
 
 '''adc = ADCsimulator()

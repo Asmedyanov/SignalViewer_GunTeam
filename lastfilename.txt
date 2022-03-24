@@ -1,1 +1,2 @@
-C:/Users/asmedian/Desktop/InterfDebug/v0.bin
+D:/1. Clouds/GUN_TEAM/Experiments/2022-03-03-Статистика-2инт-1кол-1пояс-1дел/V3/COLO0003.PRN
+D:/1. Clouds/GUN_TEAM/Experiments/2022-03-03-Статистика-2инт-1кол-1пояс-1дел/V3/v3.bin

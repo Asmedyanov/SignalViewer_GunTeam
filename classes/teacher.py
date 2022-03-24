@@ -33,7 +33,7 @@ class Teacher(QMainWindow):
             self.parent().DefaultStatusMassege()
         except:
             pass
-        self.parent().isStadied = self.parent().CheckStadied()
+        #self.parent().isStadied = self.parent().CheckStadied()
 
     def onNextFile(self):
         trening_pi = self.mainPlotDict['Поворот вблизи 0'].get_marks_pi()

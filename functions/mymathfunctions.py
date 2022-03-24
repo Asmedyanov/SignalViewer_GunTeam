@@ -8,10 +8,10 @@ from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 def my_find_pics(signal):
     return find_peaks(signal,
                       #height=[0, np.pi],
-                        threshold=[0, np.pi],
-                       distance=7.0,
-                      width=[7.0, 1000.0],
-                      prominence=[0.0, np.pi])
+                      threshold=[0.0, np.pi],
+                      distance=5.0,
+                      width=[5.0, 200.0],
+                      prominence=[1.0e-1, np.pi])
 
 
 def my_fft(value, df, dt):
@@ -130,8 +130,8 @@ def my_fft_filter_com(data, fstart, ffinish):
 
     # If our original signal time was in seconds, this is now in Hz
     cut_f_signal = f_signal.copy()
-    fstart = fstart
-    fend = ffinish
+    fstart = fstart * 2.0 * np.pi
+    fend = ffinish * 2.0 * np.pi
     fw = 1428.5714285714287 * 4
     fwindow = np.exp(-np.power((W - fstart) / fw, 2)) + np.exp(-np.power((W - fend) / fw, 2))
     fwindow = fwindow / np.max(fwindow)

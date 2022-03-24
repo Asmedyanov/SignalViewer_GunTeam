@@ -48,6 +48,7 @@ class MplWidget_teacher(MplWidget):
             self.axes.plot(self.time, self.signal, style)
             pics = my_find_pics(-data['Values'])
             self.pic_0_prop = pics[1]
+            # print(f'разница баз 0 пиков\n {pics[1]["right_bases"] - pics[1]["left_bases"]}')
             pics_indexes = pics[0]
             self.pics_indexes_0 = pics_indexes
 
@@ -57,7 +58,7 @@ class MplWidget_teacher(MplWidget):
             self.pics_widths_0 = pics[1]['widths']
             self.pics_width_heights_0 = pics[1]['width_heights']
             pics_values = data['Values'].values[pics_indexes]
-            self.axes.plot(pics_time, pics_values, 'o')
+            # self.axes.plot(pics_time, pics_values, 'o')
             self.checklist_0 = []
             for i, j in enumerate(pics_indexes):
                 outputstring = f'{i}'
@@ -76,6 +77,7 @@ class MplWidget_teacher(MplWidget):
             self.marks_0 = np.zeros(len(self.checklist_0))
             pics = my_find_pics(data['Values'])
             self.pic_pi_prop = pics[1]
+            # print(f'разница баз Пи пиков\n {pics[1]["right_bases"] - pics[1]["left_bases"]}')
             pics_indexes = pics[0]
             self.pics_indexes_pi = pics_indexes
 
@@ -103,7 +105,29 @@ class MplWidget_teacher(MplWidget):
 
             self.marks_pi = np.zeros(len(self.checklist_pi))
             self.canvas.ActivateAnnotations()
-            self.axes.plot(pics_time, pics_values, 'o')
+            pics_all = np.concatenate([self.pics_time_0, self.pics_time_pi])
+            pics_all = np.sort(pics_all)
+            if (pics_all[0] in self.pics_time_0) and (pics_all[-1] in self.pics_time_pi):
+                base_dif_0 = self.pic_0_prop["right_bases"][0] - self.pic_0_prop["left_bases"][0]
+                base_dif_pi = self.pic_pi_prop["right_bases"][-1] - self.pic_pi_prop["left_bases"][-1]
+                if base_dif_0 > base_dif_pi:
+                    self.pics_indexes_0 = np.delete(self.pics_indexes_0, 0)
+                else:
+                    self.pics_indexes_pi = np.delete(self.pics_indexes_pi, -1)
+
+            elif (pics_all[0] in self.pics_time_pi) and (pics_all[-1] in self.pics_time_0):
+                base_dif_0 = self.pic_0_prop["right_bases"][-1] - self.pic_0_prop["left_bases"][-1]
+                base_dif_pi = self.pic_pi_prop["right_bases"][0] - self.pic_pi_prop["left_bases"][0]
+                if base_dif_0 > base_dif_pi:
+                    self.pics_indexes_0 = np.delete(self.pics_indexes_0, -1)
+                else:
+                    self.pics_indexes_pi = np.delete(self.pics_indexes_pi, 0)
+            pics_time_0 = data['Time'].values[self.pics_indexes_0] * timemult
+            pics_values_0 = data['Values'].values[self.pics_indexes_0]
+            pics_time_pi = data['Time'].values[self.pics_indexes_pi] * timemult
+            pics_values_pi = data['Values'].values[self.pics_indexes_pi]
+            self.axes.plot(pics_time_0, pics_values_0, 'o')
+            self.axes.plot(pics_time_pi, pics_values_pi, 'o')
             self.axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(self.axes)
 

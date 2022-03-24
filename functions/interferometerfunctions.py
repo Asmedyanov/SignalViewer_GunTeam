@@ -53,7 +53,16 @@ def scale_up_interferometr_0(data, rev_x):
     time = data['Time'].values
     n_left = find_nearest(time, rev_x[0])
     n_right = find_nearest(time, rev_x[-1])
-    rev_value = min([signal[n_left], signal[n_right]])
+    #rev_value = min(signal[[n_left, n_right]])
+    rev_value = signal[n_left]
+    '''mult = 1
+    if rev_value<0:
+        mult = -1
+    rev_value = abs(rev_value)
+    must_be = 2.0*np.pi
+    rev_value = (int(rev_value/must_be)+1)*must_be*mult'''
+    if abs(signal[n_left]) < abs(signal[n_right]):
+        rev_value = signal[n_right]
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
     dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=new_signal)
@@ -68,6 +77,12 @@ def scale_up_interferometr_pi(data, rev_x):
     rev_value = signal[n_left]
     if abs(signal[n_left]) < abs(signal[n_right]):
         rev_value = signal[n_right]
+    '''mult = 1
+    if rev_value < 0:
+        mult = -1
+    rev_value = abs(rev_value)
+    rev_value = (int(rev_value / np.pi) + 1) * np.pi * mult'''
+
     new_signal = np.where((time > rev_x[0]) & (time < rev_x[-1]),
                           2 * rev_value - signal, signal)
     dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=new_signal)
@@ -79,7 +94,7 @@ def find_revers_0(data, classificator):
     signal = data['Values'].values
     time = data['Time'].values
     # plt.plot(time, signal)
-    pic_max = signal.max() - signal.min()
+    # pic_max = signal.max() - signal.min()
     pic_array_raw = my_find_pics(-signal)
     pic_data = pd.DataFrame(pic_array_raw[1])
     pic_data['pic_time'] = pic_array_raw[0]
@@ -153,6 +168,34 @@ def find_revers_pi(data, classificator):
         pic_array_raw_time.append(t)
     # plt.show()
     return pic_array_raw_time
+
+
+def find_reverse(data):
+    signal = data['Values'].values
+    time = data['Time'].values
+    pics_pi_raw = my_find_pics(signal)
+    pics_pi_index = pics_pi_raw[0]
+    pics_0_raw = my_find_pics(-signal)
+    pics_0_index = pics_0_raw[0]
+    pics_all_index = np.concatenate([pics_0_index, pics_pi_index])
+    pics_all_index = np.sort(pics_all_index)
+    if (pics_all_index[0] in pics_0_index) and (pics_all_index[-1] in pics_pi_index):
+        base_dif_0 = pics_0_raw[1]["right_bases"][0] - pics_0_raw[1]["left_bases"][0]
+        base_dif_pi = pics_pi_raw[1]["right_bases"][-1] - pics_pi_raw[1]["left_bases"][-1]
+        if base_dif_0 > base_dif_pi:
+            pics_0_index = np.delete(pics_0_index, 0)
+        else:
+            pics_pi_index = np.delete(pics_pi_index, -1)
+
+    elif (pics_all_index[0] in pics_pi_index) and (pics_all_index[-1] in pics_0_index):
+        base_dif_0 = pics_0_raw[1]["right_bases"][-1] - pics_0_raw[1]["left_bases"][-1]
+        base_dif_pi = pics_pi_raw[1]["right_bases"][0] - pics_pi_raw[1]["left_bases"][0]
+        if base_dif_0 > base_dif_pi:
+            pics_0_index = np.delete(pics_0_index, -1)
+        else:
+            pics_pi_index = np.delete(pics_pi_index, 0)
+
+    return time[pics_0_index], time[pics_pi_index]
 
 
 def post_interferometer_2(data):

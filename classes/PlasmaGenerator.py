@@ -11,13 +11,13 @@ class PlasmaGenerator(pd.DataFrame):
         self.fdisc = 1.0e2  # MHz
         self.tdisc = 1 / self.fdisc  # mks
         self.sigma_left_min = 0.05  # mks
-        self.sigma_left_max = 10.0  # mks
+        self.sigma_left_max = 20.0  # mks
         self.sigma_right_min = 10.0  # mks
-        self.sigma_right_max = 20.0  # mks
+        self.sigma_right_max = 30.0  # mks
         self.tau_min = 20.0  # mks
         self.tau_max = 60.0  # mks
-        self.a_min = 0.5 * np.pi  # rad
-        self.a_max = 4 * np.pi  # rad
+        self.a_min = 0.1 * np.pi  # rad
+        self.a_max = 10 * np.pi  # rad
         self['Time'] = np.arange(self.Npoints) / self.fdisc - 610
 
     def generate(self):

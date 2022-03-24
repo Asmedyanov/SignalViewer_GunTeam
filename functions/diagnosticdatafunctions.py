@@ -73,34 +73,36 @@ def Diagnostic_Interferometer(rawdata, master):
     data = my_fft_filter_com(rawdata, fstart, ffinish)
     data = fase_interferometr(data)
     data = ininterval(data, tstart, tfinish)
-    data = rolling_avg(data, 1.0 / ffinish)
+    data = rolling_avg(data, 0.5e-6)
     ret = data
     if master.master.isStadied:
         ret = preinterferometer(rawdata, fstart)
         ret = ininterval(ret, tstart, tfinish)
-        rev_x_0 = find_revers_0(data, master.master.Classificator_0)
-        rev_x_pi = find_revers_pi(data, master.master.Classificator_0)
-
+        rev_x_0, rev_x_pi = find_reverse(data)
+        # rev_x_0 = find_revers_0(data, master.master.Classificator_0)
+        # rev_x_pi = find_revers_pi(data, master.master.Classificator_0)
 
         # ret = rolling_avg(ret, 1.0 / ffinish)
 
-        if len(rev_x_0) % 2 == 0:
-            while len(rev_x_0) > 0:
-                ret = scale_up_interferometr_0(ret, rev_x_0)
-                rev_x_0 = rev_x_0[1:-1]
+        # if len(rev_x_0) % 2 == 0:
+        while len(rev_x_0) > 1:
+            ret = scale_up_interferometr_0(ret, rev_x_0)
+            rev_x_0 = rev_x_0[1:-1]
 
-        if len(rev_x_pi) % 2 == 0:
-            while len(rev_x_pi) > 0:
-                ret = scale_up_interferometr_pi(ret, rev_x_pi)
-                rev_x_pi = rev_x_pi[1:-1]
+        # if len(rev_x_pi) % 2 == 0:
+        while len(rev_x_pi) > 1:
+            ret = scale_up_interferometr_pi(ret, rev_x_pi)
+            rev_x_pi = rev_x_pi[1:-1]
 
-        if mult == 'На себя':
-            ret = norm_data(ret)
-        else:
-            if abs(ret['Values'].max()) < abs(ret['Values'].min()):
-                mult *= (-1)
-            ret['Values'] = ret['Values'] * mult
-        #ret = cut_negative(ret)
+    if mult == 'На себя':
+        ret = norm_data(ret)
+    else:
+        if abs(ret['Values'].max()) < abs(ret['Values'].min()):
+            mult *= (-1)
+        ret['Values'] = ret['Values'] * mult
+    ret = cut_negative(ret)
+
+
     set_parameters(dia, ret)
     return ret
 
