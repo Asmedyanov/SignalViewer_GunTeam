@@ -5,7 +5,7 @@ from inspect import getmembers, isfunction
 
 
 class DiagnosticData(DataFrame):
-    def __init__(self, rawData,master):
+    def __init__(self, rawData, master):
         super(DiagnosticData, self).__init__()
         functions_list = [o[1] for o in getmembers(diagnosticdatafunctions) if
                           (isfunction(o[1]) and (o[0].split('_')[0] == 'Diagnostic'))]
@@ -20,3 +20,17 @@ class DiagnosticData(DataFrame):
         self.label = returndata.label
         self.timeDim = returndata.timeDim
         self.Overlay = returndata.Overlay
+
+    def get_statistic(self):
+        ret = DataFrame()
+
+        predata = self['Values'].values[20:40]
+        ret['start_value'] = [np.mean(predata)]
+
+        ret['max'] = [np.max(self['Values'])]
+        ret['min'] = [np.min(self['Values'])]
+        ret['mean'] = [np.mean(self['Values'])]
+        ret['integral'] = [np.sum(self['Values']) * np.gradient(self['Time']).mean()]
+        ret['front50'] = [
+            self['Time'][np.min(np.nonzero(np.where(self['Values'] / self['Values'].max() > 0.5, self['Time'], 0)))]]
+        return ret

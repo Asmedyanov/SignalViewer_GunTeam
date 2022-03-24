@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from classes.rawdata import RawData
 from functions.mymathfunctions import integral
+from classes.StatisticSettings import StatisticSettings
+
 
 
 class Experiment:
@@ -36,7 +38,7 @@ class Experiment:
         # self.upDateRowSpectra()
         self.upDataDiacnosticData()
         self.upDataCorrelationData()
-        self.upDataStatistic()
+        self.upDataStatistic_new()
         # self.upDateDiaSpectra()
 
     def addRawdataList_NoUpdate(self, rawdatalist):
@@ -145,6 +147,21 @@ class Experiment:
                 self.statDict[f'correlation {i}_speed'] = []
             self.statDict[f'correlation {i}_speed'].append(0.2 / data.get_shift())
 
+    def upDataStatistic_new(self, ):
+
+        try:
+            for diagnosticdata in self.diagnosticDataList:
+                self.statDict[diagnosticdata.label] = pd.concat(
+                    [self.statDict[diagnosticdata.label], diagnosticdata.get_statistic()], ignore_index=True)
+            for diagnosticdata in self.correlationDataList:
+                self.statDict[diagnosticdata.label] = pd.concat(
+                    [self.statDict[diagnosticdata.label], diagnosticdata.get_statistic()], ignore_index=True)
+        except:
+            for diagnosticdata in self.diagnosticDataList:
+                self.statDict[diagnosticdata.label] = diagnosticdata.get_statistic()
+            for diagnosticdata in self.correlationDataList:
+                self.statDict[diagnosticdata.label] = diagnosticdata.get_statistic()
+
     def saveStatistic(self, fileName='default.txt'):
         if len(self.statDict) == 0:
             return
@@ -186,6 +203,14 @@ class Experiment:
         output.to_csv(fileName, sep='\t', float_format='%.1e')
 
         self.master.mainPlotDict['Сырая статистика'].plot(plotStatList, header='Сырая статистика', style='o')
+
+    def viewStatistic(self):
+        self.StatisticSettings=StatisticSettings(self)
+        self.master.tabWidget.addTab(self.StatisticSettings, 'Просмотр стаитстики')
+
+    def saveStatistic_new(self, fname='Статистика'):
+        for [mykey, statdata] in self.statDict.items():
+            statdata.to_csv(f'{fname}/{mykey}.txt', sep='\t')
 
     def loadSettings(self, filename=default_file):
         self.oscDict = dict()

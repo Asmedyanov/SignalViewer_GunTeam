@@ -12,16 +12,18 @@ import constants
 import re
 from classes.teacher import Teacher
 import pandas as pd
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
+# from sklearn.metrics import classification_report
+# from sklearn.metrics import confusion_matrix
+# from sklearn.metrics import accuracy_score
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.naive_bayes import GaussianNB
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.svm import SVC
 import itertools
-from sklearn.model_selection import train_test_split
+
+
+# from sklearn.model_selection import train_test_split
 
 
 class MainWindow(QMainWindow):
@@ -33,13 +35,13 @@ class MainWindow(QMainWindow):
         self.foldername = ''
         self.initActions()
         self.initTabs()
-        self.isStadied = self.CheckStadied()
+        self.isStadied = True  # self.CheckStadied()
         self.show()
 
     def DefaultStatusMassege(self):
         self.statusbar.showMessage("Жду Ваших указаний")
 
-    def CheckStadied(self):
+    '''def CheckStadied(self):
         try:
             trening_data_0 = pd.read_csv('artif_pic_2pi.txt', sep='\t')
             trening_data_pi = pd.read_csv('artif_pic_pi.txt', sep='\t')
@@ -96,7 +98,7 @@ class MainWindow(QMainWindow):
             return True
         except:
             self.statusbar.showMessage("Нейросеть НЕ обучена")
-            return False
+            return False'''
 
     def initTabs(self):
         self.mainTabTextDict = dict()
@@ -146,12 +148,14 @@ class MainWindow(QMainWindow):
         currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetResultData)
         # currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
 
-        currentmenu = self.mainActionsDict['Нейросеть']
+        '''currentmenu = self.mainActionsDict['Нейросеть']
         currentmenu['Начать обучение'].triggered.connect(self.startLearning)
         currentmenu['Обучение на первую левую'].triggered.connect(self.startLearning_1_l)
         currentmenu['Обучение на первую правую'].triggered.connect(self.startLearning_1_r)
         currentmenu['Обучение на вторую левую'].triggered.connect(self.startLearning_2_l)
-        currentmenu['Обучение на вторую правую'].triggered.connect(self.startLearning_2_r)
+        currentmenu['Обучение на вторую правую'].triggered.connect(self.startLearning_2_r)'''
+        currentmenu = self.mainActionsDict['Статистика']
+        currentmenu['Просмотр сырой из папки'].triggered.connect(self.on_watch_raw_statistic)
 
     def addFile(self):
         '''self.lastFileName = \
@@ -434,8 +438,9 @@ class MainWindow(QMainWindow):
             os.chdir(folderName)
             self.mainPlotDict['Итоговые сигналы'].canvas.fig.savefig(f'Итоговые сигналы/{tfolderName}.png')
             self.clearAll()
-        self.experiment.saveStatistic(f'Статистика/Статистика.txt')
-        self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
+        self.experiment.saveStatistic_new(f'Статистика')
+        self.experiment.viewStatistic()
+        # self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
         os.chdir(curentDir)
         self.DefaultStatusMassege()
 
@@ -483,3 +488,22 @@ class MainWindow(QMainWindow):
         self.addFile()
         if self.fileList != 0:
             self.mTeacher = Teacher(self, 'pic_2_r')
+
+    def on_watch_raw_statistic(self):
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить")[0]
+        if self.lastFileName in ['', None]:
+            return
+        folderName = '/'.join(self.lastFileName.split('/')[:-1])
+        currentdir = os.getcwd()
+        os.chdir(folderName)
+        self.experiment.clear()
+        self.experiment.statDict = dict()
+        for filename in os.listdir():
+            if filename.split('.')[-1] != 'txt':
+                continue
+            dia_name = filename.split('.')[0]
+            data = pd.read_csv(filename, sep='\t')
+            self.experiment.statDict[dia_name] = data
+        self.experiment.viewStatistic()

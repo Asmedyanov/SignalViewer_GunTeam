@@ -56,7 +56,7 @@
      <x>0</x>
      <y>0</y>
      <width>1001</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -119,21 +119,17 @@
    </widget>
    <widget class="QMenu" name="menu_7">
     <property name="title">
-     <string>Нейросеть</string>
+     <string>Статистика</string>
     </property>
-    <addaction name="action_31"/>
-    <addaction name="action_32"/>
-    <addaction name="action_33"/>
-    <addaction name="action_34"/>
-    <addaction name="action_35"/>
+    <addaction name="action_36"/>
    </widget>
    <addaction name="menu_2"/>
    <addaction name="menu"/>
    <addaction name="menu_3"/>
    <addaction name="menu_4"/>
    <addaction name="menu_5"/>
-   <addaction name="menu_6"/>
    <addaction name="menu_7"/>
+   <addaction name="menu_6"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">
@@ -173,7 +169,7 @@
   <action name="action_6">
    <property name="icon">
     <iconset theme="Шаблон">
-     <normaloff>C:/Users/asmedian/.designer/backup</normaloff>C:/Users/asmedian/.designer/backup</iconset>
+     <normaloff>../../../../../asmedian/.designer/backup</normaloff>../../../../../asmedian/.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Открыть шаблон эксперимента</string>
@@ -355,6 +351,11 @@
   <action name="action_35">
    <property name="text">
     <string>Обучение на вторую правую</string>
+   </property>
+  </action>
+  <action name="action_36">
+   <property name="text">
+    <string>Просмотр сырой из папки</string>
    </property>
   </action>
  </widget>

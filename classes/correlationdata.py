@@ -62,3 +62,8 @@ class CorrelationData(DataFrame):
         except:
             ret = 0
         return ret
+
+    def get_statistic(self):
+        ret = DataFrame()
+        ret['Time_shift'] = [self['Time'][np.argmax(self['Values'])]]
+        return ret
