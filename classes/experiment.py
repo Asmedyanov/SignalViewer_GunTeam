@@ -12,7 +12,6 @@ from functions.mymathfunctions import integral
 from classes.StatisticSettings import StatisticSettings
 
 
-
 class Experiment:
     def __init__(self, master):
         self.master = master
@@ -156,11 +155,16 @@ class Experiment:
             for diagnosticdata in self.correlationDataList:
                 self.statDict[diagnosticdata.label] = pd.concat(
                     [self.statDict[diagnosticdata.label], diagnosticdata.get_statistic()], ignore_index=True)
+            dataname = pd.DataFrame()
+            dataname['name'] = [self.master.foldername]
+            self.statDict['name'] = pd.concat([self.statDict['name'], dataname])
         except:
             for diagnosticdata in self.diagnosticDataList:
                 self.statDict[diagnosticdata.label] = diagnosticdata.get_statistic()
             for diagnosticdata in self.correlationDataList:
                 self.statDict[diagnosticdata.label] = diagnosticdata.get_statistic()
+            self.statDict['name'] = pd.DataFrame()
+            self.statDict['name']['name'] = [self.master.foldername]
 
     def saveStatistic(self, fileName='default.txt'):
         if len(self.statDict) == 0:
@@ -205,12 +209,46 @@ class Experiment:
         self.master.mainPlotDict['Сырая статистика'].plot(plotStatList, header='Сырая статистика', style='o')
 
     def viewStatistic(self):
-        self.StatisticSettings=StatisticSettings(self)
+        try:
+            self.advanced_statistic()
+        except:
+            pass
+        self.StatisticSettings = StatisticSettings(self)
         self.master.tabWidget.addTab(self.StatisticSettings, 'Просмотр стаитстики')
 
     def saveStatistic_new(self, fname='Статистика'):
+
         for [mykey, statdata] in self.statDict.items():
             statdata.to_csv(f'{fname}/{mykey}.txt', sep='\t')
+
+    def advanced_statistic(self):
+        self.statDict['Advanced'] = pd.DataFrame()
+        interf_distance = 20.0e-2
+        front_time_shift = \
+            self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['front50'] \
+            - self.statDict['$n_{e}$, $10^{15} см^{-3}$']['front50']
+        speed50 = interf_distance / front_time_shift
+        speedCC = interf_distance / self.statDict['$n_{e}$, $10^{15} см^{-3}$ x $n_{e}$, $10^{15} см^{-3}$'][
+            'Time_shift']
+        self.statDict['Advanced']['V50, kms'] = speed50 * 1.0e-3
+        self.statDict['Advanced']['VCC, kms'] = speedCC * 1.0e-3
+        protonE = 1.7e-27 * speedCC * speedCC * 0.5
+        self.statDict['Advanced']['Энергия протона, эВ'] = protonE / 1.6e-19
+        ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['max'] * 1.0e21
+        ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['max'] * 1.0e21
+        pressure50 = 1.7e-27 * ne1 * speed50 * speed50
+        self.statDict['Advanced']['Давление по 50%, кПа'] = pressure50 * 1.0e-3
+        int_ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['integral'] * 1.0e21
+        int_ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['integral'] * 1.0e21
+        pressureCC = 1.7e-27 * ne1 * speedCC * speedCC
+        self.statDict['Advanced']['Давление по корреляции, кПа'] = pressureCC * 1.0e-3
+        S = np.pi * (2.0e-2) ** 2
+        Ne1 = int_ne1 * S * speedCC
+        Ne2 = int_ne2 * S * speedCC
+        self.statDict['Advanced']['Количество электронов на 1, $10^{18}$'] = Ne1 * 1.0e-18
+        self.statDict['Advanced']['Количество электронов на 2, $10^{18}$'] = Ne2 * 1.0e-18
+        EnegryCC = protonE * Ne1
+        self.statDict['Advanced']['Энергия по корреляции, Дж'] = EnegryCC
 
     def loadSettings(self, filename=default_file):
         self.oscDict = dict()

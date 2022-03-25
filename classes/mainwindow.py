@@ -504,6 +504,7 @@ class MainWindow(QMainWindow):
             if filename.split('.')[-1] != 'txt':
                 continue
             dia_name = filename.split('.')[0]
-            data = pd.read_csv(filename, sep='\t')
+            data = pd.read_csv(filename, sep='\t').iloc[:, 1:]
             self.experiment.statDict[dia_name] = data
+
         self.experiment.viewStatistic()
