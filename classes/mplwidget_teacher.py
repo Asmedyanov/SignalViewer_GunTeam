@@ -2,12 +2,11 @@
 import numpy as np
 
 from classes.mplwidget import *
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QMenu, QCheckBox
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
-from matplotlib.widgets import CheckButtons
+
 import constants
-from scipy.signal import find_peaks
+
 from functions.mymathfunctions import *
+from scipy import ndimage
 
 
 class MplWidget_teacher(MplWidget):
@@ -46,6 +45,8 @@ class MplWidget_teacher(MplWidget):
 
             self.time = data['Time'] * timemult
             self.axes.plot(self.time, self.signal, style)
+            env_signal_max = ndimage.maximum_filter1d(self.signal, size=3)
+            self.axes.plot(self.time, env_signal_max, style)
             pics = my_find_pics(-data['Values'])
             self.pic_0_prop = pics[1]
             # print(f'разница баз 0 пиков\n {pics[1]["right_bases"] - pics[1]["left_bases"]}')

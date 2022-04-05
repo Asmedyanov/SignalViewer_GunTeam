@@ -70,17 +70,16 @@ def Diagnostic_Interferometer(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    data = my_fft_filter_com(rawdata, fstart, ffinish)
-    data = fase_interferometr(data)
+    #data = my_fft_filter_sharp(rawdata, fstart, ffinish)
+    data = fase_interferometr(rawdata)
     data = ininterval(data, tstart, tfinish)
-    data = rolling_avg(data, 0.5e-6)
+    #data = rolling_avg(data, 0.5e-6)
     ret = data
     if master.master.isStadied:
         ret = preinterferometer(rawdata, fstart)
         ret = ininterval(ret, tstart, tfinish)
         rev_x_0, rev_x_pi = find_reverse(data)
-        # rev_x_0 = find_revers_0(data, master.master.Classificator_0)
-        # rev_x_pi = find_revers_pi(data, master.master.Classificator_0)
+
 
         # ret = rolling_avg(ret, 1.0 / ffinish)
 
@@ -100,7 +99,7 @@ def Diagnostic_Interferometer(rawdata, master):
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
         ret['Values'] = ret['Values'] * mult
-    ret = cut_negative(ret)
+    #ret = cut_negative(ret)
 
 
     set_parameters(dia, ret)

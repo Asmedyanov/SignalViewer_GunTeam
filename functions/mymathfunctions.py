@@ -7,11 +7,13 @@ from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 
 def my_find_pics(signal):
     return find_peaks(signal,
-                      #height=[0, np.pi],
-                      threshold=[0.0, np.pi],
-                      distance=5.0,
-                      width=[5.0, 200.0],
-                      prominence=[1.0e-1, np.pi])
+                      #height=[1.0, np.pi],
+                      #threshold=[0.0, np.pi],
+                      #threshold=1.0e-1,
+                      #distance=2.0,
+                      #width=[2.0, 200.0],
+                      prominence=[7.0e-1, np.pi]
+                      )
 
 
 def my_fft(value, df, dt):

@@ -1,2 +1,1 @@
-C:/Users/n.asmedyanov/Desktop/Отборные данные/V72/COLO0072.PRN
-C:/Users/n.asmedyanov/Desktop/Отборные данные/V72/v72.bin
+C:/Users/asmedian/Desktop/Отладочные данные/30-03-2022/v0.bin

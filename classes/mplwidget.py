@@ -8,6 +8,8 @@ from matplotlib.widgets import CheckButtons
 import constants
 from scipy.signal import find_peaks
 from classes.mplcanvas_teacher import MplCanvas_teacher
+from scipy import ndimage
+import functions.mymathfunctions as mymathfunctions
 
 
 def gun_team_axes_stile(axis):
@@ -72,6 +74,14 @@ class MplWidget(QWidget):
                 except:
                     timemult = 1
                 axes.plot(data['Time'] * timemult, data['Values'], style, label=data.label)
+                #pics_index = mymathfunctions.my_find_pics(data['Values'].values)[0]
+                #pics_time = (data['Time'].values * timemult)[pics_index]
+                #pics_val = data['Values'].values[pics_index]
+                #axes.plot(pics_time, pics_val,'o')
+                #pics_index = mymathfunctions.my_find_pics(-data['Values'].values)[0]
+                #pics_time = (data['Time'].values * timemult)[pics_index]
+                #pics_val = data['Values'].values[pics_index]
+                #axes.plot(pics_time, pics_val, 'o')
                 # axes.set_ylabel(data.label)  # Подписать вертикальные оси
             gun_team_axes_stile(axes)
             axes.set_xlabel(f't, {timescale}')
@@ -90,6 +100,7 @@ class MplWidget(QWidget):
                     except:
                         timemult = 1
                     axes[i].plot(data['Time'] * timemult, data['Values'], style)
+
                     axes[i].set_ylabel(data.label)  # Подписать вертикальные оси
                     gun_team_axes_stile(axes[i])
                 except:

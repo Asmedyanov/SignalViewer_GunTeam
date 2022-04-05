@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMenu
 from PyQt5.QtCore import pyqtSignal
 
 
+
 class MplCanvas_teacher(MplCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):

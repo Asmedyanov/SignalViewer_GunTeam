@@ -4,6 +4,7 @@ from functions.mymathfunctions import *
 import matplotlib.pyplot as plt
 import pandas as pd
 from constants import pic_parameters
+from scipy import ndimage
 
 visinity = 1.0
 prominence = 0.1
@@ -12,13 +13,12 @@ prominence = 0.1
 def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
-    # mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
-    mininterf = d['Values'].min()
+
+    mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (1200.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
-    # maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
-    maxinterf = d['Values'].max()
-    # d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    # d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+
+    maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (1200.0 * 1.0e-7)))
+
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -30,13 +30,10 @@ def fase_interferometr(data):
 def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
-    mininterf = d['Values'].min()
-    # mininterf = d['Values'].loc[d['Time'] > d['Time'].mean()].min()
+    mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (1200.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
-    # maxinterf = d['Values'].loc[d['Time'] > d['Time'].mean()].max()
-    maxinterf = d['Values'].max()
-    # d['Values'] = np.where(d['Values'] > maxinterf, maxinterf, d['Values'])
-    # d['Values'] = np.where(d['Values'] < 0, 0, d['Values'])
+
+    maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (1200.0 * 1.0e-7)))
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -53,7 +50,7 @@ def scale_up_interferometr_0(data, rev_x):
     time = data['Time'].values
     n_left = find_nearest(time, rev_x[0])
     n_right = find_nearest(time, rev_x[-1])
-    #rev_value = min(signal[[n_left, n_right]])
+    # rev_value = min(signal[[n_left, n_right]])
     rev_value = signal[n_left]
     '''mult = 1
     if rev_value<0:
