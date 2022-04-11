@@ -7,12 +7,12 @@ from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 
 def my_find_pics(signal):
     return find_peaks(signal,
-                      #height=[1.0, np.pi],
-                      #threshold=[0.0, np.pi],
-                      #threshold=1.0e-1,
-                      #distance=2.0,
-                      #width=[2.0, 200.0],
-                      prominence=[7.0e-1, np.pi]
+                      # height=[1.0, np.pi],
+                      # threshold=[0.0, np.pi],
+                      # threshold=1.0e-1,
+                      # distance=2.0,
+                      # width=[2.0, 200.0],
+                      prominence=[0.916, np.pi]
                       )
 
 
@@ -217,6 +217,27 @@ def norm_data(data):
 def find_nearest(a, value):
     a_val = np.abs(a - value)
     return a_val.argmin()
+
+
+def high_pass_filter(data, f_start=300.0):
+    signal = data['Values'].values
+    time = data['Time'].values
+    tgrad = np.gradient(time)
+    dt = np.mean(tgrad)
+
+    nfur = 8 * len(signal)
+    f_signal = rfft(signal, n=nfur)
+    W = fftfreq(f_signal.size, d=dt)[:int(f_signal.size)]
+    cut_f_signal = f_signal.copy()
+    f_reg = 2.0 * np.pi * f_start  # W[np.argmax(f_signal[200:])]
+    fw = f_reg * 4
+    fwindow = np.where(W > f_reg, 1, 0)
+    cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
+    cut_time = time[:cut_signal.size]
+
+    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=cut_time, values=cut_signal)
+
+    return dataret
 
 
 def regect_filter(data, f_gen=300.0):

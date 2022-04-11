@@ -37,7 +37,8 @@ def preinterferometer(data, f_start):
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
-    d = regect_filter(d)
+    #d = regect_filter(d,f_gen=f_start)
+    d = high_pass_filter(d,f_start)
     nnul = d['Values'].loc[((d['Time'] < 10.0e-6) & (d['Time'] > 5.0e-6))].mean()
     d['Values'] = d['Values'] - nnul
 
@@ -176,21 +177,24 @@ def find_reverse(data):
     pics_0_index = pics_0_raw[0]
     pics_all_index = np.concatenate([pics_0_index, pics_pi_index])
     pics_all_index = np.sort(pics_all_index)
-    if (pics_all_index[0] in pics_0_index) and (pics_all_index[-1] in pics_pi_index):
-        base_dif_0 = pics_0_raw[1]["right_bases"][0] - pics_0_raw[1]["left_bases"][0]
-        base_dif_pi = pics_pi_raw[1]["right_bases"][-1] - pics_pi_raw[1]["left_bases"][-1]
-        if base_dif_0 > base_dif_pi:
-            pics_0_index = np.delete(pics_0_index, 0)
-        else:
-            pics_pi_index = np.delete(pics_pi_index, -1)
+    try:
+        if (pics_all_index[0] in pics_0_index) and (pics_all_index[-1] in pics_pi_index):
+            base_dif_0 = pics_0_raw[1]["right_bases"][0] - pics_0_raw[1]["left_bases"][0]
+            base_dif_pi = pics_pi_raw[1]["right_bases"][-1] - pics_pi_raw[1]["left_bases"][-1]
+            if base_dif_0 > base_dif_pi:
+                pics_0_index = np.delete(pics_0_index, 0)
+            else:
+                pics_pi_index = np.delete(pics_pi_index, -1)
 
-    elif (pics_all_index[0] in pics_pi_index) and (pics_all_index[-1] in pics_0_index):
-        base_dif_0 = pics_0_raw[1]["right_bases"][-1] - pics_0_raw[1]["left_bases"][-1]
-        base_dif_pi = pics_pi_raw[1]["right_bases"][0] - pics_pi_raw[1]["left_bases"][0]
-        if base_dif_0 > base_dif_pi:
-            pics_0_index = np.delete(pics_0_index, -1)
-        else:
-            pics_pi_index = np.delete(pics_pi_index, 0)
+        elif (pics_all_index[0] in pics_pi_index) and (pics_all_index[-1] in pics_0_index):
+            base_dif_0 = pics_0_raw[1]["right_bases"][-1] - pics_0_raw[1]["left_bases"][-1]
+            base_dif_pi = pics_pi_raw[1]["right_bases"][0] - pics_pi_raw[1]["left_bases"][0]
+            if base_dif_0 > base_dif_pi:
+                pics_0_index = np.delete(pics_0_index, -1)
+            else:
+                pics_pi_index = np.delete(pics_pi_index, 0)
+    except:
+        pass
 
     return time[pics_0_index], time[pics_pi_index]
 
