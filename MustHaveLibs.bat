@@ -1,3 +1,4 @@
+pip install pyinstaller
 pip install pandas
 pip install matplotlib
 pip install scipy

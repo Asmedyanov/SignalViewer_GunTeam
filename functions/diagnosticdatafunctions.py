@@ -124,7 +124,7 @@ def Diagnostic_Calorimetr(rawdata, master):
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     ret = calorimetr(rawdata)
     ret = rolling_avg(ret, 1.0 / ffinish)
-    ret = ininterval(ret, tstart, tfinish)
+    #ret = ininterval(ret, tstart, tfinish)#
     retmin = ret['Values'].loc[ret['Time'] < 0].min()
 
     ret['Values'] = (ret['Values'] - retmin) * mult
