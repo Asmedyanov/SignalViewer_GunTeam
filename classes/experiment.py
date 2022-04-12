@@ -237,11 +237,11 @@ class Experiment:
         ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['max'] * 1.0e21
         ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['max'] * 1.0e21
         pressure50 = 1.7e-27 * ne1 * speed50 * speed50
-        self.statDict['Advanced']['Давление по 50%, кПа'] = pressure50 * 1.0e-3
+        self.statDict['Advanced']['Давление по 50%, бар'] = pressure50 * 1.0e-5
         int_ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['integral'] * 1.0e21
         int_ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['integral'] * 1.0e21
         pressureCC = 1.7e-27 * ne1 * speedCC * speedCC
-        self.statDict['Advanced']['Давление по корреляции, кПа'] = pressureCC * 1.0e-3
+        self.statDict['Advanced']['Давление по корреляции, бар'] = pressureCC * 1.0e-5
         S = np.pi * (2.0e-2) ** 2
         Ne1 = int_ne1 * S * speedCC
         Ne2 = int_ne2 * S * speedCC

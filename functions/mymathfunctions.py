@@ -11,8 +11,8 @@ def my_find_pics(signal):
                       # threshold=[0.0, np.pi],
                       # threshold=1.0e-1,
                       # distance=2.0,
-                      width=[3.0, 200.0],
-                      prominence=[0.5, np.pi]
+                      width=[2.0, 200.0],
+                      prominence=[0.45, np.pi]
                       )
 
 
@@ -71,7 +71,7 @@ def rolling_avg(data, t_window):
     if n_window != 0:
         signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
     time = time[:signal.size]
-    #time = (time - 0.5 * t_window)[:signal.size]
+    #time = (time + t_window)[:signal.size]
     dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time, values=signal)
 
     return dataret

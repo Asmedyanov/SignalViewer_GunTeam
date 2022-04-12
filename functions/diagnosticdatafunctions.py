@@ -99,7 +99,7 @@ def Diagnostic_Interferometer(rawdata, master):
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
         ret['Values'] = ret['Values'] * mult
-    #ret = cut_negative(ret)
+    ret = cut_negative(ret)
 
 
     set_parameters(dia, ret)
