@@ -14,10 +14,12 @@ def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
 
-    mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    mininterf = ndimage.minimum_filter1d(data['Values'], size=5000)
+    #mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
 
-    maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    maxinterf = ndimage.maximum_filter1d(data['Values'], size=5000)
+    #maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
 
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
@@ -30,10 +32,12 @@ def fase_interferometr(data):
 def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
-    mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    mininterf = ndimage.minimum_filter1d(data['Values'], size=5000)
+    #mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
 
-    maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    maxinterf = ndimage.maximum_filter1d(data['Values'], size=5000)
+    #maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть

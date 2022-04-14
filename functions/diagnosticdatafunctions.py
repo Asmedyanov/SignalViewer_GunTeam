@@ -75,7 +75,7 @@ def Diagnostic_Interferometer(rawdata, master):
     data = ininterval(data, tstart, tfinish)
     #data = rolling_avg(data, 0.5e-6)
     ret = data
-    if master.master.isStadied:
+    '''if master.master.isStadied:
         ret = preinterferometer(rawdata, fstart)
         ret = ininterval(ret, tstart, tfinish)
         rev_x_0, rev_x_pi = find_reverse(data)
@@ -99,7 +99,7 @@ def Diagnostic_Interferometer(rawdata, master):
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
         ret['Values'] = ret['Values'] * mult
-    ret = cut_negative(ret)
+    ret = cut_negative(ret)'''
 
 
     set_parameters(dia, ret)
