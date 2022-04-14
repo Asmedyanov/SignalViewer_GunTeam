@@ -41,7 +41,8 @@ def Open_A_CSV_short(a, master):
                     nameslist.append(name)
             except:
                 continue
-        data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
+        data = pd.read_csv(a, skiprows=2,
+                           #error_bad_lines=False,
                            names=nameslist)
         t0 = -1.2
         #for ch in osc['Каналы'].values():
@@ -85,7 +86,8 @@ def Open_A_CSV_full(a, master):
         chlist.sort()
         for i in chlist:
             nameslist.append(f'CH{i}')
-        data = pd.read_csv(a, skiprows=10, error_bad_lines=False,
+        data = pd.read_csv(a, skiprows=10,
+                           #error_bad_lines=False,
                            names=nameslist, engine='python')
         for ch in osc['Каналы'].values():
             if ch['Диагностика'] == 'Запуск':

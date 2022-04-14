@@ -5,14 +5,18 @@ from classes.rawdata import RawData
 from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 
 
-def my_find_pics(signal):
+def my_find_pics(signal, noize_ample=1.0e-4, noize_freq=1.0e7):
+    width = int(1.0e7/noize_freq)
+    if width == 0:
+        width = 2
     return find_peaks(signal,
                       # height=[1.0, np.pi],
                       # threshold=[0.0, np.pi],
                       # threshold=1.0e-1,
-                        distance=6.0,
-                      width=[14, 200],
-                      prominence=[0.8, np.pi]
+                      #distance=width,
+                      width=[width, 200],
+                      #width=[, 200],
+                      prominence=[noize_ample*0.5, np.pi]
                       )
 
 
@@ -70,7 +74,7 @@ def rolling_avg(data, t_window):
     n_window = int(t_window / meanStep)
     if n_window != 0:
         signal = np.convolve(signal, np.ones(n_window), 'valid') / n_window
-    #time = time[:signal.size]
+    # time = time[:signal.size]
     time = (time + t_window)[:signal.size]
     dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=time, values=signal)
 
@@ -236,7 +240,7 @@ def high_pass_filter(data, f_start=300.0):
     cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
     cut_time = time[:cut_signal.size]
 
-    dataret = RawData(label=data.label, diagnostic=data.diagnostic, time=cut_time, values=cut_signal)
+    dataret = RawData(label='Фильтрованный', diagnostic=data.diagnostic, time=cut_time, values=cut_signal)
 
     return dataret
 

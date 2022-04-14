@@ -15,11 +15,11 @@ def fase_interferometr(data):
     # сдвинем минимум в 0
 
     mininterf = ndimage.minimum_filter1d(data['Values'], size=5000)
-    #mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    # mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
 
     maxinterf = ndimage.maximum_filter1d(data['Values'], size=5000)
-    #maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    # maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
 
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
@@ -29,15 +29,46 @@ def fase_interferometr(data):
     return dataret
 
 
+def get_noize_ample(data, fstart):
+    cut_data = ininterval(data, -50e-4, -1e-4)
+    # plt.plot(cut_data['Time'], cut_data['Values'])
+    cut_data = high_pass_filter(cut_data, fstart * 16)
+    cut_data = ininterval(cut_data, -44e-4, -5e-4)
+    # plt.plot(cut_data['Time'],cut_data['Values'])
+    # plt.show()
+    signal = np.abs(cut_data['Values'].values-np.mean(cut_data['Values'].values))
+    pics = find_peaks(signal)[0]
+    return np.max(signal[pics])
+    #return np.mean(signal[pics])
+
+
+def get_noize_freq(data, fstart):
+    cut_data = ininterval(data, -50e-4, -1e-4)
+    # plt.plot(cut_data['Time'], cut_data['Values'])
+    cut_data = high_pass_filter(cut_data, fstart * 16)
+    cut_data = ininterval(cut_data, -45e-4, -5e-4)
+    # plt.plot(cut_data['Time'],cut_data['Values'])
+    # plt.show()
+    signal = cut_data['Values'].values
+    time = cut_data['Time'].values
+    timeSteps = np.gradient(time)
+    meanStep = np.mean(timeSteps)
+    f_signal = np.abs(rfft(signal, ))
+    W = fftfreq(f_signal.size, d=meanStep)[:int(f_signal.size)]
+    f_signal = np.where(W > 2.0 * np.pi * 5e5, f_signal, 0)
+    max_f_index = np.argmax(f_signal)
+    return W[max_f_index] / (2.0 * np.pi)
+
+
 def preinterferometer(data, f_start):
     d = data
     # сдвинем минимум в 0
     mininterf = ndimage.minimum_filter1d(data['Values'], size=5000)
-    #mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    # mininterf = ndimage.minimum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     d['Values'] = d['Values'] - mininterf
 
     maxinterf = ndimage.maximum_filter1d(data['Values'], size=5000)
-    #maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
+    # maxinterf = ndimage.maximum_filter1d(data['Values'], size=int(1.0 / (600.0 * 1.0e-7)))
     # Пересчитаем в фазу
     d['Values'] = np.arccos(1.0 - (2.0 * d['Values'] / maxinterf))
     # вычислим неплазменную часть
@@ -172,16 +203,16 @@ def find_revers_pi(data, classificator):
     return pic_array_raw_time
 
 
-def find_reverse(data):
+def find_reverse(data, noize_ample, noize_freq):
     signal = data['Values'].values
     time = data['Time'].values
-    pics_pi_raw = my_find_pics(signal)
+    pics_pi_raw = my_find_pics(signal, noize_ample, noize_freq)
     pics_pi_index = pics_pi_raw[0]
-    pics_0_raw = my_find_pics(-signal)
+    pics_0_raw = my_find_pics(-signal, noize_ample, noize_freq)
     pics_0_index = pics_0_raw[0]
     pics_all_index = np.concatenate([pics_0_index, pics_pi_index])
     pics_all_index = np.sort(pics_all_index)
-    visinity = 0.6
+    visinity = 1.5
     try:
         for i, index in enumerate(pics_0_index):
             if signal[index] > visinity:
