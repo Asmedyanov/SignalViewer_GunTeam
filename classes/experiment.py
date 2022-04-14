@@ -157,7 +157,7 @@ class Experiment:
                     [self.statDict[diagnosticdata.label], diagnosticdata.get_statistic()], ignore_index=True)
             dataname = pd.DataFrame()
             dataname['name'] = [self.master.foldername]
-            self.statDict['name'] = pd.concat([self.statDict['name'], dataname])
+            self.statDict['name'] = pd.concat([self.statDict['name'], dataname], ignore_index=True)
         except:
             for diagnosticdata in self.diagnosticDataList:
                 self.statDict[diagnosticdata.label] = diagnosticdata.get_statistic()

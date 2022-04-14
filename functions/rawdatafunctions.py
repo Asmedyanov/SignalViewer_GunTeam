@@ -43,15 +43,15 @@ def Open_A_CSV_short(a, master):
                 continue
         data = pd.read_csv(a, skiprows=2, error_bad_lines=False,
                            names=nameslist)
-        t0 = 0
-        for ch in osc['Каналы'].values():
-            if ch['Диагностика'] == 'Запуск':
-                startdata = data[f'CH{ch["Номер"]}']
-                stmin = startdata.min()
-                stmax = startdata.max()
-                st = 0.5 * (stmax + stmin)
-                t0 = data['Time'].loc[startdata < st].min()
-                break
+        t0 = -1.2
+        #for ch in osc['Каналы'].values():
+        #    if ch['Диагностика'] == 'Запуск':
+        #        startdata = data[f'CH{ch["Номер"]}']
+        #        stmin = startdata.min()
+        #        stmax = startdata.max()
+        #        st = 0.5 * (stmax + stmin)
+        #        t0 = data['Time'].loc[startdata < st].min()
+        #        break
         time = data['Time'] - t0
         returnlist = []
         for i in osc['Каналы'].keys():

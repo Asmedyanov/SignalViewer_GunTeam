@@ -1,1 +1,1 @@
-C:/Users/n.asmedyanov/PycharmProjects/SignalViewer_GunTeam/experiment_templates/2022-04-11-2инт-1кол-1пояс-1делитель.xml
+D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-04-12-2инт-1кол-1пояс-1делитель.xml

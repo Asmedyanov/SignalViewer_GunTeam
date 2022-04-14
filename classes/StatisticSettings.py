@@ -61,20 +61,22 @@ class StatisticSettings(QWidget):
 
         strX, strY = self.getXY()
 
-        try:
-            diaX = strX.split('/')[0]
-            keyX = strX.split('/')[1]
-            dataX = self.master.statDict[diaX][keyX]
-            dataY = dict()
-            for stry in strY:
+
+        diaX = strX.split('/')[0]
+        keyX = strX.split('/')[1]
+        dataX = self.master.statDict[diaX][keyX]
+        dataY = dict()
+        for stry in strY:
+            try:
                 diaY = stry.split('/')[0]
                 keyY = stry.split('/')[1]
                 dataY[stry] = self.master.statDict[diaY][keyY]
                 plt.plot(dataX, dataY[stry], 'o', label=stry)
-            plt.legend()
-            plt.show()
-        except:
-            pass
+            except:
+                continue
+        plt.legend()
+        plt.show()
+
 
     def apply_view_errorbar(self):
 
@@ -110,14 +112,22 @@ class StatisticSettings(QWidget):
         dataY_avg = dict()
         dataY_std = dict()
         for stry in strY:
-            data_avg = []
-            data_std = []
-            for indexes in dataX_steped_units:
-                data_avg.append(np.average(dataY[stry][indexes]))
-                data_std.append(np.std(dataY[stry][indexes]))
-            dataY_avg[stry] = data_avg
-            dataY_std[stry] = data_std
-            plt.errorbar(x=dataX_avg, xerr=dataX_std, y=data_avg, yerr=data_std, marker='o', label=stry)
+            try:
+                data_avg = []
+                data_std = []
+                for indexes in dataX_steped_units:
+                    try:
+                        data_avg.append(np.average(dataY[stry][indexes]))
+                        data_std.append(np.std(dataY[stry][indexes]))
+                    except:
+                        print('Не могу это добавить')
+                        continue
+                dataY_avg[stry] = data_avg
+                dataY_std[stry] = data_std
+                plt.errorbar(x=dataX_avg, xerr=dataX_std, y=data_avg, yerr=data_std, marker='o', label=stry)
+            except:
+                print("Не могу это построить")
+                continue
         plt.title('Статистика')
         plt.xlabel(strX)
         plt.ylabel(strY[-1])
