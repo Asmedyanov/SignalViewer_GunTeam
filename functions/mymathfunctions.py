@@ -14,9 +14,9 @@ def my_find_pics(signal, noize_ample=1.0e-4, noize_freq=1.0e7):
                       # threshold=[0.0, np.pi],
                       # threshold=1.0e-1,
                       #distance=width,
-                      width=[width, 200],
+                      #width=[width, 200],
                       #width=[, 200],
-                      prominence=[noize_ample*0.5, np.pi]
+                      prominence=[noize_ample*3, np.pi]
                       )
 
 

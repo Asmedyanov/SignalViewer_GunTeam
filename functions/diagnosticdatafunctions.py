@@ -81,12 +81,12 @@ def Diagnostic_Interferometer(rawdata, master):
     data = ininterval(data, tstart, tfinish)
     #data = rolling_avg(data, 0.5e-6)
     ret = data
-    ret['Values'] = np.unwrap(ret['Values'].values, axis=0,period=np.pi,discont=np.pi)
-    '''if master.master.isStadied:
-        #ret = rolling_avg(rawdata, 1.0 / ffinish)
-        ret = preinterferometer(rawdata, fstart)
+    #ret['Values'] = np.unwrap(ret['Values'].values, axis=0,period=np.pi,discont=np.pi)
+    if master.master.isStadied:
+        ret = rolling_avg(rawdata, 1.0 / ffinish)
+        ret = preinterferometer(ret, fstart)
         ret = ininterval(ret, tstart, tfinish)
-        ret['Values'] = np.unwrap(ret['Values'],period=0.5*np.pi)
+        #ret['Values'] = np.unwrap(ret['Values'],period=0.5*np.pi)
         rev_x_0, rev_x_pi = find_reverse(data, noize_ample,noize_freq)
 
 
@@ -99,15 +99,15 @@ def Diagnostic_Interferometer(rawdata, master):
         # if len(rev_x_pi) % 2 == 0:
         while len(rev_x_pi) > 1:
             ret = scale_up_interferometr_pi(ret, rev_x_pi)
-            rev_x_pi = rev_x_pi[1:-1]'''
+            rev_x_pi = rev_x_pi[1:-1]
 
-    '''if mult == 'На себя':
+    if mult == 'На себя':
         ret = norm_data(ret)
     else:
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
-        ret['Values'] = ret['Values'] * mult'''
-    # ret = cut_negative(ret)
+        ret['Values'] = ret['Values'] * mult
+    ret = cut_negative(ret)
 
     set_parameters(dia, ret)
     return ret
