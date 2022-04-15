@@ -1,3 +1,1 @@
-
-C:/Users/asmedian/Desktop/2022-04-12-отбор 1/V3/AKIP0003.CSV
-C:/Users/asmedian/Desktop/2022-04-12-отбор 1/V3/v3.bin
+D:/1. Clouds/GUN_TEAM_YANDEX/YandexDisk/EXPERIMENTS/2022-04-12-releas-1belt-1dev-2int-1col/V23/v23.bin

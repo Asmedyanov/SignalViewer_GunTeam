@@ -71,18 +71,21 @@ def Diagnostic_Interferometer(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     # data = my_fft_filter_sharp(rawdata, fstart, ffinish)
-    #data = rolling_avg(rawdata, 0.3e-6)
-    data = fase_interferometr(rawdata)
-    #data = rolling_avg(data, 0.5e-6)
-    noize_ample = get_noize_ample(data, fstart)
-    noize_freq = get_noize_freq(data, fstart)
-    print(f'амплитуда шума {noize_ample} рад')
-    print(f'частота шума {noize_freq} Гц')
-    data = ininterval(data, tstart, tfinish)
-    #data = rolling_avg(data, 0.5e-6)
+    data = rolling_avg(rawdata, 0.5e-6)
+    data = fase_interferometr_tan(data)
+    # data = ininterval(data, tstart, tfinish)
+    data = my_unwrop(data)
     ret = data
-    #ret['Values'] = np.unwrap(ret['Values'].values, axis=0,period=np.pi,discont=np.pi)
-    if master.master.isStadied:
+    # data = rolling_avg(data, 0.5e-6)
+    # noize_ample = get_noize_ample(data, fstart)
+    # noize_freq = get_noize_freq(data, fstart)
+    # print(f'амплитуда шума {noize_ample} рад')
+    # print(f'частота шума {noize_freq} Гц')
+    # data = ininterval(data, tstart, tfinish)
+    # data = rolling_avg(data, 0.5e-6)
+    # ret = high_pass_filter(data,fstart)
+    # ret['Values'] = np.unwrap(ret['Values'].values, axis=0,period=np.pi,discont=np.pi)
+    '''if master.master.isStadied:
         ret = rolling_avg(rawdata, 1.0 / ffinish)
         ret = preinterferometer(ret, fstart)
         ret = ininterval(ret, tstart, tfinish)
@@ -107,7 +110,7 @@ def Diagnostic_Interferometer(rawdata, master):
         if abs(ret['Values'].max()) < abs(ret['Values'].min()):
             mult *= (-1)
         ret['Values'] = ret['Values'] * mult
-    ret = cut_negative(ret)
+    ret = cut_negative(ret)'''
 
     set_parameters(dia, ret)
     return ret

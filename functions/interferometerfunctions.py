@@ -10,6 +10,29 @@ visinity = 1.0
 prominence = 0.1
 
 
+def my_unwrop(data):
+    signal = data['Values'].values
+    time = data['Time'].values
+    gsignal = -np.gradient(signal)
+
+    plt.plot(time, gsignal)
+    # plt.plot(time, signal)
+    pi_index = find_peaks(gsignal, prominence=3.0, distance=30)[0]
+    plt.plot(time[pi_index], gsignal[pi_index], 'o')
+
+    usignal = signal
+    revers = -1
+    for i in pi_index:
+        usignal = np.where(time > time[i - 1], usignal+2.0*np.pi, usignal)
+        if i % 2 == 0:
+            revers *= -1
+
+    plt.plot(time, usignal)
+    plt.show()
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=usignal)
+    return dataret
+
+
 def fase_interferometr(data):
     d = data
     # сдвинем минимум в 0
@@ -29,6 +52,39 @@ def fase_interferometr(data):
     return dataret
 
 
+def fase_interferometr_tan(data):
+    signal = data['Values'].values
+    time = data['Time'].values
+    mininterf = ndimage.minimum_filter1d(signal, size=20000)
+    # plt.plot(signal)
+    # maxinterf = ndimage.maximum_filter1d(signal, size=20000)
+    # plt.plot(mininterf)
+    # plt.plot(maxinterf)
+    # plt.show()
+    signal = signal - mininterf
+    # maxinterf = ndimage.maximum_filter1d(signal, size=3000)
+    # signal = signal / maxinterf
+    dt = np.mean(np.gradient(time))
+    fmax = 1.0e7
+    df = 5.0
+    nfreq = int(fmax / df)
+    signal_f = fft(signal, n=nfreq)
+    W = fftfreq(signal_f.size, d=dt)[:int(signal_f.size)]
+    signal_f_cut = np.where(W > 100.0, signal_f, 0)
+    signal_if = ifft(signal_f_cut)[:signal.size]
+    # plt.plot(time, np.real(signal_if), label='Re')
+    # plt.plot(time, np.imag(signal_if), label='Im')
+    Re = np.real(signal_if)
+    Im = np.imag(signal_if)
+    rebuild_phase = np.where((Im > 0) & (Re > 0), np.arctan(Im / Re), 0)
+    rebuild_phase = np.where((Im < 0) & (Re > 0), np.arctan(Im / Re), rebuild_phase)
+    rebuild_phase = np.where((Im > 0) & (Re < 0), np.arctan(Im / Re) + np.pi, rebuild_phase)
+    rebuild_phase = np.where((Im < 0) & (Re < 0), np.arctan(Im / Re) - np.pi, rebuild_phase)
+
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=rebuild_phase)
+    return dataret
+
+
 def get_noize_ample(data, fstart):
     cut_data = ininterval(data, -50e-4, -1e-4)
     # plt.plot(cut_data['Time'], cut_data['Values'])
@@ -36,10 +92,10 @@ def get_noize_ample(data, fstart):
     cut_data = ininterval(cut_data, -44e-4, -5e-4)
     # plt.plot(cut_data['Time'],cut_data['Values'])
     # plt.show()
-    signal = np.abs(cut_data['Values'].values-np.mean(cut_data['Values'].values))
+    signal = np.abs(cut_data['Values'].values - np.mean(cut_data['Values'].values))
     pics = find_peaks(signal)[0]
     return np.max(signal[pics])
-    #return np.mean(signal[pics])
+    # return np.mean(signal[pics])
 
 
 def get_noize_freq(data, fstart):
