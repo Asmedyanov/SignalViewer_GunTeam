@@ -15,20 +15,21 @@ def my_unwrop(data):
     time = data['Time'].values
     gsignal = -np.gradient(signal)
 
-    plt.plot(time, gsignal)
-    # plt.plot(time, signal)
+    #plt.plot(time, gsignal)
+    #plt.plot(time, signal)
     pi_index = find_peaks(gsignal, prominence=3.0, distance=30)[0]
-    plt.plot(time[pi_index], gsignal[pi_index], 'o')
+    #plt.plot(time[pi_index], gsignal[pi_index], 'o')
 
     usignal = signal
-    revers = -1
+    revers = 1
     for i in pi_index:
-        usignal = np.where(time > time[i - 1], usignal+2.0*np.pi, usignal)
-        if i % 2 == 0:
-            revers *= -1
+        usignal = np.where(time > time[i-1], -usignal * revers, usignal)
+        revers *= -1
 
-    plt.plot(time, usignal)
-    plt.show()
+    usignal = np.unwrap(usignal)
+
+    #plt.plot(time, usignal)
+    #plt.show()
     dataret = RawData(label='', diagnostic=data.diagnostic, time=time, values=usignal)
     return dataret
 
