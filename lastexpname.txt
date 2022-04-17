@@ -1,1 +1,1 @@
-D:/PHDbuffer/SoftWare/SignalViewer/experiment_templates/2022-04-12-2инт-1кол-1пояс-1делитель.xml
+D:/1.Clouds/Google/NIKITA/PD_NSU_AND_BINP/ASP/PHD/SOFTWARE/PERMONENT_SOFT/SignalViewer_GunTeam/experiment_templates/Отладка интреферометра.xml

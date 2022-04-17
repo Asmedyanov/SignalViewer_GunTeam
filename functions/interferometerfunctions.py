@@ -26,7 +26,10 @@ def my_unwrop(data):
         usignal = np.where(time > time[i-1], -usignal * revers, usignal)
         revers *= -1
 
-    usignal = np.unwrap(usignal)
+
+
+
+    #usignal = np.unwrap(usignal)
 
     #plt.plot(time, usignal)
     #plt.show()
@@ -56,13 +59,13 @@ def fase_interferometr(data):
 def fase_interferometr_tan(data):
     signal = data['Values'].values
     time = data['Time'].values
-    mininterf = ndimage.minimum_filter1d(signal, size=20000)
+    #mininterf = ndimage.minimum_filter1d(signal, size=20000)
     # plt.plot(signal)
     # maxinterf = ndimage.maximum_filter1d(signal, size=20000)
     # plt.plot(mininterf)
     # plt.plot(maxinterf)
     # plt.show()
-    signal = signal - mininterf
+    #signal = signal - mininterf
     # maxinterf = ndimage.maximum_filter1d(signal, size=3000)
     # signal = signal / maxinterf
     dt = np.mean(np.gradient(time))
@@ -71,7 +74,7 @@ def fase_interferometr_tan(data):
     nfreq = int(fmax / df)
     signal_f = fft(signal, n=nfreq)
     W = fftfreq(signal_f.size, d=dt)[:int(signal_f.size)]
-    signal_f_cut = np.where(W > 100.0, signal_f, 0)
+    signal_f_cut = np.where(W > 250.0*2.0*np.pi, signal_f, 0)
     signal_if = ifft(signal_f_cut)[:signal.size]
     # plt.plot(time, np.real(signal_if), label='Re')
     # plt.plot(time, np.imag(signal_if), label='Im')
