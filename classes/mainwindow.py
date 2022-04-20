@@ -21,6 +21,7 @@ import pandas as pd
 # from sklearn.tree import DecisionTreeClassifier
 # from sklearn.svm import SVC
 import itertools
+import time, datetime
 
 
 # from sklearn.model_selection import train_test_split
@@ -134,6 +135,7 @@ class MainWindow(QMainWindow):
         currentmenu['Добавить файл'].triggered.connect(self.addFile)
         currentmenu['Добавить папку'].triggered.connect(self.addFolder)
         currentmenu['Группировать папку по выстрелам'].triggered.connect(self.groupFolder)
+        currentmenu['Группировать папку по временам'].triggered.connect(self.groupFolderTime)
         currentmenu['Открыть прошлую сессию'].triggered.connect(self.openResent)
         currentmenu['Открыть следующий файл'].triggered.connect(self.openNextFile)
         currentmenu['Открыть предыдущий файл'].triggered.connect(self.openPrevFile)
@@ -207,11 +209,6 @@ class MainWindow(QMainWindow):
         self.DefaultStatusMassege()
 
     def groupFolder(self):
-        '''lastFileName = \
-            QFileDialog.getOpenFileName(self,
-                                        "Выберете файл, чью папку Вы хотите группировать по выстрелам",
-                                        constants.experiments_dir,
-                                        ';;'.join(constants.filter_list))[0]'''
         lastFileName = \
             QFileDialog.getOpenFileName(self,
                                         "Выберете файл, чью папку Вы хотите группировать по выстрелам")[0]
@@ -220,17 +217,53 @@ class MainWindow(QMainWindow):
         currentDir = os.getcwd()
         os.chdir(folderName)
         for name in os.listdir(folderName):
-            for name in os.listdir():
-                try:
-                    numlist = re.findall(r'\d*\.\d+|\d+', name)
+            try:
+                numlist = re.findall(r'\d*\.\d+|\d+', name)
 
-                    n_exper = int(numlist[0])
-                    if len(numlist) == 0:
-                        continue
-                    os.makedirs(f'V{n_exper}', exist_ok=True)
-                    os.rename(name, f'V{n_exper}/{name}')
+                n_exper = int(numlist[0])
+                if len(numlist) == 0:
+                    continue
+                os.makedirs(f'V{n_exper}', exist_ok=True)
+                os.rename(name, f'V{n_exper}/{name}')
+            except:
+                pass
+        os.chdir(currentDir)
+        self.DefaultStatusMassege()
+
+    def groupFolderTime(self):
+        lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите группировать по выстрелам")[0]
+        folderName = '/'.join(lastFileName.split('/')[:-1])
+        self.statusbar.showMessage(f"Группирую папку {folderName}")
+        currentDir = os.getcwd()
+        os.chdir(folderName)
+        for name in os.listdir(folderName):
+            # print(f'{name} изменен {datetime.time(time.ctime(os.path.getmtime(name)).split(" ")[-2].split(":"))}')
+            init_time = os.path.getmtime(name)
+            init_time = time.ctime(init_time)
+            init_time = init_time.split(' ')[-2].split(':')
+            init_time = int(init_time[0]) * 3600 + int(init_time[1]) * 60 + int(init_time[2])
+            for name0 in os.listdir(folderName):
+                if name == name0: continue
+                new_time = os.path.getmtime(name0)
+                new_time = time.ctime(new_time)
+                new_time = new_time.split(' ')[-2].split(':')
+                new_time = int(new_time[0]) * 3600 + int(new_time[1]) * 60 + int(new_time[2])
+                dt = abs(new_time - init_time)
+                if dt > 10: continue
+
+                try:
+                    new_folder_name = os.path.getmtime(name0)
+                    new_folder_name = time.ctime(new_folder_name)
+                    new_folder_name = new_folder_name.split(' ')[-2].split(':')
+                    new_folder_name = '-'.join(new_folder_name)
+                    os.makedirs(f'{new_folder_name}', exist_ok=True)
+                    os.rename(name, f'{new_folder_name}/{name}')
+                    os.rename(name0, f'{new_folder_name}/{name0}')
                 except:
                     pass
+                #print(f'{name} - {name0} = {dt}')
         os.chdir(currentDir)
         self.DefaultStatusMassege()
 

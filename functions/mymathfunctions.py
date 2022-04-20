@@ -241,6 +241,8 @@ def high_pass_filter(data, f_start=300.0):
     fw = f_reg * 4
     fwindow = np.where(W > f_reg, 1, 0)
     cut_signal = irfft(cut_f_signal * fwindow)[:signal.size]
+    re_cut = np.real(cut_signal).mean()
+    im_cut = np.imag(cut_signal).min()
     cut_time = time[:cut_signal.size]
 
     dataret = RawData(label='Фильтрованный', diagnostic=data.diagnostic, time=cut_time, values=cut_signal)
