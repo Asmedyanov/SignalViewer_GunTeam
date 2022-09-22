@@ -102,6 +102,7 @@
     <addaction name="action_17"/>
     <addaction name="action_18"/>
     <addaction name="action_30"/>
+    <addaction name="action_38"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
@@ -373,6 +374,11 @@
   <action name="action_37">
    <property name="text">
     <string>Просмотр сырой из папки</string>
+   </property>
+  </action>
+  <action name="action_38">
+   <property name="text">
+    <string>Пакетная обработка по итоговым данным по временам</string>
    </property>
   </action>
  </widget>

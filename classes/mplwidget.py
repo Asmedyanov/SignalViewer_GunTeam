@@ -110,7 +110,7 @@ class MplWidget(QWidget):
                     try:
                         timescale = data.timeDim
                     except:
-                        timescale = 'сек'
+                        timescale = 's'
                     axes[n - 1].plot(data['Time'] * constants.timeScaleDict[timescale], data['Values'],
                                      label=f'{data.label}')
                     axes[n - 1].set_ylabel(data.label)
@@ -122,6 +122,6 @@ class MplWidget(QWidget):
             # Подписать горизонтальную ось
             axes[n - 1].set_xlabel(f't, {timescale}')
             # Подписать заголовок
-            axes[0].set_title(f'Данные {header}')
+            #axes[0].set_title(f'Данные {header}')
         self.canvas.draw()
 

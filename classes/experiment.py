@@ -234,8 +234,8 @@ class Experiment:
         self.statDict['Advanced']['VCC, kms'] = speedCC * 1.0e-3
         protonE = 1.7e-27 * speedCC * speedCC * 0.5
         self.statDict['Advanced']['Энергия протона, эВ'] = protonE / 1.6e-19
-        ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['max'] * 1.0e21
-        ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['max'] * 1.0e21
+        ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['mean'] * 1.0e21
+        #ne2 = self.statDict['$n_{e}$, $10^{15} см^{-3}$ #2']['max'] * 1.0e21
         pressure50 = 1.7e-27 * ne1 * speed50 * speed50
         self.statDict['Advanced']['Давление по 50%, бар'] = pressure50 * 1.0e-5
         int_ne1 = self.statDict['$n_{e}$, $10^{15} см^{-3}$']['integral'] * 1.0e21

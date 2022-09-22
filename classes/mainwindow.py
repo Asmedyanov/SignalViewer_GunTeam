@@ -12,6 +12,7 @@ import constants
 import re
 from classes.teacher import Teacher
 import pandas as pd
+import fnmatch
 # from sklearn.metrics import classification_report
 # from sklearn.metrics import confusion_matrix
 # from sklearn.metrics import accuracy_score
@@ -148,6 +149,7 @@ class MainWindow(QMainWindow):
         currentmenu = self.mainActionsDict['Пакетная обработка папки']
         currentmenu['Пакетная обработка по сырым данным'].triggered.connect(self.packetRowData)
         currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetResultData)
+        currentmenu['Пакетная обработка по итоговым данным по временам'].triggered.connect(self.packetResultDataTime)
         # currentmenu['Пакетная обработка по итоговым данным'].triggered.connect(self.packetКResultData)
 
         '''currentmenu = self.mainActionsDict['Нейросеть']
@@ -263,7 +265,7 @@ class MainWindow(QMainWindow):
                     os.rename(name0, f'{new_folder_name}/{name0}')
                 except:
                     pass
-                #print(f'{name} - {name0} = {dt}')
+                # print(f'{name} - {name0} = {dt}')
         os.chdir(currentDir)
         self.DefaultStatusMassege()
 
@@ -453,6 +455,49 @@ class MainWindow(QMainWindow):
         folderNameList = [name for name in os.listdir() if os.path.isdir(name)]
         for tfolderName in folderNameList:
             if not tfolderName[0] == 'V':
+                continue
+            os.chdir(tfolderName)
+            addeddatalist = []
+            for fileName in os.listdir():
+
+                try:
+                    self.statusbar.showMessage(f'{defaultstr} файл: {fileName}')
+                    addeddatalist = addeddatalist + filefunctions.addFile(fileName, self.experiment)
+                    self.fileList.append(fileName)
+                    self.foldername = tfolderName
+
+                except:
+                    pass
+            self.experiment.addRawdataList(addeddatalist)
+            print(tfolderName)
+            os.chdir(folderName)
+            self.mainPlotDict['Итоговые сигналы'].canvas.fig.savefig(f'Итоговые сигналы/{tfolderName}.png')
+            self.clearAll()
+        self.experiment.saveStatistic_new(f'Статистика')
+        self.experiment.viewStatistic()
+        # self.mainPlotDict['Сырая статистика'].canvas.fig.savefig(f'Статистика/Статистика.png')
+        os.chdir(curentDir)
+        self.DefaultStatusMassege()
+
+    def packetResultDataTime(self):
+        self.lastFileName = \
+            QFileDialog.getOpenFileName(self,
+                                        "Выберете файл, чью папку Вы хотите добавить")[0]
+        if self.lastFileName in ['', None]:
+            return
+        folderName = '/'.join(self.lastFileName.split('/')[:-2])
+
+        self.foldername = '/'.join(folderName.split('/')[-3:])
+        defaultstr = f"Обработка папки {self.foldername} по итоговым данным"
+        self.statusbar.showMessage(defaultstr)
+        self.experiment.clear_statistic()
+        curentDir = os.getcwd()
+        os.chdir(folderName)
+        os.makedirs('Итоговые сигналы', exist_ok=True)
+        os.makedirs('Статистика', exist_ok=True)
+        folderNameList = [name for name in os.listdir() if os.path.isdir(name)]
+        for tfolderName in folderNameList:
+            if not fnmatch(tfolderName,'\d{2}-\d{2}-\d{2}'):
                 continue
             os.chdir(tfolderName)
             addeddatalist = []

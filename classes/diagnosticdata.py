@@ -30,7 +30,18 @@ class DiagnosticData(DataFrame):
         ret['max'] = [np.max(self['Values'])]
         ret['min'] = [np.min(self['Values'])]
         ret['mean'] = [np.mean(self['Values'])]
-        ret['integral'] = [np.sum(self['Values']) * np.gradient(self['Time']).mean()]
-        ret['front50'] = [
-            self['Time'][np.min(np.nonzero(np.where(self['Values'] / self['Values'].max() > 0.5, self['Time'], 0)))]]
+        # ret['integral'] = [np.sum(self['Values']) * np.gradient(self['Time']).mean()]
+        try:
+            ret['integral'] = [np.sum(self['Values']) * np.gradient(self['Time']).mean()]
+            ret['front50'] = [
+                self['Time'][
+                    np.min(np.nonzero(np.where(self['Values'] / self['Values'].max() > 0.5, self['Time'], 0)))]]
+            ret['length10'] = [
+                self['Time'][
+                    np.max(np.nonzero(np.where(self['Values'] / self['Values'].max() > 0.2, self['Time'], 0)))] -
+                self['Time'][np.min(np.nonzero(np.where(self['Values'] / self['Values'].max() > 0.1, self['Time'], 0)))]
+            ]
+        except:
+            ret['front50'] = [0]
+            ret['integral'] = [0]
         return ret

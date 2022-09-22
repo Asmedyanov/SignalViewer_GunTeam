@@ -2,11 +2,14 @@
 # from scipy.fft import rfft, irfft, fftfreq, fft, ifft
 # import pandas as pd
 # from classes.rawdata import RawData
-# from scipy.signal import argrelextrema, find_peaks, butter, filtfilt
+from scipy.signal import argrelextrema, find_peaks, butter, filtfilt
 # from scipy.interpolate import interp1d, splrep, splev
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # from mymathfunctions import *
+import numpy as np
+
 from functions.interferometerfunctions import *
+from scipy import ndimage
 
 
 def get_parameters(dia):
@@ -60,6 +63,7 @@ def Diagnostic_piezo(rawdata, master):
 
     else:
         ret['Values'] = ret['Values'] * mult
+    ret = cut_negative(ret)
     set_parameters(dia, ret)
     return ret
 
@@ -71,7 +75,7 @@ def Diagnostic_Interferometer(rawdata, master):
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
     # data = my_fft_filter_sharp(rawdata, fstart, ffinish)
-    # data = rolling_avg(rawdata, 0.3e-6)
+    #data = rolling_avg(rawdata, 0.9e-6)
     data = fase_interferometr(rawdata)
     # data = rolling_avg(data, 0.5e-6)
     noize_ample = get_noize_ample(data, fstart)
@@ -83,8 +87,8 @@ def Diagnostic_Interferometer(rawdata, master):
     ret = data
     # ret['Values'] = np.unwrap(ret['Values'].values, axis=0,period=np.pi,discont=np.pi)
     if master.master.isStadied:
-        ret = rolling_avg(rawdata, 1.0 / ffinish)
-        ret = preinterferometer(ret, fstart)
+        #ret = rolling_avg(rawdata, 1.0 / ffinish)
+        ret = preinterferometer(rawdata, fstart)
         ret = ininterval(ret, tstart, tfinish)
         # ret['Values'] = np.unwrap(ret['Values'],period=0.5*np.pi)
         rev_x_0, rev_x_pi = find_reverse(data, noize_ample, noize_freq)
@@ -114,10 +118,19 @@ def Diagnostic_Interferometer(rawdata, master):
 def calorimetr(data):
     u = np.abs(data['Values'].values)
     t = data['Time'].values
-    U0 = 1.52
-    R0 = 910.0
-    r = np.abs(R0 * u / (U0 - u))
-    dataret = RawData(label='', diagnostic=data.diagnostic, time=t, values=r)
+
+    u_i_pic=find_peaks(u, prominence=np.max(u)*0.5)[0]
+    t_pic = t[u_i_pic]
+    u_pic = u[u_i_pic]
+    #plt.plot(t,u)
+    #plt.plot(t_pic,u_pic)
+
+    U0 = 2.5
+    R0 = 100.0
+    r = np.abs(R0 * u_pic / (U0 - u_pic))
+    #plt.plot(t_pic,r)
+    #plt.show()
+    dataret = RawData(label='', diagnostic=data.diagnostic, time=t_pic, values=r)
     return dataret
 
 
@@ -127,10 +140,11 @@ def Diagnostic_Calorimetr(rawdata, master):
         return None
     dia = master.getDia(diagnostic)
     tstart, tfinish, fstart, ffinish, mult = get_parameters(dia)
-    ret = calorimetr(rawdata)
-    ret = rolling_avg(ret, 1.0 / ffinish)
+    ret = rolling_avg(rawdata, 1.0 / ffinish)
+    ret = calorimetr(ret)
+
     # ret = ininterval(ret, tstart, tfinish)#
-    retmin = ret['Values'].loc[ret['Time'] < 0].min()
+    retmin = ret['Values'].loc[ret['Time'] < 0.2].min()
 
     ret['Values'] = (ret['Values'] - retmin) * mult
 

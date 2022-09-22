@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from PyQt5.QtWidgets import QRadioButton, QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QFrame, QPushButton, \
     QGroupBox, QInputDialog
 import matplotlib.pyplot as plt
@@ -61,7 +62,6 @@ class StatisticSettings(QWidget):
 
         strX, strY = self.getXY()
 
-
         diaX = strX.split('/')[0]
         keyX = strX.split('/')[1]
         dataX = self.master.statDict[diaX][keyX]
@@ -72,11 +72,14 @@ class StatisticSettings(QWidget):
                 keyY = stry.split('/')[1]
                 dataY[stry] = self.master.statDict[diaY][keyY]
                 plt.plot(dataX, dataY[stry], 'o', label=stry)
+                savedata = pd.DataFrame()
+                savedata[f'{strX}'] = dataX
+                savedata[f'{stry}'] = dataY[stry]
+                savedata.to_csv(f'Последняя сырая статистика.txt', sep='\t')
             except:
                 continue
         plt.legend()
         plt.show()
-
 
     def apply_view_errorbar(self):
 
@@ -125,6 +128,12 @@ class StatisticSettings(QWidget):
                 dataY_avg[stry] = data_avg
                 dataY_std[stry] = data_std
                 plt.errorbar(x=dataX_avg, xerr=dataX_std, y=data_avg, yerr=data_std, marker='o', label=stry)
+                savedata = pd.DataFrame()
+                savedata[f'avg({strX})'] = dataX_avg
+                savedata[f'std({strX})'] = dataX_std
+                savedata[f'avg({stry})'] = data_avg
+                savedata[f'std({stry})'] = data_std
+                savedata.to_csv(f'Последняя статистика.txt', sep='\t')
             except:
                 print("Не могу это построить")
                 continue

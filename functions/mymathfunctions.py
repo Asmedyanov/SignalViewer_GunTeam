@@ -14,10 +14,10 @@ def my_find_pics(signal, noize_ample=1.0e-4, noize_freq=1.0e7):
                       # height=[1.0, np.pi],
                       # threshold=[0.0, np.pi],
                       # threshold=1.0e-1,
-                      # distance=width,
+                      #distance=width,
                       # width=[width, 200],
-                      # width=[, 200],
-                      prominence=[noize_ample * 3, np.pi]
+                      width=[3, 200],
+                      prominence=[noize_ample * 1.5, np.pi]
                       )
 
 
@@ -235,8 +235,8 @@ def high_pass_filter(data, f_start=300.0):
     f_signal = rfft(signal)#, n=nfur)
     W = fftfreq(f_signal.size, d=dt)[:int(f_signal.size)]
     cut_f_signal = f_signal.copy()
-    plt.plot(W, cut_f_signal)
-    plt.show()
+    #plt.plot(W, cut_f_signal)
+    #plt.show()
     f_reg = 2.0 * np.pi * f_start  # W[np.argmax(f_signal[200:])]
     fw = f_reg * 4
     fwindow = np.where(W > f_reg, 1, 0)

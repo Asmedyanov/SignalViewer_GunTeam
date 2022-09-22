@@ -272,7 +272,7 @@ def find_reverse(data, noize_ample, noize_freq):
     pics_0_index = pics_0_raw[0]
     pics_all_index = np.concatenate([pics_0_index, pics_pi_index])
     pics_all_index = np.sort(pics_all_index)
-    visinity = 1.5
+    visinity = 1.0
     try:
         for i, index in enumerate(pics_0_index):
             if signal[index] > visinity:
